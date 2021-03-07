@@ -375,8 +375,8 @@ The following items will need api changes on the backend
   ```
 - In the `app/src/main/jni/` directory, run
   ```
-  $ ./download_ffmpeg.sh
-  $ ./build_ffmpeg.sh
+  ./download_ffmpeg.sh
+  ./build_ffmpeg.sh
   ```
 - Open the project in [Android Studio][studio].
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
