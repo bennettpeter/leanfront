@@ -49,6 +49,11 @@ android {
             path file('src/main/jni/Android.mk')
         }
     }
+
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
+
     ndkVersion '21.3.6528147'
 }
 

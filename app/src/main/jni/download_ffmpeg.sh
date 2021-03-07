@@ -23,10 +23,8 @@
 # along with MythTV-leanfront.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-scriptname=`readlink -e "$0"`
-scriptpath=`dirname "$scriptname"`
-scriptname=`basename "$scriptname" .sh`
+scriptpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 cd "$scriptpath"
 
-(git -C ffmpeg pull || git clone git@github.com:FFmpeg/FFmpeg.git ffmpeg)
+(git -C ffmpeg pull || git clone git://source.ffmpeg.org/ffmpeg ffmpeg)

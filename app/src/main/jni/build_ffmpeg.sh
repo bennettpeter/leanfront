@@ -23,9 +23,8 @@
 # along with MythTV-leanfront.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-scriptname=`readlink -e "$0"`
-scriptpath=`dirname "$scriptname"`
-scriptname=`basename "$scriptname" .sh`
+scriptpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+scriptname=$(basename "$0")
 set -e
 
 cd "$scriptpath"
@@ -34,9 +33,17 @@ cd "$scriptpath"
 rm -rf ffmpeg/android-libs/*
 
 FFMPEG_EXT_PATH="$PWD"
-NDK_PATH=$HOME/Android/android-ndk
-HOST_PLATFORM="linux-x86_64"
-ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw)
+
+if [ "$(uname -s)" = "Darwin" ];
+then
+  NDK_PATH=$HOME/Library/Android/android-ndk
+  HOST_PLATFORM="darwin-x86_64"
+else
+  NDK_PATH=$HOME/Android/android-ndk
+  HOST_PLATFORM="linux-x86_64"
+fi
+
+TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
 # --enable-avresample no longer needed
 COMMON_OPTIONS="
     --target-os=android
@@ -52,8 +59,9 @@ COMMON_OPTIONS="
     --disable-avfilter
     --disable-symver
     --enable-swresample
+    --strip=${TOOLCHAIN_PREFIX}/llvm-strip
     "
-TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
+ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw)
 for decoder in "${ENABLED_DECODERS[@]}"
 do
     COMMON_OPTIONS="${COMMON_OPTIONS} --enable-decoder=${decoder}"
@@ -67,8 +75,6 @@ git checkout release/4.2
     --arch=arm \
     --cpu=armv7-a \
     --cross-prefix="${TOOLCHAIN_PREFIX}/armv7a-linux-androideabi16-" \
-    --nm="${TOOLCHAIN_PREFIX}/arm-linux-androideabi-nm" \
-    --strip="${TOOLCHAIN_PREFIX}/arm-linux-androideabi-strip" \
     --extra-cflags="-march=armv7-a -mfloat-abi=softfp" \
     --extra-ldflags="-Wl,--fix-cortex-a8" \
     --extra-ldexeflags=-pie \
@@ -81,8 +87,6 @@ make clean
     --arch=aarch64 \
     --cpu=armv8-a \
     --cross-prefix="${TOOLCHAIN_PREFIX}/aarch64-linux-android21-" \
-    --nm="${TOOLCHAIN_PREFIX}/aarch64-linux-android-nm" \
-    --strip="${TOOLCHAIN_PREFIX}/aarch64-linux-android-strip" \
     --extra-ldexeflags=-pie \
     ${COMMON_OPTIONS}
 make -j4
@@ -93,8 +97,6 @@ make clean
     --arch=x86 \
     --cpu=i686 \
     --cross-prefix="${TOOLCHAIN_PREFIX}/i686-linux-android16-" \
-    --nm="${TOOLCHAIN_PREFIX}/i686-linux-android-nm" \
-    --strip="${TOOLCHAIN_PREFIX}/i686-linux-android-strip" \
     --extra-ldexeflags=-pie \
     --disable-asm \
     ${COMMON_OPTIONS}
@@ -106,8 +108,6 @@ make clean
     --arch=x86_64 \
     --cpu=x86_64 \
     --cross-prefix="${TOOLCHAIN_PREFIX}/x86_64-linux-android29-" \
-    --nm="${TOOLCHAIN_PREFIX}/x86_64-linux-android-nm" \
-    --strip="${TOOLCHAIN_PREFIX}/x86_64-linux-android-strip" \
     --extra-ldexeflags=-pie \
     --disable-asm \
     ${COMMON_OPTIONS}
