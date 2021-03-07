@@ -60,6 +60,7 @@ COMMON_OPTIONS="
     --disable-symver
     --enable-swresample
     --strip=${TOOLCHAIN_PREFIX}/llvm-strip
+    --nm=${TOOLCHAIN_PREFIX}/llvm-nm
     "
 ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw)
 for decoder in "${ENABLED_DECODERS[@]}"

@@ -368,9 +368,13 @@ The following items will need api changes on the backend
 ## Building
 
 - Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
-- Note the ndk version is referenced in the app/build.gradle file. You need to either download the version that is specified there or else update there to match the version you downloaded.
-- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/20.0.5594570
-- In the app/src/main/jni/ directory, run download_ffmpeg.sh and build_ffmpeg.sh.
+- Note the ndk version is referenced in the `app/build.gradle` file. You need to either download the version that is specified there or else update there to match the version you downloaded.
+- In the `$HOME/Android` on Linux or `$HOME/Library/Android` on OSX directory create a link to the ndk, for example `ln -s sdk/ndk/23.0.7123448 android-ndk`
+- In the `app/src/main/jni/` directory, run
+  ```
+  ./download_ffmpeg.sh
+  ./build_ffmpeg.sh
+  ```
 - Open the project in [Android Studio][studio].
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
 - It can also be run with an android emulator, but the emulator that comes with android studio does not support MPEG2 playback, so you need to play an h264 or h265 recording.
