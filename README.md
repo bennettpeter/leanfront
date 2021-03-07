@@ -369,11 +369,14 @@ The following items will need api changes on the backend
 
 - Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
 - Note the ndk version is referenced in the `app/build.gradle` file. You need to either download the version that is specified there or else update there to match the version you downloaded.
-- In the `$HOME/Android` on Linux or `$HOME/Library/Android` on OSX directory create a link to the ndk, for example `ln -s sdk/ndk/23.0.7123448 android-ndk`
+- In the `$HOME/Android` on Linux or `$HOME/Library/Android` on OSX directory create a link to the ndk. For example
+  ```
+  ln -s sdk/ndk/23.0.7123448 android-ndk
+  ```
 - In the `app/src/main/jni/` directory, run
   ```
-  ./download_ffmpeg.sh
-  ./build_ffmpeg.sh
+  $ ./download_ffmpeg.sh
+  $ ./build_ffmpeg.sh
   ```
 - Open the project in [Android Studio][studio].
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
