@@ -401,3 +401,4 @@ Licensed under the GNU GPL version 3 or later. See the [LICENSE file][license] f
 [license]: LICENSE
 [bintray]: https://dl.bintray.com/bennettpeter/generic/mythtv_leanfront/android
 [downloads]: https://dl.orangedox.com/pCBmBm
+
