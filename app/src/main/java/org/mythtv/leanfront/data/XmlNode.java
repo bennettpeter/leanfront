@@ -233,6 +233,10 @@ public class XmlNode {
         return getString(tags, 0);
     }
 
+    public void setString(String text) {
+        this.text = text;
+    }
+
     public String getString() { return text; }
 
     public int getInt(String tag, int defaultValue) {

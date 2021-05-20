@@ -27,6 +27,7 @@ package org.mythtv.leanfront.ui;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -43,6 +44,7 @@ import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.app.HeadersSupportFragment;
 import androidx.leanback.app.ProgressBarManager;
 import androidx.leanback.app.RowsSupportFragment;
+import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.CursorObjectAdapter;
 import androidx.leanback.widget.ImageCardView;
@@ -81,6 +83,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+
+import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.FetchVideoService;
@@ -105,6 +109,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -182,6 +187,7 @@ public class MainFragment extends BrowseSupportFragment
     private static int TASK_INTERVAL = 240;
     private ItemViewClickedListener mItemViewClickedListener;
     private ScrollSupport scrollSupport;
+    private Loader loader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -272,7 +278,7 @@ public class MainFragment extends BrowseSupportFragment
     // Load user interface from local database.
     public void startLoader() {
         LoaderManager manager = LoaderManager.getInstance(this);
-        manager.initLoader(CATEGORY_LOADER, null, this);
+        loader = manager.initLoader(CATEGORY_LOADER, null, this);
     }
 
     @Override
@@ -573,7 +579,7 @@ public class MainFragment extends BrowseSupportFragment
         setHeaderPresenterSelector(new PresenterSelector() {
             @Override
             public Presenter getPresenter(Object o) {
-                return new IconHeaderItemPresenter();
+                return new IconHeaderItemPresenter(MainFragment.this);
             }
         });
     }
@@ -728,6 +734,7 @@ public class MainFragment extends BrowseSupportFragment
         return ret;
     }
 
+    static final String[] articles = MyApplication.getAppContext().getResources().getStringArray(R.array.title_sort_articles);
     /**
      * Create the Sql to sort with excluding articles "the" "a" etc at the front
      * or at the front of directory names
@@ -735,13 +742,11 @@ public class MainFragment extends BrowseSupportFragment
      * @param delim Delimiter to use - ^ for title and / for directory
      * @return StringBuilder with resulting phrase for "order by"
      */
-    StringBuilder makeTitleSort(String columnName, char delim) {
-
+    public static StringBuilder makeTitleSort(String columnName, char delim) {
         // Sort uppercase title
         StringBuilder titleSort = new StringBuilder();
         titleSort.append("'").append(delim).append("'||UPPER(")
                 .append(columnName).append(")");
-        String[] articles = getResources().getStringArray(R.array.title_sort_articles);
         for (String article : articles) {
             if (article != null && article.length() > 0) {
                 titleSort.insert(0, "REPLACE(");
@@ -761,12 +766,14 @@ public class MainFragment extends BrowseSupportFragment
             // Fill in usage
             new AsyncBackendCall(null, 0L, false,
                     MainFragment.this).execute(Video.ACTION_BACKEND_INFO);
-            if (mActiveFragment == this)
-                saveSelected();
 
             String seq = Settings.getString("pref_seq");
             String ascdesc = Settings.getString("pref_seq_ascdesc");
             boolean showRecents = "true".equals(Settings.getString("pref_show_recents"));
+            boolean recentsTrim = "true".equals(Settings.getString("pref_recents_trim"));
+            boolean showRecentDeleted = "true".equals(Settings.getString("pref_recents_deleted"));
+            boolean showRecentWatched = "true".equals(Settings.getString("pref_recents_watched"));
+            recentsTrim = recentsTrim && (showRecentDeleted || showRecentWatched);
 
             int allType = TYPE_RECGROUP_ALL;
             String allTitle = null;
@@ -1098,26 +1105,85 @@ public class MainFragment extends BrowseSupportFragment
                     if (recentsObjectAdapter != null
                             && dbVideo.isRecentViewed()) {
                         // 525960 minutes in a year
-                        // Get position as number of minutes since 1970
+                        // Get key as number of minutes since 1970
                         // Will stop working in the year 5982
-                        int position = (int) (dbVideo.lastUsed / 60000L);
+                        int key = (int) (dbVideo.lastUsed / 60000L);
                         // Add 70 years in case it is before 1970
-                        position += 36817200;
+                        key += 36817200;
                         // descending
-                        position = Integer.MAX_VALUE - position;
+                        key = Integer.MAX_VALUE - key;
                         // Make sure we have an empty slot
                         try {
-                            while (recentsObjectAdapter.lookup(position) != null)
-                                position++;
+                            while (recentsObjectAdapter.lookup(key) != null)
+                                key++;
                         } catch (ArrayIndexOutOfBoundsException e) { }
-
-                        recentsObjectAdapter.set(position,dbVideo);
 
                         if (selectedRowNum == recentsRowNum) {
                             if (dbVideo.getItemType() == mSelectedItemType
-                                    && Objects.equals(dbVideo.recordedid,mSelectedItemId))
-                                selectedItemNum = position;
+                                    && Objects.equals(dbVideo.recordedid, mSelectedItemId))
+                                selectedItemNum = key;
                         }
+
+                        // Check if there is already an entry for that series / directory
+                        // If the user does not want duplicates of recent titles that were
+                        // watched or deleted
+
+                        boolean isDeleted = "Deleted".equals(dbVideo.recGroup);
+                        boolean isWatched = dbVideo.isWatched();
+                        if (recentsTrim) {
+
+                            // If all recently viewed episodes of a series are watched/deleted, show the most
+                            // recently viewed.
+                            // If some recently viewed episodes of a series are watched/deleted and some are not,
+                            // show only the ones not watched/deleted
+
+                            String series = dbVideo.getSeries();
+                            if (series != null) {
+                                for (int fx = 0; fx < recentsObjectAdapter.size(); fx++) {
+                                    Video fvid = (Video) recentsObjectAdapter.get(fx);
+                                    boolean fisDeleted = "Deleted".equals(fvid.recGroup);
+                                    if (series.equals(fvid.getSeries())
+                                            && (isDeleted || fisDeleted || Objects.equals(dbVideo.recGroup,fvid.recGroup))) {
+                                        int fkey = Integer.MAX_VALUE - ((int) (fvid.lastUsed / 60000L) + 36817200);
+                                        boolean fisWatched = fvid.isWatched();
+                                        if ((isDeleted || isWatched) && (fisDeleted || fisWatched)) {
+                                            // If the episode we are processing is watched/deleted and the matched
+                                            // episode in the list is also, keep the most recent
+                                            if (key < fkey) {
+                                                if (selectedRowNum == recentsRowNum && selectedItemNum == fkey)
+                                                    selectedItemNum = key;
+                                                // position is closer to front, delete the other one
+                                                recentsObjectAdapter.clear(fkey);
+                                                break;
+                                            } else {
+                                                if (selectedRowNum == recentsRowNum && selectedItemNum == key)
+                                                    selectedItemNum = fkey;
+                                                // position is later in list - drop this one
+                                                key = -1;
+                                                break;
+                                            }
+                                        } else if (isDeleted || isWatched) {
+                                            // If the episode we are processing is watched/deleted and the matched
+                                            // episode in the list is not, keep the non-watched
+                                            if (selectedRowNum == recentsRowNum && selectedItemNum == key)
+                                                selectedItemNum = fkey;
+                                            key = -1;
+                                            break;
+                                        } else if (fisDeleted || fisWatched) {
+                                            // If the episode we are processing is not watched/deleted and the matched
+                                            // episode in the list is, keep the non-watched
+                                            if (selectedRowNum == recentsRowNum && selectedItemNum == fkey)
+                                                selectedItemNum = key;
+                                            recentsObjectAdapter.clear(fkey);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (key != -1)
+                            recentsObjectAdapter.set(key, dbVideo);
                     }
 
                     data.moveToNext();
@@ -1202,7 +1268,6 @@ public class MainFragment extends BrowseSupportFragment
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(setter, 100);
                 }
-
             }
             setProgressBar(false);
         }
@@ -1393,6 +1458,147 @@ public class MainFragment extends BrowseSupportFragment
         }
     }
 
+    public boolean onHeaderMenu(MyHeaderItem headerItem) {
+        int type = headerItem.getItemType();
+        ArrayList<String> prompts = new ArrayList<>();
+        ArrayList<Action> actions = new ArrayList<>();
+        switch (type) {
+            case MainFragment.TYPE_SERIES:
+            case MainFragment.TYPE_VIDEODIR:
+                Row row = null;
+                ObjectAdapter rowsAdapter = getAdapter();
+                int size = rowsAdapter.size();
+                for (int ix = 0 ; ix < size ; ix++) {
+                    row = (Row)rowsAdapter.get(ix);
+                    if (row.getHeaderItem() == headerItem)
+                        break;
+                }
+                Row selectedRow = row;
+                if (((ListRow)row).getAdapter().size() == 0)
+                    break;
+                String alertTitle;
+                if (type == MainFragment.TYPE_SERIES) {
+                    alertTitle = getContext().getString(R.string.title_menu_series,
+                            headerItem.getName(),headerItem.getBaseName());
+                    if ("Deleted".equals(headerItem.getBaseName())) {
+                        prompts.add(getString(R.string.menu_undelete));
+                        actions.add(new Action(Video.ACTION_UNDELETE));
+                    }
+                    else {
+                        prompts.add(getString(R.string.menu_delete));
+                        actions.add(new Action(Video.ACTION_DELETE));
+                        prompts.add(getString(R.string.menu_delete_rerecord));
+                        actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
+                    }
+                    prompts.add(getString(R.string.menu_rerecord));
+                    actions.add(new Action(Video.ACTION_ALLOW_RERECORD));
+                }
+                else {
+                    String baseName = headerItem.getBaseName();
+                    if (baseName.length() > 0)
+                        baseName = baseName + "/";
+                    alertTitle = getContext().getString(R.string.title_menu_videodir,
+                            baseName + headerItem.getName());
+                }
+                prompts.add(getString(R.string.menu_mark_unwatched));
+                actions.add(new Action(Video.ACTION_SET_UNWATCHED));
+                prompts.add(getString(R.string.menu_mark_watched));
+                actions.add(new Action(Video.ACTION_SET_WATCHED));
+                prompts.add(getString(R.string.menu_remove_bookmark));
+                actions.add(new Action(Video.ACTION_REMOVE_BOOKMARK));
+                prompts.add(getString(R.string.menu_remove_from_recent));
+                actions.add(new Action(Video.ACTION_REMOVE_RECENT));
+
+                if (prompts != null && actions != null) {
+                    final ArrayList<Action> finalActions = actions; // needed because used in inner class
+                    // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
+                            R.style.Theme_AppCompat_Dialog_Alert);
+                    builder
+                            .setTitle(alertTitle)
+                            .setItems(prompts.toArray(new String[0]),
+                                    new DialogInterface.OnClickListener() {
+                                        ArrayList<Action> mActions = finalActions;
+                                        MainFragment mParent = MainFragment.this;
+
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // The 'which' argument contains the index position
+                                            // of the selected item
+                                            if (which < mActions.size()) {
+                                                mParent.onMenuClicked(mActions.get(which), selectedRow);
+                                            }
+                                        }
+                                    });
+                    builder.show();
+                }
+
+                return true;
+        }
+        return true; // Do not treat long press as a short press
+    }
+
+    public void onMenuClicked(Action action, Row row) {
+        saveSelected();
+        loader.stopLoading();
+        ListRow listRow = (ListRow) row;
+        ObjectAdapter rowAdapter = listRow.getAdapter();
+        AsyncBackendCall call = new AsyncBackendCall(
+                new AsyncBackendCall.OnBackendCallListener() {
+                    @Override
+                    public void onPostExecute(AsyncBackendCall taskRunner) {
+                        ArrayList<XmlNode> results = taskRunner.getXmlResults();
+                        int nSuccess = 0;
+                        int nFail = 0;
+                        XmlNode xmlResult;
+                        // only look at every alternate result, others are
+                        // refresh or dummy
+                        for (int ix = 1; ix < results.size(); ix+=2) {
+                            xmlResult = results.get(ix);
+                            String result = null;
+                            if (xmlResult != null)
+                                result = xmlResult.getString();
+                            if ("true".equals(result))
+                                nSuccess++;
+                            else
+                                nFail++;
+                        }
+                        if (nFail > 0) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
+                                    R.style.Theme_AppCompat_Dialog_Alert);
+                            builder.setTitle(R.string.title_alert_rowresults);
+                            String msg = getContext().getString(R.string.alert_rowresults, nSuccess, nFail);
+                            builder.setMessage(msg);
+                            builder.show();
+                        }
+                        loader.startLoading();
+                    }
+        });
+        call.setBookmark(0);
+        call.setPosBookmark(0);
+        call.setRowAdapter(rowAdapter);
+        Integer [] tasks;
+        int task = (int)action.getId();
+
+        switch (task) {
+            case Video.ACTION_DELETE:
+            case Video.ACTION_DELETE_AND_RERECORD:
+                tasks = new Integer [] {Video.ACTION_REFRESH, task};
+                break;
+            case Video.ACTION_SET_UNWATCHED:
+            case Video.ACTION_SET_WATCHED:
+                call.setWatched(task == Video.ACTION_SET_WATCHED);
+                // Set the task since both watched and unwatched are done with
+                // ACTION_SET_WATCHED in AsyncBackend
+                task = Video.ACTION_SET_WATCHED;
+                // Fall Through to default
+            default:
+                tasks = new Integer [] {Video.ACTION_DUMMY, task};
+                break;
+        }
+        call.execute(tasks);
+        setProgressBar(true);
+    }
+
     private static class MythTask implements Runnable {
         boolean mVersionMessageShown = false;
 
@@ -1472,6 +1678,8 @@ public class MainFragment extends BrowseSupportFragment
                         return;
                     activity.runOnUiThread(new Runnable() {
                         public void run() {
+                            if (mActiveFragment != null)
+                                mActiveFragment.saveSelected();
                             MainActivity.getContext().getMainFragment().startFetch(-1, null, null);
                         }
                     });

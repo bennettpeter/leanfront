@@ -32,6 +32,7 @@ import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.RowHeaderPresenter;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,11 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
 
     private float mUnselectedAlpha;
     private MyHeaderItem headerItem;
+    private MainFragment mainFragment;
+
+    public IconHeaderItemPresenter(MainFragment mainFragment) {
+        this.mainFragment = mainFragment;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup) {
@@ -56,6 +62,12 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
 
         View view = inflater.inflate(R.layout.icon_header_item, null);
         view.setAlpha(mUnselectedAlpha); // Initialize icons to be at half-opacity.
+        view.setOnLongClickListener( (v) -> mainFragment.onHeaderMenu(headerItem));
+        view.setOnKeyListener( (v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN)
+                return mainFragment.onHeaderMenu(headerItem);
+            return false;
+        });
 
         return new ViewHolder(view);
     }

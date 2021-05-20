@@ -65,6 +65,8 @@ public final class Video implements Parcelable, ListItem {
     // From MythTV libmyth/programtypes.h
     // This flag is also set for videos as needed.
     public static final int FL_WATCHED = 0x00000200;
+    public String videoProps;
+    public static final int VID_DAMAGED = 0x00000400;
     // Channel values
     public final String chanid;
     public final String channum;
@@ -82,11 +84,10 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_UNDELETE             =  5;
     public static final int ACTION_REFRESH              =  6;
     public static final int ACTION_OTHER                =  7;
-    public static final int ACTION_WATCHED              =  8;
-    public static final int ACTION_UNWATCHED            =  9;
+    public static final int ACTION_SET_WATCHED          =  8;
+    public static final int ACTION_SET_UNWATCHED        =  9;
     public static final int ACTION_SET_BOOKMARK         = 10;
     public static final int ACTION_REMOVE_BOOKMARK      = 11;
-    public static final int ACTION_SET_WATCHED          = 12;
     public static final int ACTION_ZOOM                 = 13;
     public static final int ACTION_ASPECT               = 14;
     public static final int ACTION_FILELENGTH           = 15;
@@ -120,6 +121,7 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_AUDIOSYNC             = 44;
     public static final int ACTION_ALLOW_RERECORD        = 45;
     public static final int ACTION_REMOVE_RECENT         = 46;
+    public static final int ACTION_PLAYLIST_PLAY         = 47;
 
 
     private Video(
@@ -144,6 +146,7 @@ public final class Video implements Parcelable, ListItem {
             final String filename,
             final String hostname,
             final String progflags,
+            final String videoProps,
             final String chanid,
             final String channum,
             final String callsign,
@@ -171,6 +174,7 @@ public final class Video implements Parcelable, ListItem {
         this.filename = filename;
         this.hostname = hostname;
         this.progflags = progflags;
+        this.videoProps = videoProps;
         this.chanid = chanid;
         this.channum = channum;
         this.callsign = callsign;
@@ -201,6 +205,7 @@ public final class Video implements Parcelable, ListItem {
         filename = in.readString();
         hostname = in.readString();
         progflags = in.readString();
+        videoProps = in.readString();
         chanid = in.readString();
         channum = in.readString();
         callsign = in.readString();
@@ -253,6 +258,7 @@ public final class Video implements Parcelable, ListItem {
         dest.writeString(filename);
         dest.writeString(hostname);
         dest.writeString(progflags);
+        dest.writeString(videoProps);
         dest.writeString(chanid);
         dest.writeString(channum);
         dest.writeString(callsign);
@@ -313,6 +319,29 @@ public final class Video implements Parcelable, ListItem {
                         || (Integer.parseInt(progflags) & Video.FL_WATCHED) == 0);
     }
 
+    public boolean isWatched() {
+        return progflags != null
+                && (Integer.parseInt(progflags) & Video.FL_WATCHED) != 0;
+    }
+
+    public boolean isDamaged() {
+        return videoProps != null
+                && (Integer.parseInt(videoProps) & Video.VID_DAMAGED) != 0;
+    }
+
+    public String getSeries() {
+        if (rectype == VideoContract.VideoEntry.RECTYPE_RECORDING)
+            return title;
+        else if (rectype == VideoContract.VideoEntry.RECTYPE_VIDEO
+            && filename != null) {
+            int lastslashpos = filename.lastIndexOf('/');
+            if (lastslashpos == -1)
+                return "";
+            return filename.substring(0,lastslashpos);
+        }
+        return null;
+    }
+
     // Builder for Video object.
     public static class VideoBuilder {
         private long id;
@@ -336,6 +365,7 @@ public final class Video implements Parcelable, ListItem {
         private String filename;
         private String hostname;
         private String progflags;
+        private String videoProps;
         private String chanid;
         private String channum;
         private String callsign;
@@ -449,6 +479,11 @@ public final class Video implements Parcelable, ListItem {
             return this;
         }
 
+        public VideoBuilder videoProps(String videoProps) {
+            this.videoProps = videoProps;
+            return this;
+        }
+
         public VideoBuilder chanid(String chanid) {
             this.chanid = chanid;
             return this;
@@ -491,7 +526,7 @@ public final class Video implements Parcelable, ListItem {
                     String.valueOf(desc.getIconUri()),
                     String.valueOf(desc.getSubtitle()),
                     "", //recordid not provided
-                    "","","","","","","","","","","","","","","", 0, false
+                    "","","","","","","","","","","0","0","","","","", 0, false
             );
         }
 
@@ -518,6 +553,7 @@ public final class Video implements Parcelable, ListItem {
                      filename,
                      hostname,
                      progflags,
+                    videoProps,
                     chanid,
                     channum,
                     callsign,

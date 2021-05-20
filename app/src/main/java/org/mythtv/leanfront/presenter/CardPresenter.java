@@ -146,6 +146,9 @@ public class CardPresenter extends Presenter {
             // possible characters for watched - "👁" "⏿" "👀"
             if ((progflags & Video.FL_WATCHED) != 0)
                 subtitle.append("\uD83D\uDC41");
+            // damaged character - 💥
+            if (video.isDamaged())
+                subtitle.append("\uD83D\uDCA5");
             if (video.season != null && video.season.compareTo("0") > 0) {
                 subtitle.append('S').append(video.season).append('E').append(video.episode)
                         .append(' ');

@@ -76,9 +76,11 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     }
 
     @Override
-    public void onPlayCompleted() {
+    public void onPlayCompleted(VideoPlayerGlue.MyAction playlistPlayAction) {
         playbackFragment.markWatched(true);
-        if (playbackFragment.mIsBounded) {
+        if (playlistPlayAction.getIndex() == 1) // playlist selected
+            onNext();
+        else if (playbackFragment.mIsBounded) {
             Log.i(TAG, CLASS + " onPlayCompleted checking File Length.");
             playbackFragment.mIsPlayResumable = true;
             playbackFragment.getFileLength();

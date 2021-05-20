@@ -266,16 +266,22 @@ public class PlaybackFragment extends VideoSupportFragment
         long leng = mPlayerGlue.myGetDuration();
         if (pos < 0)
             pos = mPlayerGlue.getSavedCurrentPosition();
-        if (leng == -1 || (pos > 5000 && pos < (leng - 500)))
+        if (leng == -1 || (pos > 10000 && pos < (leng - 10000)))
             mBookmark = pos;
         else
             mBookmark = 0;
+        int action2 = Video.ACTION_DUMMY;
+        if (pos > leng - 10000) {
+            mWatched = true;
+            action2 = Video.ACTION_SET_WATCHED;
+        }
+
         posBookmark = mBookmark * (long)(frameRate * 100.0f) / 100000;
         AsyncBackendCall call =  new AsyncBackendCall(mVideo, mBookmark, mWatched,
                 null);
         call.setPosBookmark(posBookmark);
         posBookmark = -1;
-        call.execute(Video.ACTION_SET_BOOKMARK);
+        call.execute(Video.ACTION_SET_BOOKMARK, action2);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -1120,11 +1126,14 @@ public class PlaybackFragment extends VideoSupportFragment
 
             boolean showDeleted = "true".equals(Settings.getString("pref_related_deleted"));
             boolean showWatched = "true".equals(Settings.getString("pref_related_watched"));
+            String seq = Settings.getString("pref_seq");
+            String ascdesc = Settings.getString("pref_seq_ascdesc");
 
             // When loading related videos or videos for the playlist, query by category.
             int rectype = args.getInt(VideoContract.VideoEntry.COLUMN_RECTYPE, -1);
             String recgroup = args.getString(VideoContract.VideoEntry.COLUMN_RECGROUP);
             String filename = args.getString(VideoContract.VideoEntry.COLUMN_FILENAME);
+            StringBuilder orderby;
             if (rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
                 // Videos
                 int pos = filename.lastIndexOf('/');
@@ -1134,7 +1143,8 @@ public class PlaybackFragment extends VideoSupportFragment
                 dirname = dirname + "%";
                 String subdirname = dirname + "%/%";
 
-                String orderby = "UPPER (" +VideoContract.VideoEntry.COLUMN_FILENAME + ")";
+                orderby = MainFragment.makeTitleSort
+                        (VideoContract.VideoEntry.COLUMN_FILENAME, '/');
                 StringBuilder where = new StringBuilder();
                 where   .append(VideoContract.VideoEntry.COLUMN_RECTYPE)
                         .append(" = ").append(VideoContract.VideoEntry.RECTYPE_VIDEO)
@@ -1158,7 +1168,7 @@ public class PlaybackFragment extends VideoSupportFragment
                         where.toString(),
                         new String[]{dirname, subdirname,
                                 args.getString(VideoContract.VideoEntry.COLUMN_VIDEO_URL)},
-                        orderby);
+                        orderby.toString());
             } else {
                 // Recordings or LiveTV
                 String category;
@@ -1203,9 +1213,20 @@ public class PlaybackFragment extends VideoSupportFragment
                         .append(VideoContract.VideoEntry.COLUMN_VIDEO_URL)
                         .append(" = ? ");
 
-                String orderby = VideoContract.VideoEntry.COLUMN_TITLE + ","
-                        + VideoContract.VideoEntry.COLUMN_AIRDATE + ","
-                        + VideoContract.VideoEntry.COLUMN_STARTTIME;
+                orderby = MainFragment.makeTitleSort(VideoContract.VideoEntry.COLUMN_TITLE, '^')
+                        .append(", ");
+                if ("airdate".equals(seq)) {
+                    orderby.append(VideoContract.VideoEntry.COLUMN_AIRDATE).append(" ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(VideoContract.VideoEntry.COLUMN_STARTTIME).append(" ")
+                            .append(ascdesc);
+                }
+                else {
+                    orderby.append(VideoContract.VideoEntry.COLUMN_STARTTIME).append(" ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(VideoContract.VideoEntry.COLUMN_AIRDATE).append(" ")
+                            .append(ascdesc);
+                }
                 String [] selectionArgs;
                 if (deleted)
                     selectionArgs = new String[]{category,
@@ -1219,7 +1240,7 @@ public class PlaybackFragment extends VideoSupportFragment
                         null,
                         where.toString(),
                         selectionArgs,
-                        orderby);
+                        orderby.toString());
             }
         }
 

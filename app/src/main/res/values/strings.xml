@@ -89,8 +89,12 @@
     <string name="pref_show_recents">Show Recently Viewed List</string>
     <string name="pref_show_recents_desc">This appears on the top level screen only.</string>
     <string name="pref_recents_days">Number of Days in Recently Viewed List</string>
-    <string name="pref_recents_deleted">Include Deleted Shows in Recently Viewed List</string>
-    <string name="pref_recents_watched">Include Watched Shows in Recently Viewed List</string>
+    <string name="pref_recents_deleted">Include Deleted Recordings in Recent List</string>
+    <string name="pref_recents_deleted_desc">Recordings that have been marked "Deleted" but not yet physically removed yet</string>
+    <string name="pref_recents_watched">Include Watched Shows in Recent List</string>
+    <string name="pref_recents_watched_desc">Recordings or Videos completely watched to the end or marked as "Watched" with the menu</string>
+    <string name="pref_recents_trim">Trim Recently Viewed List</string>
+    <string name="pref_recents_trim_desc">Include only one Watched or Deleted episode for each series or directory</string>
     <string name="pref_related_deleted">Include Deleted Shows in Related Videos List</string>
     <string name="pref_related_deleted_desc">To see the list press down in video
         details or playback controls.</string>
@@ -111,6 +115,9 @@
     <string name="pref_letterbox_black">Letterbox Black Matte</string>
     <string name="pref_letterbox_black_desc">If unchecked use Gray Matte</string>
     <string name="pref_msg_needs_6_0">Requires at least Android 6.0</string>
+    <string name="pref_tweaks_title">Tweaks</string>
+    <string name="pref_tweaks_desc">Please read the documentation on Tweaks before changing anything here.</string>
+    <string name="pref_tweak_ts_search_pkts">TS Search Packets (default 2600)</string>
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
     <string name="all_title">All</string>
@@ -180,11 +187,15 @@
     <string name="button_cc">Closed Captions</string>
     <string name="button_audiotrack">Change Audio Track</string>
     <string name="button_audiosync">Adjust Audio Sync</string>
+    <string name="button_playlistplay">Play Related Videos</string>
+    <string name="button_playlistplay_active">Will Play Related Videos</string>
     <string name="row_header_videos">Videos</string>
     <string name="row_header_channels">Channels</string>
     <string name="row_header_tools">Tools</string>
     <string name="title_alert_livetv">Live TV</string>
     <string name="alert_livetv_message">Recording failed.</string>
+    <string name="title_alert_rowresults">Results</string>
+    <string name="alert_rowresults">%1$d Updated\n%2$d Failed</string>
     <string name="title_are_you_sure">Are you sure?</string>
     <string name="title_disk_usage">Disk Usage\n %1$d %%</string>
     <!-- In the below string the %1 is the channel number ans %2 is the callsign   -->
@@ -216,6 +227,8 @@
     <string name="title_program_guide">Program Guide</string>
     <string name="title_rec_rules">Recording Rules</string>
     <string name="title_upcoming">Upcoming Recordings</string>
+    <string name="title_menu_series">Update entire series \"%1$s\" in group \"%2$s\"</string>
+    <string name="title_menu_videodir">Update all videos in directory \"%1$s\"</string>
 
     <string name="msg_edit_schedule">Edit Schedule for %1$s</string>
     <string name="msg_edit_schedule2">Edit Schedule for %1$s (2)</string>

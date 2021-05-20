@@ -103,6 +103,8 @@ public class Settings {
         mEditor.putString("pref_recents_deleted",str);
         str = mPrefs.getString("pref_recents_watched", "false");
         mEditor.putString("pref_recents_watched",str);
+        str = mPrefs.getString("pref_recents_trim", "true");
+        mEditor.putString("pref_recents_trim",str);
         str = mPrefs.getString("pref_related_deleted", "false");
         mEditor.putString("pref_related_deleted",str);
         str = mPrefs.getString("pref_related_watched", "false");
@@ -111,6 +113,8 @@ public class Settings {
         mEditor.putString("pref_recents_days",str);
         str = mPrefs.getString("pref_letterbox_color", String.valueOf(Color.DKGRAY));
         mEditor.putString("pref_letterbox_color",str);
+        str = mPrefs.getString("pref_tweak_ts_search_pkts", "2600");
+        mEditor.putString("pref_tweak_ts_search_pkts",str);
         mEditor.apply();
     }
 }

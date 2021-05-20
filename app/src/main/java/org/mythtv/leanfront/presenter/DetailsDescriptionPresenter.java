@@ -138,6 +138,9 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
             int progflags = Integer.parseInt(mVideo.progflags);
             if ((progflags & Video.FL_WATCHED) != 0)
                 subtitle.append("\uD83D\uDC41");
+            // damaged character - 💥
+            if (mVideo.isDamaged())
+                subtitle.append("\uD83D\uDCA5");
             if (mVideo.season != null && mVideo.season.compareTo("0") > 0) {
                 subtitle.append('S').append(mVideo.season).append('E').append(mVideo.episode)
                         .append(' ');

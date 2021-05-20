@@ -73,7 +73,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         void onPrevious();
         /** Skip to the next item in the queue. */
         void onNext();
-        void onPlayCompleted();
+        void onPlayCompleted(MyAction playlistPlayAction);
         void onZoom();
         void onAspect();
         void onCaption();
@@ -102,6 +102,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private MyAction mSpeedAction;
     private MyAction mAudioTrackAction;
     private MyAction mAudioSyncAction;
+    private MyAction mPlaylistPlayAction;
     private boolean mActionsVisible;
     private long mOffsetMillis = 0;
     // Skip means go to next or previous track
@@ -111,6 +112,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private long mSavedDuration = -1;
     private final boolean isTV;
     private boolean playerClosed;
+    private boolean playCompleted;
 
     public VideoPlayerGlue(
             Context context,
@@ -134,6 +136,9 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         mSpeedAction = new MyAction(context,Video.ACTION_SPEEDUP, R.drawable.ic_speed_increase,R.string.button_speedup);
         mAudioTrackAction = new MyAction(context,Video.ACTION_AUDIOTRACK, R.drawable.ic_audiotrack,R.string.button_audiotrack);
         mAudioSyncAction = new MyAction(context,Video.ACTION_AUDIOSYNC, R.drawable.ic_av_timer,R.string.button_audiosync);
+        mPlaylistPlayAction = new MyAction(context,Video.ACTION_PLAYLIST_PLAY,
+                new int[] {R.drawable.ic_playlist_play,R.drawable.ic_playlist_play_actve},
+                new int[] {R.string.button_playlistplay,R.string.button_playlistplay_active});
         mClosedCaptioningAction = new PlaybackControlsRow.ClosedCaptioningAction(context);
         Resources res = context.getResources();
         String[] labels = new String[1];
@@ -167,6 +172,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         adapter.add(mPivotAction);
         adapter.add(mAudioTrackAction);
         adapter.add(mAudioSyncAction);
+        adapter.add(mPlaylistPlayAction);
         mActionsVisible = true;
     }
 
@@ -231,7 +237,8 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
                 || action == mPivotAction
                 || action == mSpeedAction
                 || action == mAudioTrackAction
-                || action == mAudioSyncAction;
+                || action == mAudioSyncAction
+                || action == mPlaylistPlayAction;
     }
 
     private void dispatchAction(Action action) {
@@ -263,6 +270,18 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
                     multiAction,
                     (ArrayObjectAdapter) getControlsRow().getSecondaryActionsAdapter());
         }
+        if (action == mPlaylistPlayAction) {
+            if (mPlaylistPlayAction.getIndex() == 1
+                && playCompleted)
+                next();
+        }
+    }
+
+    @Override
+    protected void onPlayStateChanged() {
+        super.onPlayStateChanged();
+        if (isPlaying())
+            playCompleted = false;
     }
 
     private void notifyActionChanged(
@@ -295,7 +314,8 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
 
     @Override
     protected void onPlayCompleted() {
-        mActionListener.onPlayCompleted();
+        mActionListener.onPlayCompleted(mPlaylistPlayAction);
+        playCompleted = true;
         super.onPlayCompleted();
     }
 
@@ -377,15 +397,21 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
      */
     public static class MyAction extends PlaybackControlsRow.MultiAction {
 
-        public MyAction(Context context, int id, int icon, int label) {
+        public MyAction(Context context, int id, int [] icons, int [] labels) {
             super(id);
             Resources res = context.getResources();
-            Drawable[] drawables = new Drawable[1];
-            drawables[0] = ResourcesCompat.getDrawable(res, icon, null);
+            Drawable[] drawables = new Drawable[icons.length];
+            String[] labelStr = new String[icons.length];
+            for (int i = 0; i<icons.length; i++) {
+                drawables[i] = ResourcesCompat.getDrawable(res, icons[i], null);
+                labelStr[i] = res.getString(labels[i]);
+            }
             setDrawables(drawables);
-            String[] labels = new String[1];
-            labels[0] = res.getString(label);
-            setLabels(labels);
+            setLabels(labelStr);
+        }
+
+        public MyAction(Context context, int id, int icon, int label) {
+            this(context, id, new int[]{icon},new int[]{label});
         }
     }
 

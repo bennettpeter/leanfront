@@ -72,6 +72,7 @@ public class VideoDbBuilder {
     public static final String XMLTAG_STARTTS = "StartTs";
     public static final String XMLTAG_ENDTS = "EndTs";
     public static final String XMLTAG_PROGFLAGS = "ProgramFlags";
+    public static final String XMLTAG_VIDEOPROPS = "VideoProps";
     public static final String XMLTAG_FILESIZE = "FileSize";
     public static final String XMLTAG_HOSTNAME = "HostName";
 
@@ -198,6 +199,7 @@ public class VideoDbBuilder {
             String baseUrl = null;
             long duration = 0;
             String progflags = "0";
+            String videoProps = "0";
             if (phase == 0) { // Recordings
                 rectype = VideoContract.VideoEntry.RECTYPE_RECORDING;
                 String fileSize = programNode.getString(XMLTAG_FILESIZE);
@@ -233,6 +235,7 @@ public class VideoDbBuilder {
                     airdate = dbDateFormat.format(new Date(startTimeSecs));
                 }
                 progflags = programNode.getString(XMLTAG_PROGFLAGS);
+                videoProps = programNode.getString(XMLTAG_VIDEOPROPS);
             }
             if (phase == 1) { // Videos
                 rectype = VideoContract.VideoEntry.RECTYPE_VIDEO;
@@ -351,6 +354,7 @@ public class VideoDbBuilder {
                         mContext.getResources().getString(R.string.global_search));
             }
             videoValues.put(VideoContract.VideoEntry.COLUMN_PROGFLAGS, progflags);
+            videoValues.put(VideoContract.VideoEntry.COLUMN_VIDEOPROPS, videoProps);
 
             videosToInsert.add(videoValues);
             if (ixSingle >= 0)
@@ -412,6 +416,7 @@ public class VideoDbBuilder {
             channelValues.put(VideoContract.VideoEntry.COLUMN_CALLSIGN, callsign);
             channelValues.put(VideoContract.VideoEntry.COLUMN_CHANNEL, channelname);
             channelValues.put(VideoContract.VideoEntry.COLUMN_PROGFLAGS, "0");
+            channelValues.put(VideoContract.VideoEntry.COLUMN_VIDEOPROPS, "0");
             channelValues.put(VideoContract.VideoEntry.COLUMN_RECGROUP, "LiveTV");
             channelsToInsert.add(channelValues);
         }

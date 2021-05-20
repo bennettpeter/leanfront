@@ -102,6 +102,8 @@ public final class VideoContract {
         }
         // see libmyth/programtypes.h for list of values.
         public static final String COLUMN_PROGFLAGS = "progflags";
+        // see libmyth/programtypes.h for list of values.
+        public static final String COLUMN_VIDEOPROPS = "videoprops";
         // Channel columns - use channel for the channel name
         public static final String COLUMN_CHANID = "chanid";
         public static final String COLUMN_CHANNUM = "channum";

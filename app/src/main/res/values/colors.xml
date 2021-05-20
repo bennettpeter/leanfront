@@ -33,4 +33,5 @@
     <color name="icon_background">#4A4F51</color>
     <color name="icon_alt_background">#2A2F51</color>
     <color name="header_text">#FFFFFF</color>
+    <color name="color_active_button">#a8ffa0</color>
 </resources>

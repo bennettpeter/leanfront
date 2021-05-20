@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
+import androidx.leanback.widget.ObjectAdapter;
 
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
@@ -33,6 +34,7 @@ import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
 import org.mythtv.leanfront.ui.MainActivity;
+import org.mythtv.leanfront.ui.MainFragment;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -74,6 +76,7 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
     private String mName;
     private RecordRule mRecordRule;
     private String mStringParameter;
+    private ObjectAdapter rowAdapter;
 
     // Parsing results of GetRecorded
     private static final String[] XMLTAGS_RECGROUP = {"Recording","RecGroup"};
@@ -99,6 +102,10 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
 
     public AsyncBackendCall(OnBackendCallListener backendCallListener) {
         mBackendCallListener = backendCallListener;
+    }
+
+    public void setBookmark(long mValue) {
+        this.mValue = mValue;
     }
 
     public long getBookmark() {
@@ -173,20 +180,50 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
         this.mStringParameter = stringParameter;
     }
 
+    public void setWatched(boolean watched) {
+        this.mWatched = watched;
+    }
+
     public String getStringParameter() {
         return mStringParameter;
     }
 
+    public void setRowAdapter(ObjectAdapter rowAdapter) {
+        this.rowAdapter = rowAdapter;
+    }
+
     protected Void doInBackground(Integer ... tasks) {
         mTasks = new int[tasks.length];
-        boolean isRecording = (mVideo != null && mVideo.recGroup != null);
+        MainActivity main = MainActivity.getContext();
         HttpURLConnection urlConnection = null;
-        for (int count = 0; count < tasks.length; count++) {
-            int task = tasks[count];
-            mTasks[count] = task;
-            MainActivity main = MainActivity.getContext();
+        int videoIndex = 0;
+        int taskIndex = -1;
+        for(;;) {
+            // If there is a rowAdapter, take each video in the adapter and run
+            // all tasks on it.
+            taskIndex++;
+            if (taskIndex >= tasks.length) {
+                if (rowAdapter == null)
+                    break;
+                taskIndex = 0;
+                videoIndex++;
+            }
+            if (rowAdapter != null && videoIndex >= rowAdapter.size())
+                break;
+
+            if (rowAdapter != null) {
+                mVideo = (Video) rowAdapter.get(videoIndex);
+                // in row adapter only process videos and series.
+                if ( ! (mVideo.type == MainFragment.TYPE_VIDEO
+                        || mVideo.type == MainFragment.TYPE_EPISODE))
+                    continue;
+            }
+            int task = tasks[taskIndex];
+            mTasks[taskIndex] = task;
             boolean found;
-            XmlNode response;
+            boolean isRecording = false;
+            if (mVideo != null)
+                isRecording = (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING);
             String urlString = null;
             Context context = MyApplication.getAppContext();
             boolean allowRerecord = false;
@@ -286,10 +323,10 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                             urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                     "/Dvr/GetRecorded?RecordedId="
                                             + mVideo.recordedid);
-                            XmlNode recorded = XmlNode.fetch(urlString, null);
-                            mVideo.recGroup = recorded.getString(XMLTAGS_RECGROUP);
-                            mVideo.progflags = recorded.getString(XMLTAGS_PROGRAMFLAGS);
-                            String newEndtime = recorded.getString(XMLTAGS_ENDTIME);
+                            xmlResult = XmlNode.fetch(urlString, null);
+                            mVideo.recGroup = xmlResult.getString(XMLTAGS_RECGROUP);
+                            mVideo.progflags = xmlResult.getString(XMLTAGS_PROGRAMFLAGS);
+                            String newEndtime = xmlResult.getString(XMLTAGS_ENDTIME);
 
                             if (main != null && !Objects.equals(mVideo.endtime, newEndtime)) {
                                 mVideo.endtime = newEndtime;
@@ -301,8 +338,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                             urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                     "/Video/GetVideo?Id="
                                             + mVideo.recordedid);
-                            XmlNode resp = XmlNode.fetch(urlString, null);
-                            String watched = resp.getString(XMLTAG_WATCHED);
+                            xmlResult = XmlNode.fetch(urlString, null);
+                            String watched = xmlResult.getString(XMLTAG_WATCHED);
                             if ("true".equals(watched))
                                 watched = VALUE_WATCHED;
                             else
@@ -330,7 +367,7 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                 "/Dvr/DeleteRecording?RecordedId="
                                         + mVideo.recordedid
                                         + "&AllowRerecord=" + allowRerecord);
-                        response = XmlNode.fetch(urlString, "POST");
+                        xmlResult = XmlNode.fetch(urlString, "POST");
                         if (main != null)
                             main.getMainFragment().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
                                     mVideo.recordedid, null);
@@ -346,7 +383,7 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                         urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                 "/Dvr/UnDeleteRecording?RecordedId="
                                         + mVideo.recordedid);
-                        response = XmlNode.fetch(urlString, "POST");
+                        xmlResult = XmlNode.fetch(urlString, "POST");
                         if (main != null)
                             main.getMainFragment().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
                                     mVideo.recordedid, null);
@@ -354,6 +391,10 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                         e.printStackTrace();
                     }
                     break;
+                case Video.ACTION_REMOVE_BOOKMARK:
+                    mValue = 0;
+                    posBookmark = 0;
+                    // fall through
                 case Video.ACTION_SET_BOOKMARK:
                     // when using this method, mValue and posBookmark must both be set.
                     try {
@@ -365,8 +406,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                 urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                         "/Dvr/SetSavedBookmark?OffsetType=duration&RecordedId="
                                                 + mVideo.recordedid + "&Offset=" + mValue);
-                                response = XmlNode.safeFetch(urlString, "POST");
-                                String result = response.getString();
+                                xmlResult = XmlNode.safeFetch(urlString, "POST");
+                                String result = xmlResult.getString();
                                 if ("true".equals(result))
                                     found = true;
                             }
@@ -380,8 +421,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                     urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                             "/Video/SetSavedBookmark?Id="
                                                     + mVideo.recordedid + "&Offset=" + posBookmark);
-                                response = XmlNode.safeFetch(urlString, "POST");
-                                String result = response.getString();
+                                xmlResult = XmlNode.safeFetch(urlString, "POST");
+                                String result = xmlResult.getString();
                                 if ("true".equals(result))
                                     found = true;
                             }
@@ -427,6 +468,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     }
                     break;
                 case Video.ACTION_SET_WATCHED:
+                    // This handles both set watched and set unwatched, depending on your setting for
+                    // mWatched.
                     try {
                         int type;
                         if (isRecording) {
@@ -443,14 +486,39 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                             + mVideo.recordedid + "&Watched=" + mWatched);
                             type = VideoContract.VideoEntry.RECTYPE_VIDEO;
                         }
-                        response = XmlNode.fetch(urlString, "POST");
-                        String result = response.getString();
+                        xmlResult = XmlNode.fetch(urlString, "POST");
                         if (main != null)
                             main.getMainFragment().startFetch(type, mVideo.recordedid, null);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
                     break;
+                case Video.ACTION_REMOVE_RECENT: {
+                    // Gets the data repository in write mode
+                    VideoDbHelper dbh = new VideoDbHelper(context);
+                    SQLiteDatabase db = dbh.getWritableDatabase();
+                    // Create a new map of values, where column names are the keys
+                    ContentValues values = new ContentValues();
+                    values.put(VideoContract.StatusEntry.COLUMN_SHOW_RECENT, 0);
+
+                    // First try an update
+                    String selection = VideoContract.StatusEntry.COLUMN_VIDEO_URL + " = ?";
+                    String[] selectionArgs = {mVideo.videoUrl};
+
+                    db.update(
+                            VideoContract.StatusEntry.TABLE_NAME,
+                            values,
+                            selection,
+                            selectionArgs);
+
+                    db.close();
+                    if (main != null)
+                        main.getMainFragment().startFetch(mVideo.rectype, mVideo.recordedid, null);
+                    // Fake out an xml node with true to pass back success status
+                    xmlResult = new XmlNode();
+                    xmlResult.setString("true");
+                    break;
+                }
                 case Video.ACTION_FILELENGTH:
                     // mValue is prior file length to be checked against
                     // Try 10 times until file length increases.
@@ -531,8 +599,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                         + "&SearchType=Manual+Search&AutoExpire=true&RecPriority=-99"
                                         + "&RecGroup=LiveTV&StorageGroup=LiveTV"
                                         );
-                        response = XmlNode.fetch(urlString, "POST");
-                        String result = response.getString();
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        String result = xmlResult.getString();
                         Log.i(TAG, CLASS + " Live TV scheduled, RecordId:" + result);
                         mRecordId = Integer.parseInt(result);
                         // Now try to find the recording
@@ -542,12 +610,12 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                         found = false;
                         int ixFound = -1;
                         for (int icount = 0; icount < 15 && !found; icount ++) {
-                            response = XmlNode.fetch(urlString,null);
-                            Log.d(TAG, CLASS + " Found " + response.getString("Count") +" recordings");
+                            xmlResult = XmlNode.fetch(urlString,null);
+                            Log.d(TAG, CLASS + " Found " + xmlResult.getString("Count") +" recordings");
                             XmlNode programNode = null;
                             for (ixFound = 0; ; ixFound++ ) {
                                 if (programNode == null)
-                                    programNode = response.getNode(VideoDbBuilder.XMLTAGS_PROGRAM, 0);
+                                    programNode = xmlResult.getNode(VideoDbBuilder.XMLTAGS_PROGRAM, 0);
                                 else
                                     programNode = programNode.getNextSibling();
                                 if (programNode == null)
@@ -577,7 +645,7 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                         }
                         VideoDbBuilder builder = new VideoDbBuilder(context);
                         List<ContentValues> contentValuesList = new ArrayList<>();
-                        builder.buildMedia(response, 0, ixFound, contentValuesList);
+                        builder.buildMedia(xmlResult, 0, ixFound, contentValuesList);
                         ContentValues[] downloadedVideoContentValues =
                                 contentValuesList.toArray(new ContentValues[contentValuesList.size()]);
                         context.getContentResolver().bulkInsert(VideoContract.VideoEntry.CONTENT_URI,
@@ -623,8 +691,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 "/Dvr/StopRecording?RecordedId=" + mVideo.recordedid);
-                        response = XmlNode.fetch(urlString, null);
-                        String result = response.getString();
+                        xmlResult = XmlNode.fetch(urlString, null);
+                        String result = xmlResult.getString();
                         if ("true".equals(result))
                             Log.i(TAG, CLASS + " Recording Stopped. RecordedId:" + mVideo.recordedid);
                         else
@@ -638,8 +706,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 "/Dvr/RemoveRecordSchedule?RecordId=" + mValue);
-                        response = XmlNode.fetch(urlString, "POST");
-                        String result = response.getString();
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        String result = xmlResult.getString();
                         if ("true".equals(result))
                             Log.i(TAG, CLASS + " Record Rule Removed. recordId:" + mValue);
                         else
@@ -669,7 +737,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                             }
                         }
                     }
-                    mXmlResults.add(xmlResult);
                     break;
                 case Video.ACTION_BACKEND_INFO_HTML:
                     InputStream is = null;
@@ -726,7 +793,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Guide.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_GETPROGRAMDETAILS:
@@ -740,7 +806,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Program Details.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_GETRECORDSCHEDULE:
@@ -758,7 +823,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Record Schedule.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_ADD_OR_UPDATERECRULE:
@@ -823,7 +887,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Updating Record Schedule.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_SEARCHGUIDE:
@@ -835,7 +898,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Guide.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_DELETERECRULE:
@@ -848,11 +910,9 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception removing Record Schedule.", e);
                     }
-                    mXmlResults.add(xmlResult);
                     break;
 
                 case Video.ACTION_DUMMY:
-                    mXmlResults.add(null);
                     break;
 
                 case Video.ACTION_PAUSE:
@@ -871,7 +931,6 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                                 "/Dvr/AllowReRecord?RecordedId="
                                         + mVideo.recordedid);
                         xmlResult = XmlNode.fetch(urlString, "POST");
-                        mXmlResults.add(xmlResult);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
@@ -911,8 +970,8 @@ public class AsyncBackendCall extends AsyncTask<Integer, Void, Void> {
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception In " + method, e);
                     }
-                    mXmlResults.add(xmlResult);
             }
+            mXmlResults.add(xmlResult);
         }
         return null;
     }

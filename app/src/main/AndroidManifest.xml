@@ -38,12 +38,13 @@
 
     <application
         android:name="org.mythtv.leanfront.MyApplication"
+        android:debuggable="true"
         android:allowBackup="false"
         android:banner="@drawable/banner_lean"
         android:icon="@drawable/ic_launcher_lean"
         android:label="@string/app_name"
         android:theme="@style/Theme.Leanback"
-        tools:ignore="GoogleAppIndexingWarning"
+        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode"
         android:usesCleartextTraffic="true"
         android:largeHeap="true">
         <activity

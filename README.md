@@ -40,8 +40,9 @@ This is based on a clone of the sample Videos By Google app, designed to run on 
 
 ### To easily get back to a series you were watching recently:
 
-- Enable recently watched list in settings.
+- Enable recently viewed list in settings.
 - Enable deleted and watched items in the recent list.
+- Enable "Trim recently viewed list" to only see the latest episode of each series you are watching.
 - Disable deleted and watched items in the "related" list.
 - In mythfrontend, set the deletion delay for deleted shows to 7 days.
 
@@ -61,13 +62,26 @@ You can see a list of changes in each version by looking at the commit list in g
 
 - A list of recording groups is displayed on the left with titles in the group in a scrolling row on the right. Next to each icon on the left is a number that represents the number of entries on the right in that row. This is not necessarily the same as the number of recordings because on the main screen there is one entry per series. Select a group and press enter to open the screen with that group's contents. Once a group is open there is one entry per episode.
 - The LiveTV group shows recordings already made from Live TV as well as channels available to watch live.
+- On the top-level screen only, there is a list of recently viewed items. This can be customized in settings to select how far back it goes or to disable it entirely.
 - There is a row for "All" at the top.
 - After the recording groups there is a row for "Videos", which shows the MythTV Videos by directory.
 - There is a row labeled "Tools" at the bottom. There are various options available there.
 
+### Multiple Updates
+
+In a recording group screen or a video directory screen, you can now perform operations on an entire series or an entire videos directory. Select the header for a series or a video directory and do a "long press" or press the menu button if your remote has one. You will get a menu that lets you mark the entire series as watched or unwatched, delete or undelete it, remove bookmarks, allow rerecord or remove from recently watched list.
+
+This operation is not recursive. If there are subdirectories in a video directory, any operation on the directory will be performed on videos in that directory only.
+
 ### Settings
 
 The settings icon on the tools row allows setup of the backend ip address and a number of options for this installation of leanfront.
+
+#### Tweaks
+
+The tweaks section of settings provides for miscellaneous values that may need to be changed to suit unusual circumstances. Be careful when changing these as you may cause bad things to happen if you use inappropriate values.
+
+- **TS Search Packets.** Increase this if when playing a recording or other TS file, the recording length does not show in the OSD, and you cannot use skips or bookmarks. The default value supplied with exoplayer is 600. I have set a default value of 2600 in leanfront. The value is limited to a range of 600 - 100,000. Increasing the value will cause the start of playback to take longer and use more memory. Once playing starts, the extra memory will be freed and no slowdown will be caused.
 
 ### Refresh
 
@@ -226,6 +240,8 @@ The following controls are available when pressing enter during playback. Select
 | Skip Next | This plays, from the beginning, the next recording or video in the list without needing to exit from playback (see related videos, below). |
 | Change Playback Speed | Speeds up or slow down playback by increments to a maximum of 800%. Shows a seekbar where any desired speed can be selected in increments of 10% |
 
+**Note:** When using *Change Playback Speed* the program will disable digital audio pass-through if it is in use, by temporarily selecting *FFmpeg* audio decode. This will disable surround sound until you exit playback.
+
 ### Progress Bar
 
 This shows playback position plus time played and total time. While this is focused you can use left and right arrows to skip back and forward. Holding the arrow down moves quickly through the recording. While this is focused, pressing Enter pauses and resumes.
@@ -241,8 +257,7 @@ Below the progress bar is displayed the description of the currently selected ic
 | Move Picture | If the picture has been resized, moves the picture up or down, left or right. Use up, down, left, right arrows to move it. For use when you want to cut off part of the picture, after zooming to a bigger size. |
 | Change Audio Track | Rotates among available audio tracks including audio disabled. |
 | Adjust Audio Sync | Shows a seekbar where you can change audio sync. Use this if lip sync is wrong. The value selected applies only to this playback, it is not saved after playback is ended. |
-
-**Note:** When using *Change Playback Speed* the program will disable digital audio pass-through if it is in use, by temporarily selecting *FFmpeg* audio decode. This will disable surround sound until you exit playback.
+| Play Related Videos | Toggle automatic playback of all videos in the related videos list. When activated this displays in green color. At the end of each video or recording it will automatically start the next one. It will play watched or deleted items if you selected them in settings to be included in the related videos list. |
 
 ### Related videos
 

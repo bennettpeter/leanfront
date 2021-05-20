@@ -90,6 +90,7 @@ public class VideoProvider extends ContentProvider {
                 VideoContract.VideoEntry.COLUMN_SEASON,
                 VideoContract.VideoEntry.COLUMN_EPISODE,
                 VideoContract.VideoEntry.COLUMN_PROGFLAGS,
+                VideoContract.VideoEntry.COLUMN_VIDEOPROPS,
                 SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
                 VideoContract.StatusEntry.COLUMN_LAST_USED
         };
@@ -151,6 +152,7 @@ public class VideoProvider extends ContentProvider {
         map.put(VideoContract.VideoEntry.COLUMN_SEASON,  VideoContract.VideoEntry.COLUMN_SEASON);
         map.put(VideoContract.VideoEntry.COLUMN_EPISODE, VideoContract.VideoEntry.COLUMN_EPISODE);
         map.put(VideoContract.VideoEntry.COLUMN_PROGFLAGS, VideoContract.VideoEntry.COLUMN_PROGFLAGS);
+        map.put(VideoContract.VideoEntry.COLUMN_VIDEOPROPS, VideoContract.VideoEntry.COLUMN_VIDEOPROPS);
         map.put(VideoContract.VideoEntry.COLUMN_CHANID, VideoContract.VideoEntry.COLUMN_CHANID);
         map.put(VideoContract.VideoEntry.COLUMN_CHANNUM, VideoContract.VideoEntry.COLUMN_CHANNUM);
         map.put(VideoContract.VideoEntry.COLUMN_CALLSIGN, VideoContract.VideoEntry.COLUMN_CALLSIGN);
