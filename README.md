@@ -276,9 +276,11 @@ If you already have leanfront installed by downloading from orangedox, to instal
 Leanfront is available in the Google Play Store, for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from orangedox.com, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
-Use the play store or app store for installation. I am no longer providing side load versions via orangedox. Orangedox no longer offers free accounts, so my account will be disabled at end of March 2024. If you need a side lod build for any reason please contact me or create an issue on github.
+Preferably use the play store or app store for installation.
 
-Old versions that were distributed via orangedox are still available here: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB
+Packages are also available here, in case you want to install on a phone or tablet, or cannot install from the play store: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB
+
+To install a side load version you can download the apk file from the above link. Put it on your android device using direct download, a USB cable or another method. Open a file manager, select the apk file and tap on it to install. Alternatively you can use adb to install from a computer if you have developer mode enabled on the android device.
 
 ### After Installation
 The first time you run the app it will prompt you for the MythTV Backend settings. Supply the IP address or DNS name of the master backend. If you have MythTV V32 or V33, change the [status port](#status-port) from 6544 to 6744. (Note that 6544 still works but does not support the latest features). In V34, port 6544 now has full support. In future port 6744 may be removed.
