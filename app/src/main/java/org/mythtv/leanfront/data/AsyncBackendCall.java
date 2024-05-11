@@ -1041,7 +1041,8 @@ public class AsyncBackendCall implements Runnable {
                                 "/Guide/GetProgramGuide?ChannelGroupId=" + mId
                                         + "&StartTime="
                                         + URLEncoder.encode(sdfUTC.format(mStartTime), "UTF-8")
-                                        + "&EndTime=" + URLEncoder.encode(sdfUTC.format(mEndTime), "UTF-8") );
+                                        + "&EndTime=" + URLEncoder.encode(sdfUTC.format(mEndTime), "UTF-8")
+                                        + "&Details=true" );
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Guide.", e);
