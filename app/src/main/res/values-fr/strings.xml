@@ -234,6 +234,7 @@
   <string name="title_upcoming">Enregistrements à venir</string>
   <string name="title_menu_series">Mettre à jour la série entière \"%1$s\" dans le groupe \"%2$s\"</string>
   <string name="title_menu_videodir">Mettre à jour toutes les vidéos du répertoire \"%1$s\"</string>
+  <string name="checkbox_all_status">Afficher toutes les valeurs d\'état</string>
   <string name="msg_edit_schedule">Modifier le planning pour %1$s</string>
   <string name="msg_edit_schedule2">Modifier le calendrier pour %1$s (2)</string>
   <string name="msg_rec_rule_gone">La règle d\'enregistrement n\'existe plus.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Enregistrez cette émission avec les options normales</string>
   <string name="sched_type_rec_override">Enregistrez cette émission avec des options de remplacement</string>
   <string name="sched_type_dont_rec_override">N\'enregistrez pas cette diffusion</string>
+  <string name="sched_type_never_rec_override">N\'enregistrez jamais cet épisode</string>
+  <string name="sched_type_forget_history">Oublier l\'historique pour autoriser l\'enregistrement de cet épisode</string>
   <string name="sched_type_weekly">Enregistrez une diffusion chaque semaine</string>
   <string name="sched_type_daily">Enregistrez une diffusion chaque jour</string>
   <string name="sched_rec_group">Groupe d\'enregistrement</string>

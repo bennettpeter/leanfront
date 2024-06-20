@@ -234,6 +234,7 @@
   <string name="title_upcoming">Próximas Gravações</string>
   <string name="title_menu_series">Atualize a série inteira \"%1$s\" no grupo \"%2$s\"</string>
   <string name="title_menu_videodir">Atualize todos os vídeos no diretório \"%1$s\"</string>
+  <string name="checkbox_all_status">Mostrar todos os valores de status</string>
   <string name="msg_edit_schedule">Editar agendamento para %1$s</string>
   <string name="msg_edit_schedule2">Editar agendamento para %1$s (2)</string>
   <string name="msg_rec_rule_gone">A regra de gravação não existe mais.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Grave esta exibição com opções normais</string>
   <string name="sched_type_rec_override">Grave esta exibição com opções de substituição</string>
   <string name="sched_type_dont_rec_override">Não grave esta exibição</string>
+  <string name="sched_type_never_rec_override">Nunca grave este episódio</string>
+  <string name="sched_type_forget_history">Esqueça o histórico para permitir a gravação deste episódio</string>
   <string name="sched_type_weekly">Grave uma exibição por semana</string>
   <string name="sched_type_daily">Grave uma exibição todos os dias</string>
   <string name="sched_rec_group">Grupo de Gravação</string>

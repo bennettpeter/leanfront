@@ -234,6 +234,7 @@
   <string name="title_upcoming">Προσεχείς ηχογραφήσεις</string>
   <string name="title_menu_series">Ενημέρωση ολόκληρης της σειράς \"%1$s\" στην ομάδα \"%2$s\"</string>
   <string name="title_menu_videodir">Ενημέρωση όλων των βίντεο στον κατάλογο \"%1$s\"</string>
+  <string name="checkbox_all_status">Εμφάνιση όλων των τιμών κατάστασης</string>
   <string name="msg_edit_schedule">Επεξεργασία χρονοδιαγράμματος για %1$s</string>
   <string name="msg_edit_schedule2">Επεξεργασία χρονοδιαγράμματος για %1$s (2)</string>
   <string name="msg_rec_rule_gone">Ο κανόνας εγγραφής δεν υπάρχει πλέον.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Καταγράψτε αυτήν την εμφάνιση με κανονικές επιλογές</string>
   <string name="sched_type_rec_override">Καταγράψτε αυτήν την εμφάνιση με επιλογές παράκαμψης</string>
   <string name="sched_type_dont_rec_override">Μην καταγράψετε αυτήν την εμφάνιση</string>
+  <string name="sched_type_never_rec_override">Μην ηχογραφήσετε ποτέ αυτό το επεισόδιο</string>
+  <string name="sched_type_forget_history">Ξεχάστε το ιστορικό για να επιτρέψετε την εγγραφή αυτού του επεισοδίου</string>
   <string name="sched_type_weekly">Καταγράψτε μία προβολή κάθε εβδομάδα</string>
   <string name="sched_type_daily">Καταγράψτε μία προβολή κάθε μέρα</string>
   <string name="sched_rec_group">Ομάδα ηχογράφησης</string>

@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 
 import androidx.leanback.widget.Presenter;
 
-import org.mythtv.leanfront.model.RecordRule;
+import org.mythtv.leanfront.model.RecRuleSlot;
 
 public class RecRuleCardPresenter extends Presenter {
     private int mType;
@@ -41,7 +41,8 @@ public class RecRuleCardPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-        ((RecRuleCardView)viewHolder.view).updateUi((RecordRule) item);
+    if (item instanceof RecRuleSlot)
+        ((RecRuleCardView)viewHolder.view).updateUi(((RecRuleSlot) item).rule);
     }
 
     @Override

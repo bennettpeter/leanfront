@@ -234,6 +234,7 @@
   <string name="title_upcoming">Kommende Aufnahmen</string>
   <string name="title_menu_series">Gesamte Serie „%1$s“ in Gruppe „%2$s“ aktualisieren</string>
   <string name="title_menu_videodir">Alle Videos im Verzeichnis „%1$s“ aktualisieren</string>
+  <string name="checkbox_all_status">Alle Statuswerte anzeigen</string>
   <string name="msg_edit_schedule">Zeitplan für %1$s bearbeiten</string>
   <string name="msg_edit_schedule2">Zeitplan für %1$s bearbeiten (2)</string>
   <string name="msg_rec_rule_gone">Die Aufzeichnungsregel existiert nicht mehr.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Zeichnen Sie diese Anzeige mit normalen Optionen auf</string>
   <string name="sched_type_rec_override">Zeichnen Sie diese Vorführung mit Überschreibungsoptionen auf</string>
   <string name="sched_type_dont_rec_override">Zeichnen Sie diese Vorführung nicht auf</string>
+  <string name="sched_type_never_rec_override">Nehmen Sie diese Episode niemals auf</string>
+  <string name="sched_type_forget_history">Vergessen Sie den Verlauf, um die Aufnahme dieser Episode zu ermöglichen</string>
   <string name="sched_type_weekly">Nehmen Sie jede Woche eine Vorführung auf</string>
   <string name="sched_type_daily">Nehmen Sie jeden Tag eine Vorführung auf</string>
   <string name="sched_rec_group">Aufnahmegruppe</string>

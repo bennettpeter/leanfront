@@ -38,6 +38,7 @@ import androidx.leanback.widget.GuidedAction;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.AsyncRemoteCall;
+import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.RecordRule;
 import org.mythtv.leanfront.model.Video;
@@ -69,6 +70,9 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
     private boolean mIsDirty;
     private int mRecordId;
     private int searchTypeCode;
+    private boolean isOverride;
+    private boolean newOverride;
+    private boolean neverRecord;
 
     private ActionGroup mGpType;
     private ActionGroup mGpRecGroup;
@@ -120,7 +124,8 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
     private static final String CLASS = "EditScheduleFragment";
 
 
-    public EditScheduleFragment(ArrayList<XmlNode> detailsList, int recordId, int searchTypeCode, Object priorStep) {
+    public EditScheduleFragment(ArrayList<XmlNode> detailsList, int recordId,
+                                int searchTypeCode, Object priorStep, boolean isOverride) {
         /*
             Details are in this order
                 Video.ACTION_GETPROGRAMDETAILS,
@@ -135,6 +140,7 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
         mRecordId= recordId;
         this.searchTypeCode = searchTypeCode;
         this.priorStep = priorStep;
+        this.isOverride = isOverride;
     }
 
     public EditScheduleFragment() {
@@ -153,12 +159,26 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
             mProgDetails = new RecordRule();
             ((CreateManualSchedule)priorStep).setManualParms(mProgDetails);
         }
-        // Recording from program guide
+        // Recording from program guide or upcoming list create overrode
         else {
-            XmlNode progDetailsNode = mDetailsList.get(0); // ACTION_GETPROGRAMDETAILS
-            if (progDetailsNode != null) {
-                mProgDetails = new RecordRule().fromProgram(progDetailsNode);
+            XmlNode programNode = mDetailsList.get(0); // ACTION_GETPROGRAMDETAILS
+            if (programNode != null) {
+                mProgDetails = new RecordRule().fromProgram(programNode);
                 mRecordId = mProgDetails.recordId;
+                String recordingStatus = programNode.getNode("Recording").getString("StatusName");
+                int recType = programNode.getNode("Recording").getInt("RecType", 0);
+                if (recordingStatus == null)
+                    recordingStatus = programNode.getNode("Recording").getString("Status");
+                if (recType == 7 || recType == 8) {
+                    // editing an override
+                } else if ("NeverRecord".equals(recordingStatus)) {
+                    // Special override
+                    neverRecord = true;
+                    isOverride = true;
+                } else {
+                    if (isOverride)
+                        newOverride = true;
+                }
             }
         }
         XmlNode recRulesNode = mDetailsList.get(1) // ACTION_GETRECORDSCHEDULELIST
@@ -166,9 +186,28 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
         if (recRulesNode != null) {
             XmlNode recRuleNode = recRulesNode.getNode("RecRule");
             while (recRuleNode != null) {
-                int id = Integer.parseInt(recRuleNode.getString("Id"));
-                if (id == mRecordId)
+                int id = recRuleNode.getInt("Id", 0);
+                if (id == mRecordId) {
                     mRecordRule = new RecordRule().fromSchedule(recRuleNode);
+                    if (neverRecord) {
+                        mRecordRule.type = "Never Record";
+                    } else if (newOverride) {
+                        mRecordRule.parentId = mRecordId;
+                        mRecordRule.recordId = 0;
+                        mRecordRule.type = "Not Recording";
+                        RecordRule orgRule = new RecordRule().fromSchedule(recRuleNode);
+                        // Use mergetemplate to get the original recording parameters
+                        // into the override rule.
+                        mRecordRule.mergeTemplate(orgRule);
+                    }
+                    if (isOverride) {
+                        mRecordRule.recordingStatus = mProgDetails.recordingStatus;
+                        mRecordRule.startTime = mProgDetails.startTime;
+                        mRecordRule.chanId = mProgDetails.chanId;
+                        mRecordRule.channelName = mProgDetails.channelName;
+                        mRecordRule.station = mProgDetails.station;
+                    }
+                }
                 String type = recRuleNode.getString("Type");
                 if ("Recording Template".equals(type)) {
                     RecordRule template = new RecordRule().fromSchedule(recRuleNode);
@@ -348,13 +387,30 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
             typePrompts.add(R.string.sched_type_mod_template);
             typeOptions.add("Recording Template");
         }
-        else if ("Override Recording".equalsIgnoreCase(mRecordRule.type)) {
-            typePrompts.add(R.string.sched_type_del_override);
-            typeOptions.add("Not Recording");
-            typePrompts.add(R.string.sched_type_rec_override);
-            typeOptions.add("Override Recording");
-            typePrompts.add(R.string.sched_type_dont_rec_override);
-            typeOptions.add("Do not Record");
+        else if ("Override Recording".equalsIgnoreCase(mRecordRule.type)
+                ||  "Do not Record".equalsIgnoreCase(mRecordRule.type)
+                ||  neverRecord || newOverride) {
+            if (neverRecord) {
+                typePrompts.add(R.string.sched_type_forget_history);
+                typeOptions.add("Forget History");
+            }
+            else {
+                typePrompts.add(R.string.sched_type_del_override);
+                typeOptions.add("Not Recording");
+                typePrompts.add(R.string.sched_type_rec_override);
+                typeOptions.add("Override Recording");
+                typePrompts.add(R.string.sched_type_dont_rec_override);
+                typeOptions.add("Do not Record");
+            }
+            typePrompts.add(R.string.sched_type_never_rec_override);
+            typeOptions.add("Never Record");
+            if (BackendCache.getInstance().canForgetHistory) {
+                if ("CurrentRecording".equals(mRecordRule.recordingStatus)
+                        || "PreviousRecording".equals(mRecordRule.recordingStatus)) {
+                    typePrompts.add(R.string.sched_type_forget_history);
+                    typeOptions.add("Forget History");
+                }
+            }
         }
         else {
             boolean hasChannel = (mRecordRule.station != null);
@@ -650,7 +706,14 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
 
         AsyncBackendCall call = new AsyncBackendCall(getActivity(),this);
         call.setRecordRule(mRecordRule);
-        if ("Not Recording". equals(mRecordRule.type)) {
+        if ("Forget History".equals(mRecordRule.type)) {
+            call.execute(Video.ACTION_FORGETHISTORY);
+        }
+        else if ("Never Record".equals(mRecordRule.type)) {
+            call.setNeverRecord(true);
+            call.execute(Video.ACTION_ADDDONTRECORDSCHEDULE);
+        }
+        else if ("Not Recording". equals(mRecordRule.type)) {
             if (mRecordRule.recordId > 0)
                 call.execute(Video.ACTION_DELETERECRULE);
             else
@@ -664,22 +727,16 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
     public void onPostExecute(AsyncBackendCall taskRunner) {
         if (taskRunner == null)
             return;
-        int [] tasks = taskRunner.getTasks();
-        switch (tasks[0]) {
-            case Video.ACTION_ADD_OR_UPDATERECRULE:
-            case Video.ACTION_DELETERECRULE:
-                XmlNode response = taskRunner.getXmlResult();
-                String result = null;
-                if (response != null)
-                    result = response.getString();
-                if (result == null) {
-                    Toast.makeText(getContext(),R.string.sched_failed, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(),R.string.sched_updated, Toast.LENGTH_LONG).show();
-                    Log.i(TAG, CLASS + " Recording scheduled, Response:" + result);
-                    finishGuidedStepSupportFragments();
-                }
-                break;
+        XmlNode response = taskRunner.getXmlResult();
+        String result = null;
+        if (response != null)
+            result = response.getString();
+        if (result == null) {
+            Toast.makeText(getContext(),R.string.sched_failed, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(),R.string.sched_updated, Toast.LENGTH_LONG).show();
+            Log.i(TAG, CLASS + " Recording scheduled, Response:" + result);
+            finishGuidedStepSupportFragments();
         }
     }
 

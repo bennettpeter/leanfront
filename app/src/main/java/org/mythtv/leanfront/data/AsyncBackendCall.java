@@ -91,6 +91,8 @@ public class AsyncBackendCall implements Runnable {
     private final static ExecutorService executor = Executors.newSingleThreadExecutor();
     private int mChanid;
     private String callSign;
+    private boolean neverRecord;
+    private boolean allStatusValues;
 
     // Parsing results of GetRecorded
     private static final String[] XMLTAGS_RECGROUP = {"Recording","RecGroup"};
@@ -253,6 +255,14 @@ public class AsyncBackendCall implements Runnable {
 
     public void setCallSign(String callSign) {
         this.callSign = callSign;
+    }
+
+    public void setNeverRecord(boolean neverRecord) {
+        this.neverRecord = neverRecord;
+    }
+
+    public void setAllStatusValues(boolean allStatusValues) {
+        this.allStatusValues = allStatusValues;
     }
 
     public void execute(Integer ... tasks) {
@@ -1183,6 +1193,22 @@ public class AsyncBackendCall implements Runnable {
                     }
                     break;
 
+                case Video.ACTION_ADDDONTRECORDSCHEDULE:
+                    try {
+                        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        StringBuilder urlBuilder = new StringBuilder
+                            (XmlNode.mythApiUrl(null,
+                    "/Dvr/AddDontRecordSchedule"))
+                            .append("?ChanId=" + mRecordRule.chanId)
+                            .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"))
+                            .append("&NeverRecord=").append(neverRecord);
+                        xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception in Add Dont Record Schedule.", e);
+                    }
+                    break;
+
                 case Video.ACTION_DVR_WSDL:
                     try {
                         String url = XmlNode.mythApiUrl(null,
@@ -1212,6 +1238,23 @@ public class AsyncBackendCall implements Runnable {
                                 "/Dvr/AllowReRecord?RecordedId="
                                         + mVideo.recordedid);
                         xmlResult = XmlNode.fetch(urlString, "POST");
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case Video.ACTION_FORGETHISTORY:
+                    try {
+                        if (BackendCache.getInstance().canForgetHistory) {
+                            SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            StringBuilder urlBuilder = new StringBuilder
+                                    (XmlNode.mythApiUrl(null,
+                                            "/Dvr/AllowReRecord"))
+                                    .append("?ChanId=" + mRecordRule.chanId)
+                                    .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"));
+                            xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                        }
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
@@ -1337,7 +1380,7 @@ public class AsyncBackendCall implements Runnable {
                             method = "GetRecRuleFilterList";
                             break;
                         case Video.ACTION_GETUPCOMINGLIST:
-                            method = "GetUpcomingList";
+                            method = "GetUpcomingList?ShowAll=" + allStatusValues;
                             break;
                     }
                     if (method == null)

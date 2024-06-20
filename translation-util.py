@@ -4,27 +4,19 @@
 # Python script to check, add, remove, amend strings in the translation JSON files
 # used by the Angular MythTV webapp
 #
-# Example usage
-#
-# check and keep in sync the translation files
-#   translation-util.py --check
-#
-# add new string
-#   translation-util.py --add --key="common.test.new" --value="This is a new test string"
-#
-# remove a string from all translation files
-#   translation-util.py --remove --key="common.test.new"
-#
-# amend an existing string
-#   translation-util.py --amend --key="common.test.new" --value="This is an amended test string"
-#
-# list all the keys and strings for the German language file
-#   translation-util.py --listkeys --language=de
-#
+# run ./translation-util.py to display help info
 #
 # Required modules: googletrans and flatten_dict
-
-# https://docs.python.org/3/library/xml.etree.elementtree.html#module-xml.etree.ElementTree
+#
+# run sudo pip3 install googletrans==3.1.0a0 to install google trans.
+# On ubuntu 24.04 pip3 is disabled, so do the following in your home directory
+# This creates directory "python" in your home directory
+# python3 -m venv python
+# source python/bin/activate
+# pip3 install googletrans==3.1.0a0
+#
+# Then before running ./translation-util.py, run this:
+# export PYTHONPATH=/home/peter/python/lib/python3.12/site-packages
 
 import os, sys, re
 import json

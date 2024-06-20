@@ -234,6 +234,7 @@
   <string name="title_upcoming">Připravované nahrávky</string>
   <string name="title_menu_series">Aktualizovat celou sérii \"%1$s\" ve skupině \"%2$s\"</string>
   <string name="title_menu_videodir">Aktualizovat všechna videa v adresáři \"%1$s\"</string>
+  <string name="checkbox_all_status">Zobrazit všechny hodnoty stavu</string>
   <string name="msg_edit_schedule">Upravit plán pro %1$s</string>
   <string name="msg_edit_schedule2">Upravit plán pro %1$s (2)</string>
   <string name="msg_rec_rule_gone">Pravidlo nahrávání již neexistuje.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Zaznamenejte toto zobrazení s normálními možnostmi</string>
   <string name="sched_type_rec_override">Zaznamenejte toto zobrazení s možnostmi přepsání</string>
   <string name="sched_type_dont_rec_override">Toto představení nezaznamenávejte</string>
+  <string name="sched_type_never_rec_override">Tuto epizodu nikdy nenahrávejte</string>
+  <string name="sched_type_forget_history">Chcete-li povolit nahrávání této epizody, zapomeňte na historii</string>
   <string name="sched_type_weekly">Každý týden nahrajte jedno představení</string>
   <string name="sched_type_daily">Každý den zaznamenejte jeden pořad</string>
   <string name="sched_rec_group">Nahrávací skupina</string>

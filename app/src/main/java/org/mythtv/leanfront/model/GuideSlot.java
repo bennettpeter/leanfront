@@ -2,10 +2,8 @@ package org.mythtv.leanfront.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 
 import org.mythtv.leanfront.R;
-import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.ui.GuideFragment;
 
 import java.text.DateFormat;
@@ -14,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
-public class GuideSlot {
+public class GuideSlot extends RowSlot{
     public int chanId = -1;
     public int chanNum = -1;
     public String callSign;
@@ -28,36 +26,28 @@ public class GuideSlot {
     public static final int POS_LEFT = 1;
     public static final int POS_MIDDLE = 2;
     public static final int POS_RIGHT = 3;
-    public int cellType = 0;
-    public static final int CELL_TIMESLOT = 1;
-    public static final int CELL_CHANNEL = 2;
-    public static final int CELL_PROGRAM = 3;
-    public static final int CELL_TIMESELECTOR = 4;
-    public static final int CELL_LEFTARROW = 5;
-    public static final int CELL_RIGHTARROW = 6;
-    public static final int CELL_SEARCHRESULT = 7;
 
     private static DateFormat timeFormatter;
     private static DateFormat dateFormatter;
     private static DateFormat dayFormatter;
 
     public GuideSlot(int cellType) {
-        this.cellType = cellType;
+        super(cellType);
     }
 
     public GuideSlot(int cellType, int position, Date timeSlot)
     {
+        super(cellType);
         this.position = position;
         this.timeSlot = timeSlot;
-        this.cellType = cellType;
     }
 
     public GuideSlot(int chanId, int chanNum, String callSign, String chanDetails) {
+        super(CELL_CHANNEL);
         this.chanId = chanId;
         this.chanNum = chanNum;
         this.callSign = callSign;
         this.chanDetails = chanDetails;
-        cellType = CELL_CHANNEL;
     }
 
     public String getGuideText(Context context) {
@@ -135,37 +125,4 @@ public class GuideSlot {
         return titleDone;
     }
 
-    public static class Program {
-        public int chanId;
-        public Date startTime;      // Start time of show
-        public Date endTime;        // End time of show
-        public String title;
-        public String subTitle;
-        public int season;
-        public int episode;
-        public String recordingStatus;
-        private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
-        private static final String TAG = "lfe";
-        private static final String CLASS = "Program";
-
-        public Program(XmlNode programNode, XmlNode chanNode) {
-            try {
-                chanId = Integer.parseInt(chanNode.getString("ChanId"));
-                startTime = dateFormat.parse(programNode.getString("StartTime") + "+0000");
-                endTime = dateFormat.parse(programNode.getString("EndTime") + "+0000");
-                title = programNode.getString("Title");
-                subTitle = programNode.getString("SubTitle");
-                season = programNode.getInt("Season",0);
-                episode = programNode.getInt("Episode",0);
-                recordingStatus = programNode.getNode("Recording").getString("StatusName");
-                if (recordingStatus == null)
-                    recordingStatus = programNode.getNode("Recording").getString("Status");
-                if ("Unknown".equals(recordingStatus))
-                    recordingStatus = null; // save storage
-            } catch (Exception e) {
-                Log.e(TAG, CLASS + " Exception parsing program.", e);
-            }
-        }
-
-    }
 }

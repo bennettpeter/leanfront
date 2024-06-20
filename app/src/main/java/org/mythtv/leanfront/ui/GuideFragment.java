@@ -47,9 +47,10 @@ import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.GuideSlot;
+import org.mythtv.leanfront.model.Program;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
-import org.mythtv.leanfront.presenter.GuidePresenterSelector;
+import org.mythtv.leanfront.presenter.MyPresenterSelector;
 import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 
 import java.text.DateFormat;
@@ -128,7 +129,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         presenter.setNumberOfColumns(COLUMNS);
         setGridPresenter(presenter);
 
-        mGridAdapter = new ArrayObjectAdapter(new GuidePresenterSelector(getContext()));
+        mGridAdapter = new ArrayObjectAdapter(new MyPresenterSelector(getContext()));
         setAdapter(mGridAdapter);
 
         setOnItemViewClickedListener((itemViewHolder, item, rowViewHolder, row) -> {
@@ -620,7 +621,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                     programNode = programNode.getNextSibling();
                 if (programNode == null)
                     break;
-                GuideSlot.Program program = new GuideSlot.Program(programNode, chanNode);
+                Program program = new Program(programNode, chanNode);
                 int adapterPos = mChanArray.get(program.chanId, -1);
                 if (adapterPos == -1)
                     continue;

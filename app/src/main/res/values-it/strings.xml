@@ -234,6 +234,7 @@
   <string name="title_upcoming">Prossime registrazioni</string>
   <string name="title_menu_series">Aggiorna l\'intera serie \"%1$s\" nel gruppo \"%2$s\"</string>
   <string name="title_menu_videodir">Aggiorna tutti i video nella directory \"%1$s\"</string>
+  <string name="checkbox_all_status">Mostra tutti i valori di stato</string>
   <string name="msg_edit_schedule">Modifica pianificazione per %1$s</string>
   <string name="msg_edit_schedule2">Modifica pianificazione per %1$s (2)</string>
   <string name="msg_rec_rule_gone">La regola di registrazione non esiste più.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Registra questa visualizzazione con le opzioni normali</string>
   <string name="sched_type_rec_override">Registra questa visualizzazione con le opzioni di sostituzione</string>
   <string name="sched_type_dont_rec_override">Non registrare questa proiezione</string>
+  <string name="sched_type_never_rec_override">Non registrare mai questo episodio</string>
+  <string name="sched_type_forget_history">Dimentica la cronologia per consentire la registrazione di questo episodio</string>
   <string name="sched_type_weekly">Registra uno spettacolo ogni settimana</string>
   <string name="sched_type_daily">Registrane uno in onda ogni giorno</string>
   <string name="sched_rec_group">Gruppo di registrazione</string>

@@ -234,6 +234,7 @@
   <string name="title_upcoming">Nadchodzące nagrania</string>
   <string name="title_menu_series">Zaktualizuj całą serię „%1$s” w grupie „%2$s”</string>
   <string name="title_menu_videodir">Zaktualizuj wszystkie filmy w katalogu „%1$s”</string>
+  <string name="checkbox_all_status">Pokaż wszystkie wartości stanu</string>
   <string name="msg_edit_schedule">Edytuj harmonogram dla %1$s</string>
   <string name="msg_edit_schedule2">Edytuj harmonogram dla %1$s (2)</string>
   <string name="msg_rec_rule_gone">Reguła nagrywania już nie istnieje.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Nagraj ten pokaz przy użyciu normalnych opcji</string>
   <string name="sched_type_rec_override">Nagraj ten pokaz z opcjami zastąpienia</string>
   <string name="sched_type_dont_rec_override">Nie nagrywaj tego pokazu</string>
+  <string name="sched_type_never_rec_override">Nigdy nie nagrywaj tego odcinka</string>
+  <string name="sched_type_forget_history">Zapomnij historię, aby umożliwić nagranie tego odcinka</string>
   <string name="sched_type_weekly">Nagrywaj jeden pokaz co tydzień</string>
   <string name="sched_type_daily">Nagrywaj jeden pokaz każdego dnia</string>
   <string name="sched_rec_group">Grupa Nagrań</string>

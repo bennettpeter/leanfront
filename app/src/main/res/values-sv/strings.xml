@@ -234,6 +234,7 @@
   <string name="title_upcoming">Kommande inspelningar</string>
   <string name="title_menu_series">Uppdatera hela serien \"%1$s\" i gruppen \"%2$s\"</string>
   <string name="title_menu_videodir">Uppdatera alla videor i katalogen \"%1$s\"</string>
+  <string name="checkbox_all_status">Visa alla statusvärden</string>
   <string name="msg_edit_schedule">Redigera schema för %1$s</string>
   <string name="msg_edit_schedule2">Redigera schema för %1$s (2)</string>
   <string name="msg_rec_rule_gone">Inspelningsregeln finns inte längre.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Spela in denna visning med normala alternativ</string>
   <string name="sched_type_rec_override">Spela in denna visning med åsidosättande alternativ</string>
   <string name="sched_type_dont_rec_override">Spela inte in denna visning</string>
+  <string name="sched_type_never_rec_override">Spela aldrig in det här avsnittet</string>
+  <string name="sched_type_forget_history">Glöm historiken för att tillåta inspelning av det här avsnittet</string>
   <string name="sched_type_weekly">Spela in en visning varje vecka</string>
   <string name="sched_type_daily">Spela in en visning varje dag</string>
   <string name="sched_rec_group">Inspelningsgrupp</string>

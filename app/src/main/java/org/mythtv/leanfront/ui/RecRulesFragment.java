@@ -30,7 +30,9 @@ import androidx.leanback.widget.VerticalGridPresenter;
 
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.XmlNode;
+import org.mythtv.leanfront.model.RecRuleSlot;
 import org.mythtv.leanfront.model.RecordRule;
+import org.mythtv.leanfront.model.RowSlot;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.presenter.RecRuleCardPresenter;
 import org.mythtv.leanfront.presenter.RecRuleCardView;
@@ -80,7 +82,7 @@ public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.
         setOnItemViewClickedListener((itemViewHolder, item, rowViewHolder, row) -> {
             if (mLoadInProgress)
                 return;
-            RecordRule card = (RecordRule)item;
+            RecordRule card = ((RecRuleSlot)item).rule;
                     recRuleClicked(card);
         });
     }
@@ -138,7 +140,8 @@ public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.
         // Add a grid entry for "New Recording Rule"
         RecordRule ruleNew = new RecordRule();
         ruleNew.type = "Dummy_AddNew";
-        mGridAdapter.add(ruleNew);
+        RecRuleSlot slot = new RecRuleSlot(RowSlot.CELL_RULE, ruleNew);
+        mGridAdapter.add(slot);
         XmlNode recRuleNode = null;
         for (; ; ) {
             if (recRuleNode == null)
@@ -148,7 +151,7 @@ public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.
             if (recRuleNode == null)
                 break;
             RecordRule rule = new RecordRule().fromSchedule(recRuleNode);
-            mGridAdapter.add(rule);
+            mGridAdapter.add(new RecRuleSlot(RowSlot.CELL_RULE, rule));
         }
         while (mGridAdapter.size() % numberColumns != 0)
             mGridAdapter.add(null);

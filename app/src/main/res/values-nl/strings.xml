@@ -234,6 +234,7 @@
   <string name="title_upcoming">Aankomende opnames</string>
   <string name="title_menu_series">Update de volledige serie \"%1$s\" in groep \"%2$s\"</string>
   <string name="title_menu_videodir">Update alle video\'s in map \"%1$s\"</string>
+  <string name="checkbox_all_status">Toon alle statuswaarden</string>
   <string name="msg_edit_schedule">Bewerk schema voor %1$s</string>
   <string name="msg_edit_schedule2">Schema bewerken voor %1$s (2)</string>
   <string name="msg_rec_rule_gone">Opnameregel bestaat niet meer.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Neem deze vertoning op met normale opties</string>
   <string name="sched_type_rec_override">Neem deze vertoning op met overschrijfopties</string>
   <string name="sched_type_dont_rec_override">Neem deze vertoning niet op</string>
+  <string name="sched_type_never_rec_override">Neem deze aflevering nooit op</string>
+  <string name="sched_type_forget_history">Vergeet de geschiedenis om deze aflevering op te nemen</string>
   <string name="sched_type_weekly">Neem er elke week één op</string>
   <string name="sched_type_daily">Neem er elke dag één op</string>
   <string name="sched_rec_group">Opnamegroep</string>

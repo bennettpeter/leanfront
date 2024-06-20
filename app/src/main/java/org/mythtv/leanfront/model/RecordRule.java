@@ -116,13 +116,21 @@ public class RecordRule {
         season = programNode.getInt("Season",0);
         episode = programNode.getInt("Episode",0);
         inetref = programNode.getString("Inetref");
-        recordId = programNode.getNode("Recording").getInt("RecordId",0);
-        recordingStatus = programNode.getNode("Recording").getString("StatusName");
-        if (recordingStatus == null)
-            recordingStatus = programNode.getNode("Recording").getString("Status");
-        if ("Unknown".equals(recordingStatus))
-            recordingStatus = null; // save storage
-        encoderName = programNode.getNode("Recording").getString("EncoderName");
+        XmlNode recording = programNode.getNode("Recording");
+        if (recording != null) {
+            recordId = recording.getInt("RecordId", 0);
+            recordingStatus = recording.getString("StatusName");
+            if (recordingStatus == null)
+                recordingStatus = recording.getString("Status");
+            if ("Unknown".equals(recordingStatus))
+                recordingStatus = null; // save storage
+            encoderName = recording.getString("EncoderName");
+            recGroup = recording.getString("RecGroup");
+            storageGroup = recording.getString("StorageGroup");
+            playGroup = recording.getString("PlayGroup");
+            recPriority = recording.getInt("Priority",0);
+            recProfile = recording.getString("Profile");
+        }
         return this;
     }
 
@@ -260,8 +268,11 @@ public class RecordRule {
             build.append(dayFormatter.format(startTime))
                     .append(dateFormatter.format(startTime)).append(' ')
                     .append(timeFormatter.format(startTime)).append(" - ")
-                    .append(timeFormatter.format(endTime)).append(" : ")
-                    .append(encoderName).append(" : ");
+                    .append(timeFormatter.format(endTime)).append(" : ");
+            if (encoderName != null)
+
+
+                build.append(encoderName).append(" : ");
 
             String chanDetails = chanNum + " " + channelName + " " + station;
             build.append(chanDetails).append("\n");

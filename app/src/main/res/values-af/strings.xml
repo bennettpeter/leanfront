@@ -234,6 +234,7 @@
   <string name="title_upcoming">Komende opnames</string>
   <string name="title_menu_series">Dateer hele reeks \"%1$s\" in groep \"%2$s\" op</string>
   <string name="title_menu_videodir">Dateer alle video\'s in gids \"%1$s\" op</string>
+  <string name="checkbox_all_status">Wys alle statuswaardes</string>
   <string name="msg_edit_schedule">Wysig skedule vir %1$s</string>
   <string name="msg_edit_schedule2">Wysig skedule vir %1$s (2)</string>
   <string name="msg_rec_rule_gone">Opnamereël bestaan ​​nie meer nie.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Teken hierdie vertoning op met normale opsies</string>
   <string name="sched_type_rec_override">Teken hierdie vertoning op met ignoreeropsies</string>
   <string name="sched_type_dont_rec_override">Moenie hierdie vertoning opneem nie</string>
+  <string name="sched_type_never_rec_override">Moet nooit hierdie episode opneem nie</string>
+  <string name="sched_type_forget_history">Vergeet geskiedenis om die opname van hierdie episode toe te laat</string>
   <string name="sched_type_weekly">Teken elke week een vertoning op</string>
   <string name="sched_type_daily">Teken elke dag een vertoning op</string>
   <string name="sched_rec_group">Opnamegroep</string>

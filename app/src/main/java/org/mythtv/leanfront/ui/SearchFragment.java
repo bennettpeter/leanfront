@@ -56,6 +56,7 @@ import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.GuideSlot;
+import org.mythtv.leanfront.model.Program;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
 import org.mythtv.leanfront.presenter.CardPresenter;
@@ -218,7 +219,7 @@ public class SearchFragment extends SearchSupportFragment
             if (programNode == null)
                 break;
             XmlNode chanNode = programNode.getNode("Channel");
-            GuideSlot.Program program = new GuideSlot.Program(programNode, chanNode);
+            Program program = new Program(programNode, chanNode);
             String channum = chanNode.getString("ChanNum");
             String channelname = chanNode.getString("ChannelName");
             String callsign = chanNode.getString("CallSign");

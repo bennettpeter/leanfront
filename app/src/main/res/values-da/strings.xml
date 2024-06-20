@@ -234,6 +234,7 @@
   <string name="title_upcoming">Kommende optagelser</string>
   <string name="title_menu_series">Opdater hele serien \"%1$s\" i gruppen \"%2$s\"</string>
   <string name="title_menu_videodir">Opdater alle videoer i mappen \"%1$s\"</string>
+  <string name="checkbox_all_status">Vis alle statusværdier</string>
   <string name="msg_edit_schedule">Rediger tidsplan for %1$s</string>
   <string name="msg_edit_schedule2">Rediger tidsplan for %1$s (2)</string>
   <string name="msg_rec_rule_gone">Reglen om optagelse eksisterer ikke længere.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Optag denne visning med normale muligheder</string>
   <string name="sched_type_rec_override">Optag denne visning med tilsidesættelsesmuligheder</string>
   <string name="sched_type_dont_rec_override">Optag ikke denne visning</string>
+  <string name="sched_type_never_rec_override">Optag aldrig denne episode</string>
+  <string name="sched_type_forget_history">Glem historik for at tillade optagelse af denne episode</string>
   <string name="sched_type_weekly">Optag en visning hver uge</string>
   <string name="sched_type_daily">Optag en visning hver dag</string>
   <string name="sched_rec_group">Optagegruppe</string>

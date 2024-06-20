@@ -30,15 +30,20 @@ import androidx.leanback.widget.VerticalGridPresenter;
 
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.XmlNode;
+import org.mythtv.leanfront.model.Program;
+import org.mythtv.leanfront.model.RecRuleSlot;
 import org.mythtv.leanfront.model.RecordRule;
 import org.mythtv.leanfront.model.Video;
-import org.mythtv.leanfront.presenter.RecRuleCardPresenter;
-import org.mythtv.leanfront.presenter.RecRuleCardView;
+import org.mythtv.leanfront.presenter.MyPresenterSelector;
+
+import java.util.Date;
 
 public class UpcomingFragment extends GridFragment implements AsyncBackendCall.OnBackendCallListener {
 
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_NONE;
-    private final int NUMBER_COLUMNS = 1;
+    // 3 columns - program, override, edit
+    private final int NUMBER_COLUMNS = 3;
+    public boolean allStatusValues;
 
     private ArrayObjectAdapter mGridAdapter;
     private boolean mLoadInProgress;
@@ -70,24 +75,48 @@ public class UpcomingFragment extends GridFragment implements AsyncBackendCall.O
         presenter.setNumberOfColumns(NUMBER_COLUMNS);
         setGridPresenter(presenter);
 
-        mGridAdapter = new ArrayObjectAdapter(new RecRuleCardPresenter(RecRuleCardView.TYPE_WIDE));
+        mGridAdapter = new ArrayObjectAdapter(new MyPresenterSelector(getContext()));
         setAdapter(mGridAdapter);
 
         setOnItemViewClickedListener((itemViewHolder, item, rowViewHolder, row) -> {
             if (mLoadInProgress)
                 return;
-            RecordRule card = (RecordRule)item;
-            recRuleClicked(card);
+            RecRuleSlot slot = (RecRuleSlot) item;
+            switch (slot.cellType) {
+                case RecRuleSlot.CELL_RULE:
+                case RecRuleSlot.CELL_PENCIL:
+                    updateRecRule(slot.rule, null, false);
+                    break;
+                case RecRuleSlot.CELL_PAPERCLIP:
+                    updateRecRule(slot.rule, slot.program, true);
+                    break;
+                case RecRuleSlot.CELL_CHECKBOX:
+                    allStatusValues = ! allStatusValues;
+                    mGridAdapter.notifyArrayItemRangeChanged(0,1);
+                    setupGridData();
+                    break;
+            }
         });
     }
 
-    private void recRuleClicked(RecordRule card) {
-        if (card == null)
+    private void updateRecRule(RecordRule rule, Program program, boolean isOverride) {
+        if (rule == null)
             return;
+        int chanId;
+        Date startTime ;
+        if (program == null) {
+            chanId = rule.chanId;
+            startTime = rule.startTime;
+        } else {
+            chanId = program.chanId;
+            startTime = program.startTime;
+        }
         Intent intent = new Intent(getContext(), EditScheduleActivity.class);
-        intent.putExtra(EditScheduleActivity.RECORDID, card.recordId);
-        intent.putExtra(EditScheduleActivity.STARTTIME, card.startTime);
-        intent.putExtra(EditScheduleActivity.CHANID, card.chanId);
+        intent.putExtra(EditScheduleActivity.RECORDID, rule.recordId);
+        intent.putExtra(EditScheduleActivity.STARTTIME, startTime);
+        intent.putExtra(EditScheduleActivity.CHANID, chanId);
+        intent.putExtra(EditScheduleActivity.ISOVERRIDE, isOverride);
+
         mDoingUpdate = true;
         startActivity(intent);
     }
@@ -97,6 +126,7 @@ public class UpcomingFragment extends GridFragment implements AsyncBackendCall.O
             return;
         mLoadInProgress = true;
         AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
+        call.setAllStatusValues(allStatusValues);
         if (mDoingUpdate)
             call.execute(Video.ACTION_PAUSE, Video.ACTION_GETUPCOMINGLIST);
         else
@@ -123,6 +153,11 @@ public class UpcomingFragment extends GridFragment implements AsyncBackendCall.O
             return;
         if (!isStarted)
             return;
+        // Show All checkbox
+        mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_CHECKBOX, this));
+        mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_EMPTY));
+        mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_EMPTY));
+
         XmlNode programNode = null;
         for (; ; ) {
             if (programNode == null)
@@ -131,11 +166,13 @@ public class UpcomingFragment extends GridFragment implements AsyncBackendCall.O
                 programNode = programNode.getNextSibling();
             if (programNode == null)
                 break;
+            XmlNode channelNode = programNode.getNode("Channel");
             RecordRule rule = new RecordRule().fromProgram(programNode);
-            mGridAdapter.add(rule);
+            Program program = new Program(programNode, channelNode);
+            mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_RULE, rule, program));
+            mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_PAPERCLIP, rule, program));
+            mGridAdapter.add(new RecRuleSlot(RecRuleSlot.CELL_PENCIL, rule, program));
         }
-        while (mGridAdapter.size() % NUMBER_COLUMNS != 0)
-            mGridAdapter.add(null);
         updateAdapter();
     }
 

@@ -25,34 +25,46 @@ import android.content.Context;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.PresenterSelector;
 
-import org.mythtv.leanfront.model.GuideSlot;
+import org.mythtv.leanfront.model.RowSlot;
+import org.mythtv.leanfront.model.RecRuleSlot;
 
-public class GuidePresenterSelector extends PresenterSelector {
+public class MyPresenterSelector extends PresenterSelector {
 
-    private final Context mContext;
     private IconCardPresenter mIconCardPresenter;
+    private IconCardPresenter mIconCardPresenterSmall;
     private GuideCardPresenter mGuideCardPresenter;
+    private RecRuleCardPresenter mRecRuleCardPresenter;
+    private IconCardPresenter mCheckboxCardPresenter;
 
-    public GuidePresenterSelector(Context context)
+    public MyPresenterSelector(Context context)
     {
-        mContext = context;
-        mIconCardPresenter = new IconCardPresenter(context);
+        mIconCardPresenter = new IconCardPresenter(context, IconCardView.TYPE_LARGE);
+        mIconCardPresenterSmall = new IconCardPresenter(context, IconCardView.TYPE_SMALL);
         mGuideCardPresenter = new GuideCardPresenter(GuideCardView.TYPE_SMALL);
+        mRecRuleCardPresenter = new RecRuleCardPresenter(RecRuleCardView.TYPE_WIDE);
+        mCheckboxCardPresenter = new IconCardPresenter(context, IconCardView.TYPE_WIDE);
     }
 
     @Override
     public Presenter getPresenter(Object item) {
-        if (item instanceof GuideSlot) {
-            GuideSlot slot = (GuideSlot) item;
+        if (item instanceof RowSlot) {
+            RowSlot slot = (RowSlot) item;
             switch (slot.cellType) {
-                case GuideSlot.CELL_LEFTARROW:
-                case GuideSlot.CELL_RIGHTARROW:
+                case RowSlot.CELL_LEFTARROW:
+                case RowSlot.CELL_RIGHTARROW:
                     return mIconCardPresenter;
+                case RecRuleSlot.CELL_PAPERCLIP:
+                case RecRuleSlot.CELL_PENCIL:
+                case RecRuleSlot.CELL_EMPTY:
+                    return mIconCardPresenterSmall;
+                case RecRuleSlot.CELL_RULE:
+                    return mRecRuleCardPresenter;
+                case RecRuleSlot.CELL_CHECKBOX:
+                    return mCheckboxCardPresenter;
                 default:
                     return mGuideCardPresenter;
             }
         }
-
         return null;
     }
 }

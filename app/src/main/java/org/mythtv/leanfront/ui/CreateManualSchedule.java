@@ -161,7 +161,7 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
             case ID_NEXT:
                 FragmentManager fm = getFragmentManager();
                 GuidedStepSupportFragment.add(fm,
-                        new EditScheduleFragment(mDetailsList, mRecordId, searchType, this));
+                        new EditScheduleFragment(mDetailsList, mRecordId, searchType, this, false));
         }
         super.onGuidedActionClicked(action);
     }

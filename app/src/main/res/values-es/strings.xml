@@ -234,6 +234,7 @@
   <string name="title_upcoming">Próximas grabaciones</string>
   <string name="title_menu_series">Actualizar toda la serie \"%1$s\" en el grupo \"%2$s\"</string>
   <string name="title_menu_videodir">Actualizar todos los vídeos en el directorio \"%1$s\"</string>
+  <string name="checkbox_all_status">Mostrar todos los valores de estado</string>
   <string name="msg_edit_schedule">Editar programación para %1$s</string>
   <string name="msg_edit_schedule2">Editar programación para %1$s (2)</string>
   <string name="msg_rec_rule_gone">La regla de grabación ya no existe.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Graba esta presentación con opciones normales.</string>
   <string name="sched_type_rec_override">Grabe esta presentación con opciones de anulación</string>
   <string name="sched_type_dont_rec_override">No grabar esta presentación</string>
+  <string name="sched_type_never_rec_override">Nunca grabes este episodio</string>
+  <string name="sched_type_forget_history">Olvidar el historial para permitir la grabación de este episodio.</string>
   <string name="sched_type_weekly">Graba una presentación cada semana</string>
   <string name="sched_type_daily">Graba una presentación todos los días</string>
   <string name="sched_rec_group">Grupo de grabación</string>

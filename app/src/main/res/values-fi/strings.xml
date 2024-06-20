@@ -234,6 +234,7 @@
   <string name="title_upcoming">Tulevat tallenteet</string>
   <string name="title_menu_series">Päivitä koko sarja \"%1$s\" ryhmässä \"%2$s\"</string>
   <string name="title_menu_videodir">Päivitä kaikki hakemiston \"%1$s\" videot</string>
+  <string name="checkbox_all_status">Näytä kaikki tilaarvot</string>
   <string name="msg_edit_schedule">Muokkaa %1$s aikataulua</string>
   <string name="msg_edit_schedule2">Muokkaa aikataulua kohteelle %1$s (2)</string>
   <string name="msg_rec_rule_gone">Tallennussääntöä ei enää ole.</string>
@@ -252,6 +253,8 @@
   <string name="sched_type_del_override">Tallenna tämä esitys tavallisilla vaihtoehdoilla</string>
   <string name="sched_type_rec_override">Tallenna tämä esitys ohitusvaihtoehdoilla</string>
   <string name="sched_type_dont_rec_override">Älä tallenna tätä esitystä</string>
+  <string name="sched_type_never_rec_override">Älä koskaan nauhoita tätä jaksoa</string>
+  <string name="sched_type_forget_history">Unohda historia salliaksesi tämän jakson tallentamisen</string>
   <string name="sched_type_weekly">Nauhoita yksi esitys joka viikko</string>
   <string name="sched_type_daily">Nauhoita yksi esitys joka päivä</string>
   <string name="sched_rec_group">Äänitysryhmä</string>

@@ -43,11 +43,13 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
     private CreateManualSchedule manualFragment;
     private int mRecordId;
     private int searchType;
+    private boolean isOverride;
 
     public static final String CHANID = "CHANID";
     public static final String STARTTIME = "STARTTIME";
     public static final String RECORDID = "RECORDID";
     public static final String SEARCHTYPE = "SEARCHTYPE";
+    public static final String ISOVERRIDE = "ISOVERRIDE";
     public static final int SEARCH_MANUAL = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
         Date startTime = (Date) getIntent().getSerializableExtra(STARTTIME);
         mRecordId = getIntent().getIntExtra(RECORDID,0);
         searchType = getIntent().getIntExtra(SEARCHTYPE,0);
+        isOverride = getIntent().getBooleanExtra(ISOVERRIDE, false);
         AsyncBackendCall call = new AsyncBackendCall(this,this);
         int firstCall;
         if (chanId != 0 && startTime != null) {
@@ -92,7 +95,8 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
                         break;
                     default:
                         GuidedStepSupportFragment.addAsRoot(this,
-                                mEditFragment = new EditScheduleFragment(resultsList, mRecordId, searchType, null),
+                                mEditFragment = new EditScheduleFragment(resultsList, mRecordId,
+                                searchType, null, isOverride),
                                 android.R.id.content);
                         break;
                 }

@@ -209,11 +209,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             // When a Related Video item is clicked.
             setOnItemViewClickedListener(itemViewClickedListener);
             setOnItemViewSelectedListener(itemViewSelectedListener);
-
-//            canUpdateRecGroup = BackendCache.getInstance().canUpdateRecGroup;
-//            canUpdateRecGroup = false;
-//            AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-//            call.execute(Video.ACTION_DVR_WSDL);
         }
     }
 

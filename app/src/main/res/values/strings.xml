@@ -280,6 +280,7 @@
     <string name="title_upcoming">Upcoming Recordings</string>
     <string name="title_menu_series">Update entire series \"%1$s\" in group \"%2$s\"</string>
     <string name="title_menu_videodir">Update all videos in directory \"%1$s\"</string>
+    <string name="checkbox_all_status">Show All Status Values</string>
 
     <string name="msg_edit_schedule">Edit Schedule for %1$s</string>
     <string name="msg_edit_schedule2">Edit Schedule for %1$s (2)</string>
@@ -301,6 +302,8 @@
     <string name="sched_type_del_override">Record this showing with normal options</string>
     <string name="sched_type_rec_override">Record this showing with override options</string>
     <string name="sched_type_dont_rec_override">Do not record this showing</string>
+    <string name="sched_type_never_rec_override">Never record this episode</string>
+    <string name="sched_type_forget_history">Forget history to allow recording this episode</string>
     <string name="sched_type_weekly">Record one showing every week</string>
     <string name="sched_type_daily">Record one showing every day</string>
 
