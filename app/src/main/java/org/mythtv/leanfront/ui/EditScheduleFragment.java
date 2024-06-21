@@ -199,6 +199,7 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                         // Use mergetemplate to get the original recording parameters
                         // into the override rule.
                         mRecordRule.mergeTemplate(orgRule);
+                        mRecordRule.searchType = "None";
                     }
                     if (isOverride) {
                         mRecordRule.recordingStatus = mProgDetails.recordingStatus;
