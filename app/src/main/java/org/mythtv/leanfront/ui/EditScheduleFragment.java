@@ -195,10 +195,6 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                         mRecordRule.parentId = mRecordId;
                         mRecordRule.recordId = 0;
                         mRecordRule.type = "Not Recording";
-                        RecordRule orgRule = new RecordRule().fromSchedule(recRuleNode);
-                        // Use mergetemplate to get the original recording parameters
-                        // into the override rule.
-                        mRecordRule.mergeTemplate(orgRule);
                         mRecordRule.searchType = "None";
                     }
                     if (isOverride) {
