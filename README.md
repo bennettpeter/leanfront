@@ -220,7 +220,7 @@ There are three rows available.
 ## Upcoming Recordings
 ![](ScreenShots/Upcoming.png)
 
-[Edit](#schedule-recording) a recording rule by selecting an upcoming recording and pressing Enter.
+[Edit](#schedule-recording) a recording rule by selecting the name or the pencil icon on an upcoming recording and pressing Enter. Create an override rule for one showing or one episode by selecting the paperclip icon. The "Show All Status Values" checkbox allows you to see showings that are not to be recorded. This allows you to select one of the excluded showings so that it can be overridden or scheduled.
 
 ## Recording Rules
 ![](ScreenShots/Rules.png)
