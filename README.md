@@ -3,7 +3,7 @@
 Leanfront is a frontend for MythTV that runs on Android TV and Amazon Fire TV devices.
 Leanfront supports playback of recordings and videos from MythTV. It can also schedule recordings using voice search or a program guide, and search for recordings or videos using voice.
 
-Leanfront can be installed from the Google play store or the Amazon store, depending on your device. 
+Leanfront can be installed from the [Google play store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront) or the Amazon store, depending on your device. 
 
 <details><summary>Table of Contents</summary>
 
@@ -273,7 +273,7 @@ For a new installation, just press the microphone button on your remote and say 
 If you already have leanfront installed by downloading from orangedox, to install from the app store you will have to first uninstall it.
 
 ### Non Amazon devices
-Leanfront is available in the Google Play Store, for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from orangedox.com, you do not need to uninstall, the play store will upgrade it.
+Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront), for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from orangedox.com, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
 Preferably use the play store or app store for installation.
