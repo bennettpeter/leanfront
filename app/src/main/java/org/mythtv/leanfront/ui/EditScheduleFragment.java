@@ -198,6 +198,7 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                         mRecordRule.searchType = "None";
                     }
                     if (isOverride) {
+                        mRecordRule.inactive = false;
                         mRecordRule.recordingStatus = mProgDetails.recordingStatus;
                         mRecordRule.startTime = mProgDetails.startTime;
                         mRecordRule.chanId = mProgDetails.chanId;
