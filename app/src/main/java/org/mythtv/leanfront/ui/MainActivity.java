@@ -34,10 +34,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
+import org.mythtv.leanfront.ui.playback.PlaybackFragment;
 
 import java.util.Locale;
 
@@ -49,11 +51,18 @@ public class MainActivity extends LeanbackActivity {
     private static final String TAG = "lfe";
     private static final String CLASS = "MainActivity";
     long mMultipleKeyTime;
+    private MainFragment mainFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Fragment fragment =
+                getSupportFragmentManager().findFragmentByTag("main");
+        if (fragment instanceof MainFragment) {
+            mainFragment = (MainFragment) fragment;
+        }
+
         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         int memoryClass = am.getMemoryClass();
         int lMemoryClass = am.getLargeMemoryClass();
@@ -80,15 +89,29 @@ public class MainActivity extends LeanbackActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int direction = 1;
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 long newKeyTime=System.currentTimeMillis();
                 long diff = newKeyTime - mMultipleKeyTime;
+                Log.i(TAG, CLASS + " diff:" + diff);
                 // Restrict key interval to 50ms to prevent crash
                 if (diff < 50)
                     return true;
                 mMultipleKeyTime=newKeyTime;
+                break;
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+            case KeyEvent.KEYCODE_PAGE_UP:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                direction = -1;
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            case KeyEvent.KEYCODE_PAGE_DOWN:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                if (mainFragment != null) {
+                    mainFragment.pageDown(direction);
+                    return true;
+                }
                 break;
         }
         return super.onKeyDown(keyCode, event);

@@ -372,6 +372,7 @@
   <string name="msg_success">Erfolg</string>
   <string name="msg_restart">Leanfront wird neu gestartet</string>
   <string name="msg_db_busy">Die Aktion kann nicht ausgeführt werden, da die Datenbank ausgelastet ist.</string>
-  <string name="notes_title">Anmerkungen</string>
+  <string name="notes_title">Was ist neu?</string>
   <string name="notes_seen">Nicht mehr anzeigen</string>
+  <string name="notes_paging">Jetzt können Sie mit den Schnellvorlauf- und Rücklaufschaltflächen im linken Bereich schnell nach oben und unten blättern und durch die Videosymbole im rechten Bereich scrollen.</string>
 </resources>

@@ -74,6 +74,7 @@ import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -344,21 +345,24 @@ public class MainFragment extends BrowseSupportFragment
     // Currently no messages are displayed but an array of strings can be provided
     // in sNotes in the parens, e.g. {R.string.notes_audio}
     void showNotes() {
-        final int[] sNotes = {};
+        final int[] sNotes = {R.string.notes_paging};
+        int deletedNotes = 0;
         int notesVersion = Settings.getInt("pref_notes_version");
-        if (notesVersion >= sNotes.length)
+        if (notesVersion < deletedNotes)
+            notesVersion = deletedNotes;
+        if (notesVersion >= sNotes.length + deletedNotes)
             return;
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle(R.string.notes_title);
         StringBuilder msg = new StringBuilder();
-        for (int ix = notesVersion ; ix < sNotes.length ; ix++) {
+        for (int ix = notesVersion - deletedNotes ; ix < sNotes.length ; ix++) {
             msg.append(getContext().getString(sNotes[ix]));
         }
         builder.setMessage(msg);
         builder.setPositiveButton(R.string.notes_seen, (dialog, which) -> {
             SharedPreferences.Editor editor = Settings.getEditor();
-            Settings.putString(editor,"pref_notes_version",String.valueOf(sNotes.length));
+            Settings.putString(editor,"pref_notes_version",String.valueOf(sNotes.length + deletedNotes));
             editor.commit();
             dialog.cancel();
         });
@@ -546,6 +550,33 @@ public class MainFragment extends BrowseSupportFragment
         HeadersSupportFragment header = getHeadersSupportFragment();
         if (header != null)
             header.setOnHeaderClickedListener(new HeaderClickedListener());
+    }
+
+    public void pageDown(int direction) {
+        if (isShowingHeaders()) {
+            RowsSupportFragment frag = getRowsSupportFragment();
+            int selectedRowNum = frag.getSelectedPosition();
+            int newPos = selectedRowNum + 7 * direction;
+            if (newPos < 0)
+                newPos = 0;
+            frag.setSelectedPosition(newPos, false);
+        } else {
+            RowsSupportFragment frag = getRowsSupportFragment();
+            int selectedRowNum = frag.getSelectedPosition();
+            ListRowPresenter.ViewHolder selectedViewHolder
+                    = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
+                    .getRowViewHolder(selectedRowNum);
+            if (selectedViewHolder == null)
+                return;
+            int selectedItemNum = selectedViewHolder.getSelectedPosition();
+            int newPos = selectedItemNum + 5 * direction; // 5 = 1 page
+            if (newPos < 0)
+                newPos = 0;
+            ListRowPresenter.SelectItemViewHolderTask task
+                    = new ListRowPresenter.SelectItemViewHolderTask(newPos);
+            task.setSmoothScroll(false);
+            frag.setSelectedPosition(selectedRowNum, false, task);
+        }
     }
 
     private void updateBackground(String uri) {

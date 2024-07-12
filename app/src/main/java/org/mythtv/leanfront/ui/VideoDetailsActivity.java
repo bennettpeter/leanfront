@@ -25,6 +25,7 @@
 package org.mythtv.leanfront.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
@@ -57,6 +58,7 @@ public class VideoDetailsActivity extends LeanbackActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int direction = 1;
         switch (keyCode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -68,7 +70,24 @@ public class VideoDetailsActivity extends LeanbackActivity {
             case KeyEvent.KEYCODE_MENU:
                 mFragment.onActionClicked(new Action(Video.ACTION_OTHER));
                 break;
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+            case KeyEvent.KEYCODE_PAGE_UP:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                direction = -1;
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            case KeyEvent.KEYCODE_PAGE_DOWN:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                if (mFragment != null) {
+                    mFragment.pageDown(direction);
+                    return true;
+                }
+                break;
+
         }
         return super.onKeyDown(keyCode, event);
     }
+
 }
+
+
+

@@ -372,6 +372,7 @@
   <string name="msg_success">Úspěch</string>
   <string name="msg_restart">Leanfront se restartuje</string>
   <string name="msg_db_busy">Akci nelze provést, protože databáze je zaneprázdněna.</string>
-  <string name="notes_title">Poznámky</string>
+  <string name="notes_title">Co je nového?</string>
   <string name="notes_seen">Znovu se neukazuj</string>
+  <string name="notes_paging">Nyní můžete používat tlačítka rychlého převíjení vpřed a vzad k rychlému posunu nahoru a dolů v levém podokně a k posouvání ikon videa v pravém podokně.</string>
 </resources>

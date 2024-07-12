@@ -372,6 +372,7 @@
   <string name="msg_success">Powodzenie</string>
   <string name="msg_restart">Leanfront uruchomi się ponownie</string>
   <string name="msg_db_busy">Nie można wykonać akcji, ponieważ baza danych jest zajęta.</string>
-  <string name="notes_title">Notatki</string>
+  <string name="notes_title">Co nowego?</string>
   <string name="notes_seen">Nie pokazuj ponownie</string>
+  <string name="notes_paging">Teraz możesz używać przycisków szybkiego przewijania do przodu i do tyłu, aby szybko przewijać strony w górę i w dół w lewym okienku oraz przewijać ikony wideo w prawym okienku.</string>
 </resources>

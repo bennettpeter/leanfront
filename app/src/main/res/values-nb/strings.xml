@@ -372,6 +372,7 @@
   <string name="msg_success">Suksess</string>
   <string name="msg_restart">Leanfront vil starte på nytt</string>
   <string name="msg_db_busy">Kan ikke utføre handlingen fordi databasen er opptatt.</string>
-  <string name="notes_title">Notater</string>
+  <string name="notes_title">Hva er nytt?</string>
   <string name="notes_seen">Ikke vis igjen</string>
+  <string name="notes_paging">Nå kan du bruke frem- og tilbakespolingsknappene for raskt å bla opp og ned i venstre rute, og for å bla gjennom videoikoner i høyre rute.</string>
 </resources>

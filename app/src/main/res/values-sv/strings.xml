@@ -372,6 +372,7 @@
   <string name="msg_success">Framgång</string>
   <string name="msg_restart">Leanfront kommer att starta om</string>
   <string name="msg_db_busy">Det går inte att utföra åtgärden eftersom databasen är upptagen.</string>
-  <string name="notes_title">Anteckningar</string>
+  <string name="notes_title">Vad är nytt?</string>
   <string name="notes_seen">Visa inte igen</string>
+  <string name="notes_paging">Nu kan du använda knapparna för snabbspolning framåt och bakåt för att snabbt bläddra upp och ner i den vänstra rutan och för att rulla videoikoner i den högra rutan.</string>
 </resources>

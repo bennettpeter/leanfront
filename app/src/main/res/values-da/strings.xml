@@ -372,6 +372,7 @@
   <string name="msg_success">Succes</string>
   <string name="msg_restart">Leanfront genstarter</string>
   <string name="msg_db_busy">Kan ikke udføre handlingen, fordi databasen er optaget.</string>
-  <string name="notes_title">Noter</string>
+  <string name="notes_title">Hvad er nyt?</string>
   <string name="notes_seen">Vis ikke igen</string>
+  <string name="notes_paging">Nu kan du bruge hurtig frem- og tilbage-knapperne til hurtigt at bladre op og ned i venstre rude og til at rulle videoikoner i højre rude.</string>
 </resources>

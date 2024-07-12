@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.app.BrowseSupportFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnChildLaidOutListener;
 import androidx.leanback.widget.OnItemViewClickedListener;
@@ -224,6 +225,16 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     @Override
     public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
+    }
+
+    /**
+     * Gets the selected item position.
+     */
+    public int getSelectedPosition() {
+        if(mGridViewHolder != null && mGridViewHolder.getGridView().getAdapter() != null) {
+            return mGridViewHolder.getGridView().getSelectedPosition();
+        }
+        return -1;
     }
 
     /**

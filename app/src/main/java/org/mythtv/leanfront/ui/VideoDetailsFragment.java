@@ -73,6 +73,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.DetailsSupportFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ClassPresenterSelector;
@@ -315,6 +316,25 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         setAdapter(mAdapter);
     }
 
+    public void pageDown(int direction) {
+        RowsSupportFragment frag = getRowsSupportFragment();
+        int selectedRowNum = frag.getSelectedPosition();
+        ListRowPresenter.ViewHolder selectedViewHolder
+                = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
+                .getRowViewHolder(selectedRowNum);
+        if (selectedViewHolder == null)
+            return;
+        int selectedItemNum = selectedViewHolder.getSelectedPosition();
+        int newPos = selectedItemNum + 5 * direction; // 5 = 1 page
+        if (newPos < 0)
+            newPos = 0;
+        ListRowPresenter.SelectItemViewHolderTask task
+                = new ListRowPresenter.SelectItemViewHolderTask(newPos);
+        task.setSmoothScroll(false);
+        frag.setSelectedPosition(selectedRowNum, false, task);
+    }
+
+
     @Override
     public void onActionClicked(Action action) {
         int id = (int) action.getId();
@@ -323,6 +343,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         ArrayList<String> prompts = null;
         ArrayList<Action> actions = null;
         String alertTitle = null;
+        Log.e(TAG, CLASS + " selectedPosition:" + getRowsSupportFragment().getSelectedPosition());
 
         if (mSelectedVideo.rectype == RECTYPE_CHANNEL
             && (id == Video.ACTION_PLAY_FROM_BOOKMARK || id == Video.ACTION_PLAY

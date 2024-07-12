@@ -111,6 +111,14 @@ Now, for example, if you watched and deleted an episode yesterday, the deleted e
 
 </details>
 
+<details><summary>Paging</summary>
+
+Scroll through the list using up/down arrows and left/right arrows. This can be slow when there is a long list of shows or episodes. You can now use the Fast Forward and Rewind buttons of the remote to get though these lists more quickly. When the header (left hand) pane is visible, Fast Forward will scroll down a page at a time. When the header pane is not visible, Fast Forward will scroll across one row a page at a time.
+
+If you don't have Fast Forward and Rewind buttons, Page Down / Page Up, or Play Next / Play Previous can be used. You can connect a bluetooth keyboard and use these combinations. You can also buy a Bluetooth remote that has multimedia buttons including Fast Forward and Rewind.
+
+</details>
+
 ## Detail Screen
 ![](ScreenShots/Detail.png)
 
@@ -135,6 +143,8 @@ Select the header for a video directory and do a "long press" or press the menu 
 This operation is not recursive. If there are subdirectories in a video directory, any operation on the directory will be performed on videos in that directory only.
 
 </details>
+
+For information on paging through videos see the Paging section of [Recording Group Screen](#recording-group-screen).
 
 ## Playback Screen
 ![](ScreenShots/Playback.png)
@@ -236,6 +246,14 @@ There are three rows available.
 - Jump to a desired date and time by pressing enter on any of the date or time cells and selecting a date and time.
 - [Schedule](#schedule-recording) a recording by pressing enter on a program cell.
 - Move to the next or prior time slot of guide data by pressing enter on any of the arrow cells.
+
+<details><summary>Paging</summary>
+
+Scroll through the list using up/down arrows and left/right arrows. This can be slow when there is a long list of channels. You can now use the Fast Forward and Rewind buttons of the remote to get though the list more quickly. Fast Forward will scroll down 45 channels at a time (5 pages).
+
+If you don't have Fast Forward and Rewind buttons, Page Down / Page Up, or Play Next / Play Previous can be used. You can connect a bluetooth keyboard and use these combinations. You can also buy a Bluetooth remote that has multimedia buttons including Fast Forward and Rewind.
+
+</details>
 
 ## Schedule Recording
 ![](ScreenShots/Schedule.png)

@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRowPresenter;
@@ -15,6 +16,7 @@ import androidx.leanback.widget.PageRow;
 import androidx.leanback.widget.Row;
 
 import org.mythtv.leanfront.R;
+import org.mythtv.leanfront.model.MyHeaderItem;
 
 public class ManageRecordingsFragment extends BrowseSupportFragment {
 
@@ -25,6 +27,7 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     private ArrayObjectAdapter mRowsAdapter;
     private BackgroundManager mBackgroundManager;
     private boolean isGuide;
+    private GuideFragment guideFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,19 +78,55 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
 
     private void createRows() {
         if (!isGuide) {
-            HeaderItem headerItem3 = new HeaderItem(HEADER_ID_UPCOMING, getString(R.string.title_upcoming));
+            MyHeaderItem headerItem3 = new MyHeaderItem(HEADER_ID_UPCOMING, getString(R.string.title_upcoming));
             PageRow pageRow3 = new PageRow(headerItem3);
             mRowsAdapter.add(pageRow3);
-            HeaderItem headerItem2 = new HeaderItem(HEADER_ID_RECRULES, getString(R.string.title_rec_rules));
+            MyHeaderItem headerItem2 = new MyHeaderItem(HEADER_ID_RECRULES, getString(R.string.title_rec_rules));
             PageRow pageRow2 = new PageRow(headerItem2);
             mRowsAdapter.add(pageRow2);
         }
-        HeaderItem headerItem1 = new HeaderItem(HEADER_ID_GUIDE, getString(R.string.title_program_guide));
+        MyHeaderItem headerItem1 = new MyHeaderItem(HEADER_ID_GUIDE, getString(R.string.title_program_guide));
         PageRow pageRow1 = new PageRow(headerItem1);
         mRowsAdapter.add(pageRow1);
         if (isGuide)
             setHeadersState(HEADERS_HIDDEN);
     }
+
+    public void pageDown(int direction) {
+//        RowsSupportFragment frag = getRowsSupportFragment();
+        int selectedRowNum = getSelectedPosition();
+        if (isGuide)
+            selectedRowNum = 0;
+        if (selectedRowNum < 0)
+            return;
+        if (isShowingHeaders())
+            return;
+        MyHeaderItem header = (MyHeaderItem) ((PageRow)mRowsAdapter.get(selectedRowNum)).getHeaderItem();
+        long id = header.getId();
+        if (id == HEADER_ID_GUIDE) {
+            // This needs to go in guide creation and save the guide fragment in the magerecordings fragment
+            // so i can access it here via a member.
+            GuideFragment gfrag = (GuideFragment)header.getFragment();
+            gfrag.pageDown(direction);
+        }
+//        RowsSupportFragment frag = getRowsSupportFragment();
+//        int selectedRowNum = frag.getSelectedPosition();
+//        ListRowPresenter.ViewHolder selectedViewHolder
+//                = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
+//                .getRowViewHolder(selectedRowNum);
+//        if (selectedViewHolder == null)
+//            return;
+//        int selectedItemNum = selectedViewHolder.getSelectedPosition();
+//        int newPos = selectedItemNum + 5 * direction; // 5 = 1 page
+//        if (newPos < 0)
+//            newPos = 0;
+//        ListRowPresenter.SelectItemViewHolderTask task
+//                = new ListRowPresenter.SelectItemViewHolderTask(newPos);
+//        task.setSmoothScroll(false);
+//        frag.setSelectedPosition(selectedRowNum, false, task);
+    }
+
+
 
     private static class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory {
         private final BackgroundManager mBackgroundManager;
@@ -99,17 +138,24 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
         @Override
         public Fragment createFragment(Object rowObj) {
             Row row = (Row)rowObj;
+            MyHeaderItem header = (MyHeaderItem)row.getHeaderItem();
             mBackgroundManager.setDrawable(null);
-            if (row.getHeaderItem().getId() == HEADER_ID_GUIDE) {
-                return new GuideFragment();
+            Fragment frag;
+            switch ((int)header.getId()) {
+                case HEADER_ID_GUIDE:
+                    frag = new GuideFragment();
+                    break;
+                case HEADER_ID_RECRULES:
+                    frag =  new RecRulesFragment();
+                    break;
+                case HEADER_ID_UPCOMING:
+                    frag = new UpcomingFragment();
+                    break;
+                default:
+                    return null;
             }
-            if (row.getHeaderItem().getId() == HEADER_ID_RECRULES) {
-                return new RecRulesFragment();
-            }
-            if (row.getHeaderItem().getId() == HEADER_ID_UPCOMING) {
-                return new UpcomingFragment();
-            }
-            return null;
+            header.setFragment(frag);
+            return frag;
         }
     }
 

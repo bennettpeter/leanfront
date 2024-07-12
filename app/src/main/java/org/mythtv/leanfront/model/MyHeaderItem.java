@@ -19,6 +19,7 @@
 
 package org.mythtv.leanfront.model;
 
+import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.HeaderItem;
 
 // This class is used for row headers as well as for group cells
@@ -27,12 +28,24 @@ public class MyHeaderItem extends HeaderItem implements ListItem {
     // For type values see MainFragment
     private int mItemType;
     private String mBaseName;
+    private Fragment fragment;
 
     public MyHeaderItem(String name, int type, String baseName) {
         super(name);
         mItemType = type;
         mBaseName = baseName;
     }
+    public MyHeaderItem(long id, String name) {
+        super(id, name);
+    }
     public int getItemType() { return mItemType; }
     public String getBaseName() { return mBaseName; }
+
+    public Fragment getFragment() {
+        return fragment;
+    }
+
+    public void setFragment(Fragment fragment) {
+        this.fragment = fragment;
+    }
 }

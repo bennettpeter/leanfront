@@ -39,6 +39,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.leanback.app.ProgressBarManager;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
 import androidx.leanback.widget.VerticalGridPresenter;
@@ -363,6 +364,17 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             call.setCallSign(card.callSign);
             call.execute(Video.ACTION_LIVETV, Video.ACTION_ADD_OR_UPDATERECRULE, Video.ACTION_WAIT_RECORDING);
         }
+    }
+
+    void pageDown(int direction) {
+        int selectedCellNum = getSelectedPosition();
+        int rowStart = selectedCellNum / COLUMNS * COLUMNS;
+        int newPos = rowStart + 45 * COLUMNS * direction; // 9 = 1 page
+        if (newPos < 0)
+            newPos = 0;
+        if (newPos >= mGridAdapter.size())
+            newPos = mGridAdapter.size() - COLUMNS;
+        setSelectedPosition(newPos, false);
     }
 
     private void setupGridData() {

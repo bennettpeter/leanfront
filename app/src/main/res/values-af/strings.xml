@@ -372,6 +372,7 @@
   <string name="msg_success">Sukses</string>
   <string name="msg_restart">Leanfront sal herbegin</string>
   <string name="msg_db_busy">Kan nie die handeling uitvoer nie, want die databasis is besig.</string>
-  <string name="notes_title">Notas</string>
+  <string name="notes_title">Wat\'s nuut?</string>
   <string name="notes_seen">Moet nie weer wys nie</string>
+  <string name="notes_paging">Nou kan jy die snel vorentoe- en terugspoel-knoppies gebruik om vinnig op en af ​​in die linkerpaneel te blaai, en om video-ikone in die regterpaneel te blaai.</string>
 </resources>

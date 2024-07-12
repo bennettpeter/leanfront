@@ -372,6 +372,7 @@
   <string name="msg_success">Successo</string>
   <string name="msg_restart">Leanfront si riavvierà</string>
   <string name="msg_db_busy">Impossibile eseguire l\'azione perché il database è occupato.</string>
-  <string name="notes_title">Appunti</string>
+  <string name="notes_title">Cosa c\'è di nuovo?</string>
   <string name="notes_seen">Non mostrare più</string>
+  <string name="notes_paging">Ora puoi utilizzare i pulsanti di avanzamento rapido e riavvolgimento per scorrere rapidamente le pagine su e giù nel riquadro di sinistra e per scorrere le icone dei video nel riquadro di destra.</string>
 </resources>
