@@ -416,7 +416,7 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
             final boolean isSearch = ! "None".equalsIgnoreCase(mRecordRule.searchType);
             typePrompts.add(R.string.sched_type_not);
             typeOptions.add("Not Recording");
-            if (hasChannel && isSearch || isManual) {
+            if (hasChannel && !isSearch || isManual) {
                 typePrompts.add(R.string.sched_type_this);
                 typeOptions.add("Single Record");
             }
