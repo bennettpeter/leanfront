@@ -93,7 +93,6 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     }
 
     public void pageDown(int direction) {
-//        RowsSupportFragment frag = getRowsSupportFragment();
         int selectedRowNum = getSelectedPosition();
         if (isGuide)
             selectedRowNum = 0;
@@ -102,31 +101,9 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
         if (isShowingHeaders())
             return;
         MyHeaderItem header = (MyHeaderItem) ((PageRow)mRowsAdapter.get(selectedRowNum)).getHeaderItem();
-        long id = header.getId();
-        if (id == HEADER_ID_GUIDE) {
-            // This needs to go in guide creation and save the guide fragment in the magerecordings fragment
-            // so i can access it here via a member.
-            GuideFragment gfrag = (GuideFragment)header.getFragment();
-            gfrag.pageDown(direction);
-        }
-//        RowsSupportFragment frag = getRowsSupportFragment();
-//        int selectedRowNum = frag.getSelectedPosition();
-//        ListRowPresenter.ViewHolder selectedViewHolder
-//                = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
-//                .getRowViewHolder(selectedRowNum);
-//        if (selectedViewHolder == null)
-//            return;
-//        int selectedItemNum = selectedViewHolder.getSelectedPosition();
-//        int newPos = selectedItemNum + 5 * direction; // 5 = 1 page
-//        if (newPos < 0)
-//            newPos = 0;
-//        ListRowPresenter.SelectItemViewHolderTask task
-//                = new ListRowPresenter.SelectItemViewHolderTask(newPos);
-//        task.setSmoothScroll(false);
-//        frag.setSelectedPosition(selectedRowNum, false, task);
+        GridFragment gfrag = (GridFragment)header.getFragment();
+        gfrag.pageDown(direction);
     }
-
-
 
     private static class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory {
         private final BackgroundManager mBackgroundManager;

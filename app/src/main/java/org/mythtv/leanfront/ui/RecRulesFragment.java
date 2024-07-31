@@ -40,15 +40,15 @@ import org.mythtv.leanfront.presenter.RecRuleCardView;
 public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.OnBackendCallListener {
 
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_XSMALL;
-    private int numberColumns;
 
-    private ArrayObjectAdapter mGridAdapter;
     private boolean mLoadInProgress;
     private boolean mDoingUpdate;
+    private final int PAGING_ROWS = 9;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pagingRows = PAGING_ROWS;
         if (savedInstanceState != null) {
             mDoingUpdate = savedInstanceState.getBoolean("mDoingUpdate", mDoingUpdate);
         }

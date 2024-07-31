@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.app.RowsSupportFragment;
+import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnChildLaidOutListener;
 import androidx.leanback.widget.OnItemViewClickedListener;
@@ -60,6 +61,10 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     protected boolean isStarted;
     private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
             new BrowseSupportFragment.MainFragmentAdapter(this);
+    // These must be filled in the derived class for use with paging
+    protected int numberColumns;
+    protected ArrayObjectAdapter mGridAdapter;
+    protected int pagingRows;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -257,6 +262,17 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
                 mGridViewHolder.getGridView().setSelectedPosition(mSelectedPosition);
             }
         }
+    }
+
+    void pageDown(int direction) {
+        int selectedCellNum = getSelectedPosition();
+        int rowStart = selectedCellNum / numberColumns * numberColumns;
+        int newPos = rowStart + pagingRows * numberColumns * direction;
+        if (newPos < 0)
+            newPos = 0;
+        if (newPos >= mGridAdapter.size())
+            newPos = mGridAdapter.size() - numberColumns;
+        setSelectedPosition(newPos, false);
     }
 
 }

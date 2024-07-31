@@ -69,8 +69,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     public static final int TIMESLOT_SIZE = 30; //minutes
     public static final int TIME_ROW_INTERVAL = 8;
     public static final int DATE_RANGE = 21;
-    private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_XSMALL;
-    private ArrayObjectAdapter mGridAdapter;
+    private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_XSMALL;
+    private static final int PAGING_ROWS = 45;
     private Date mGridStartTime;
     private long mPriorGridStartTime;
     // map chanid to position in object adapter
@@ -92,6 +92,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        numberColumns = COLUMNS;
+        pagingRows = PAGING_ROWS;
         if (savedInstanceState != null) {
             long newTime = savedInstanceState.getLong("mGridStartTime", 0);
             if (newTime > 0)
@@ -364,17 +366,6 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             call.setCallSign(card.callSign);
             call.execute(Video.ACTION_LIVETV, Video.ACTION_ADD_OR_UPDATERECRULE, Video.ACTION_WAIT_RECORDING);
         }
-    }
-
-    void pageDown(int direction) {
-        int selectedCellNum = getSelectedPosition();
-        int rowStart = selectedCellNum / COLUMNS * COLUMNS;
-        int newPos = rowStart + 45 * COLUMNS * direction; // 9 = 1 page
-        if (newPos < 0)
-            newPos = 0;
-        if (newPos >= mGridAdapter.size())
-            newPos = mGridAdapter.size() - COLUMNS;
-        setSelectedPosition(newPos, false);
     }
 
     private void setupGridData() {
