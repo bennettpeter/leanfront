@@ -11,7 +11,6 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.VIEW_NAME;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;

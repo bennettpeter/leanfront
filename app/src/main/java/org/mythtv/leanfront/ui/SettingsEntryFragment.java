@@ -678,15 +678,15 @@ private static final String TAG = "lfe";
                 break;
             case ID_SKIP_FWD:
                 Settings.putString(editor, "pref_skip_fwd",group,
-                        action.getDescription().toString());
+                        validateNumber(action, 1, 3600, 60));
                 break;
             case ID_SKIP_BACK:
                 Settings.putString(editor, "pref_skip_back",group,
-                        action.getDescription().toString());
+                        validateNumber(action, 1, 3600, 60));
                 break;
             case ID_JUMP:
                 Settings.putString(editor, "pref_jump",group,
-                        action.getDescription().toString());
+                        validateNumber(action, 1, 60, 5));
                 break;
             case ID_IDLE_TIMEOUT:
                 Settings.putString(editor, "pref_idle_timeout",
