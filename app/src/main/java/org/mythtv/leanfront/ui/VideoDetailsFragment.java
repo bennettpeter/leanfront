@@ -56,6 +56,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.TabStopSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -171,6 +174,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private ArrayList<String> mRecGroupList;
     private String mNewValueText;
 //    private boolean canUpdateRecGroup = false;
+    private int actionClicked;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -489,13 +493,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             case Video.ACTION_CANCEL:
                 break;
             case Video.ACTION_VIEW_DESCRIPTION:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
-                        R.style.Theme_AppCompat);
-                String msg = mSelectedVideo.title + "\n"
-                    + mDetailsDescriptionPresenter.getSubtitle() + "\n"
-                        + mDetailsDescriptionPresenter.getDescription(true);
-                builder.setMessage(msg);
-                builder.show();
+                call = new AsyncBackendCall(getActivity(), this);
+                call.setVideo(mSelectedVideo);
+                call.execute(Video.ACTION_VIEW_DESCRIPTION);
                 break;
             case Video.ACTION_REMOVE_RECENT:
                 call = new AsyncBackendCall(getActivity(), this);
@@ -1054,11 +1054,23 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 //                else
 //                    canUpdateRecGroup = false;
 //                break;
+            case Video.ACTION_VIEW_DESCRIPTION:
+                xml = taskRunner.getXmlResult();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
+                        R.style.Theme_AppCompat);
+                String msg = mSelectedVideo.title + "\n"
+                        + mDetailsDescriptionPresenter.getSubtitle() + "\n"
+                        + mDetailsDescriptionPresenter.getDescription(xml);
+                SpannableStringBuilder span = new SpannableStringBuilder(msg);
+                span.setSpan(new TabStopSpan.Standard(400), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                builder.setMessage(span);
+                builder.show();
+                break;
+
             default:
                 // Assume ACTION_REFRESH was in the list
                 if (context == null)
                     break;
-                xml = taskRunner.getXmlResult();
                 mBookmark = taskRunner.getBookmark();
                 mPosBookmark = taskRunner.getPosBookmark();
                 mLastPlay = taskRunner.getLastPlay();

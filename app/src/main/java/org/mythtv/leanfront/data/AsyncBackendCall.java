@@ -343,6 +343,7 @@ public class AsyncBackendCall implements Runnable {
             String paramValue = null;
             switch (task) {
                 case Video.ACTION_REFRESH:
+                case Video.ACTION_VIEW_DESCRIPTION:
                     mBookmark = 0;
                     mPosBookmark = -1;
                     mLastPlay = 0;

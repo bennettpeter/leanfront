@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Poista kirjanmerkki</string>
   <string name="menu_remove_lastplaypos">Poista viimeinen toistokohta</string>
   <string name="menu_stop_recording">Lopeta tallennus</string>
-  <string name="menu_view_description">Näytä kuvaus</string>
+  <string name="menu_view_description">Ohjelman tiedot</string>
   <string name="menu_dont_stop_recording">Älä lopeta tallennusta</string>
   <string name="menu_stop_livetv">Pysäytä suora TV</string>
   <string name="menu_dont_stop_livetv">Älä lopeta suoraa TV:tä</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Mikä on uutta?</string>
   <string name="notes_seen">Älä näytä uudelleen</string>
   <string name="notes_paging">Nyt voit käyttää pikakelauspainikkeita vasemmassa ruudussa nopeasti ylös- ja alaspäin selaamiseen ja videokuvakkeiden vierittämiseen oikeanpuoleisessa ruudussa.</string>
+  <string name="details_category">Kategoria</string>
+  <string name="details_starttime">Aloitusaika</string>
+  <string name="details_endtime">Loppu aika</string>
+  <string name="details_audioprops">Äänen ominaisuudet</string>
+  <string name="details_hostname">Isäntänimi</string>
+  <string name="details_statusname">Tallennuksen tila</string>
+  <string name="details_encodername">Enkooderi</string>
+  <string name="details_cast">HEITTÄÄ</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">lisäyspäivämäärä</string>
+  <string name="details_director">Johtaja</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Sertifiointi</string>
 </resources>

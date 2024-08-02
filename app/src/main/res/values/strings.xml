@@ -174,7 +174,7 @@
     <string name="menu_remove_bookmark">Remove Bookmark</string>
     <string name="menu_remove_lastplaypos">Remove Last Play Position</string>
     <string name="menu_stop_recording">Stop Recording</string>
-    <string name="menu_view_description">View Description</string>
+    <string name="menu_view_description">Program Details</string>
     <string name="menu_dont_stop_recording">Don\'t Stop Recording</string>
     <string name="menu_stop_livetv">Stop Live TV</string>
     <string name="menu_dont_stop_livetv">Don\'t Stop Live TV</string>
@@ -493,4 +493,18 @@
     <string name="sdef_refresh_mins" translatable="false">60</string>
     <string name="sdef_chan_group" translatable="false"></string>
     <string name="sdef_idle_timeout" translatable="false">360</string>
+<!--    Program Details-->
+    <string name="details_category">Category</string>
+    <string name="details_starttime">Start Time</string>
+    <string name="details_endtime">End Time</string>
+    <string name="details_audioprops">Audio Properties</string>
+    <string name="details_hostname">Host Name</string>
+    <string name="details_statusname">Recording Status</string>
+    <string name="details_encodername">Encoder</string>
+    <string name="details_cast">CAST</string>
+    <string name="details_genre">Genre</string>
+    <string name="details_adddate">Date Added</string>
+    <string name="details_director">Director</string>
+    <string name="details_studio">Studio</string>
+    <string name="details_certification">Certification</string>
 </resources>

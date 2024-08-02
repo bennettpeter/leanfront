@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Bladwijzer verwijderen</string>
   <string name="menu_remove_lastplaypos">Laatste speelpositie verwijderen</string>
   <string name="menu_stop_recording">Stop met opnemen</string>
-  <string name="menu_view_description">Bekijk Beschrijving</string>
+  <string name="menu_view_description">Programmadetails</string>
   <string name="menu_dont_stop_recording">Stop niet met opnemen</string>
   <string name="menu_stop_livetv">Stop live-tv</string>
   <string name="menu_dont_stop_livetv">Stop live-tv niet</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Wat is er nieuw?</string>
   <string name="notes_seen">Niet meer tonen</string>
   <string name="notes_paging">Nu kunt u de knoppen voor vooruitspoelen en terugspoelen gebruiken om snel omhoog en omlaag te bladeren in het linkerdeelvenster, en om door videopictogrammen in het rechterdeelvenster te scrollen.</string>
+  <string name="details_category">Categorie</string>
+  <string name="details_starttime">Starttijd</string>
+  <string name="details_endtime">Eindtijd</string>
+  <string name="details_audioprops">Audio-eigenschappen</string>
+  <string name="details_hostname">Hostnaam</string>
+  <string name="details_statusname">Opnamestatus</string>
+  <string name="details_encodername">Encoder</string>
+  <string name="details_cast">VORM</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">Datum toegevoegd</string>
+  <string name="details_director">Regisseur</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Certificering</string>
 </resources>

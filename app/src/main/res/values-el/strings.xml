@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Κατάργηση σελιδοδείκτη</string>
   <string name="menu_remove_lastplaypos">Αφαιρέστε την τελευταία θέση αναπαραγωγής</string>
   <string name="menu_stop_recording">Διακοπή εγγραφής</string>
-  <string name="menu_view_description">Προβολή Περιγραφή</string>
+  <string name="menu_view_description">Λεπτομέρειες προγράμματος</string>
   <string name="menu_dont_stop_recording">Μην σταματάτε την εγγραφή</string>
   <string name="menu_stop_livetv">Σταματήστε τη ζωντανή τηλεόραση</string>
   <string name="menu_dont_stop_livetv">Μην σταματάτε τη ζωντανή τηλεόραση</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Τι νέα;</string>
   <string name="notes_seen">Να μην εμφανιστεί ξανά</string>
   <string name="notes_paging">Τώρα μπορείτε να χρησιμοποιήσετε τα κουμπιά γρήγορης κίνησης προς τα εμπρός και προς τα πίσω για γρήγορη σελίδα προς τα επάνω και προς τα κάτω στο αριστερό παράθυρο και για να κάνετε κύλιση στα εικονίδια βίντεο στο δεξί παράθυρο.</string>
+  <string name="details_category">Κατηγορία</string>
+  <string name="details_starttime">Ωρα έναρξης</string>
+  <string name="details_endtime">Τέλος χρόνου</string>
+  <string name="details_audioprops">Ιδιότητες ήχου</string>
+  <string name="details_hostname">Όνομα κεντρικού υπολογιστή</string>
+  <string name="details_statusname">Κατάσταση εγγραφής</string>
+  <string name="details_encodername">Κωδικοποιητής</string>
+  <string name="details_cast">ΕΚΜΑΓΕΙΟ</string>
+  <string name="details_genre">Είδος</string>
+  <string name="details_adddate">Ημερομηνία προστέθηκε</string>
+  <string name="details_director">Διευθυντής</string>
+  <string name="details_studio">Στούντιο</string>
+  <string name="details_certification">Πιστοποίηση</string>
 </resources>

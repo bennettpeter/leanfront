@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Rimuovi segnalibro</string>
   <string name="menu_remove_lastplaypos">Rimuovi l\'ultima posizione di gioco</string>
   <string name="menu_stop_recording">Interrompi la registrazione</string>
-  <string name="menu_view_description">Visualizza descrizione</string>
+  <string name="menu_view_description">Dettagli del programma</string>
   <string name="menu_dont_stop_recording">Non interrompere la registrazione</string>
   <string name="menu_stop_livetv">Interrompi la TV in diretta</string>
   <string name="menu_dont_stop_livetv">Non interrompere la TV in diretta</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Cosa c\'è di nuovo?</string>
   <string name="notes_seen">Non mostrare più</string>
   <string name="notes_paging">Ora puoi utilizzare i pulsanti di avanzamento rapido e riavvolgimento per scorrere rapidamente le pagine su e giù nel riquadro di sinistra e per scorrere le icone dei video nel riquadro di destra.</string>
+  <string name="details_category">Categoria</string>
+  <string name="details_starttime">Ora di inizio</string>
+  <string name="details_endtime">Tempo scaduto</string>
+  <string name="details_audioprops">Proprietà dell\'audio</string>
+  <string name="details_hostname">Nome host</string>
+  <string name="details_statusname">Stato della registrazione</string>
+  <string name="details_encodername">Codificatore</string>
+  <string name="details_cast">LANCIO</string>
+  <string name="details_genre">Genere</string>
+  <string name="details_adddate">Data aggiunta</string>
+  <string name="details_director">Direttore</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Certificazione</string>
 </resources>

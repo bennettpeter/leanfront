@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Supprimer le signet</string>
   <string name="menu_remove_lastplaypos">Supprimer la dernière position de lecture</string>
   <string name="menu_stop_recording">Arrête d\'enregistrer</string>
-  <string name="menu_view_description">Voir la description</string>
+  <string name="menu_view_description">Détails du programme</string>
   <string name="menu_dont_stop_recording">N\'arrêtez pas l\'enregistrement</string>
   <string name="menu_stop_livetv">Arrêter la télévision en direct</string>
   <string name="menu_dont_stop_livetv">N\'arrêtez pas la télévision en direct</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Quoi de neuf?</string>
   <string name="notes_seen">Ne pas montrer de nouveau</string>
   <string name="notes_paging">Vous pouvez désormais utiliser les boutons d\'avance et de retour rapide pour monter et descendre rapidement dans le volet de gauche et pour faire défiler les icônes vidéo dans le volet de droite.</string>
+  <string name="details_category">Catégorie</string>
+  <string name="details_starttime">Heure de début</string>
+  <string name="details_endtime">Heure de fin</string>
+  <string name="details_audioprops">Propriétés audio</string>
+  <string name="details_hostname">Nom d\'hôte</string>
+  <string name="details_statusname">Statut d\'enregistrement</string>
+  <string name="details_encodername">Encodeur</string>
+  <string name="details_cast">CASTING</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">date ajoutée</string>
+  <string name="details_director">Directeur</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Attestation</string>
 </resources>

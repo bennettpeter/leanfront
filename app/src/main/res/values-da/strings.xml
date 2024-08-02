@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Fjern bogmærke</string>
   <string name="menu_remove_lastplaypos">Fjern sidste spilleposition</string>
   <string name="menu_stop_recording">Stop optagelse</string>
-  <string name="menu_view_description">Se beskrivelse</string>
+  <string name="menu_view_description">Program detaljer</string>
   <string name="menu_dont_stop_recording">Stop ikke med at optage</string>
   <string name="menu_stop_livetv">Stop Live TV</string>
   <string name="menu_dont_stop_livetv">Stop ikke live-tv</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Hvad er nyt?</string>
   <string name="notes_seen">Vis ikke igen</string>
   <string name="notes_paging">Nu kan du bruge hurtig frem- og tilbage-knapperne til hurtigt at bladre op og ned i venstre rude og til at rulle videoikoner i højre rude.</string>
+  <string name="details_category">Kategori</string>
+  <string name="details_starttime">Starttidspunkt</string>
+  <string name="details_endtime">Sluttid</string>
+  <string name="details_audioprops">Lydegenskaber</string>
+  <string name="details_hostname">Værtsnavn</string>
+  <string name="details_statusname">Optagelsesstatus</string>
+  <string name="details_encodername">Encoder</string>
+  <string name="details_cast">CAST</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">dato tilføjet</string>
+  <string name="details_director">Direktør</string>
+  <string name="details_studio">Studie</string>
+  <string name="details_certification">Certificering</string>
 </resources>

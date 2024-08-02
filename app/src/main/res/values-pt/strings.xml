@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Remover marcador</string>
   <string name="menu_remove_lastplaypos">Remover última posição de jogo</string>
   <string name="menu_stop_recording">Pare de gravar</string>
-  <string name="menu_view_description">Ver descrição</string>
+  <string name="menu_view_description">Detalhes do programa</string>
   <string name="menu_dont_stop_recording">Não pare de gravar</string>
   <string name="menu_stop_livetv">Pare a TV ao vivo</string>
   <string name="menu_dont_stop_livetv">Não pare de TV ao vivo</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">O que há de novo?</string>
   <string name="notes_seen">Não mostre novamente</string>
   <string name="notes_paging">Agora você pode usar os botões de avanço rápido e retrocesso para subir e descer rapidamente no painel esquerdo e rolar os ícones de vídeo no painel direito.</string>
+  <string name="details_category">Categoria</string>
+  <string name="details_starttime">Hora de início</string>
+  <string name="details_endtime">Fim do tempo</string>
+  <string name="details_audioprops">Propriedades de áudio</string>
+  <string name="details_hostname">Nome de anfitrião</string>
+  <string name="details_statusname">Status de gravação</string>
+  <string name="details_encodername">Codificador</string>
+  <string name="details_cast">ELENCO</string>
+  <string name="details_genre">Gênero</string>
+  <string name="details_adddate">data adicionada</string>
+  <string name="details_director">Diretor</string>
+  <string name="details_studio">Estúdio</string>
+  <string name="details_certification">Certificação</string>
 </resources>

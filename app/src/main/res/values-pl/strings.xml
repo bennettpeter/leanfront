@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Usuń zakładkę</string>
   <string name="menu_remove_lastplaypos">Usuń ostatnią pozycję odtwarzania</string>
   <string name="menu_stop_recording">Zatrzymaj nagrywanie</string>
-  <string name="menu_view_description">Zobacz opis</string>
+  <string name="menu_view_description">Szczegóły programu</string>
   <string name="menu_dont_stop_recording">Nie przestawaj nagrywać</string>
   <string name="menu_stop_livetv">Zatrzymaj telewizję na żywo</string>
   <string name="menu_dont_stop_livetv">Nie zatrzymuj telewizji na żywo</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Co nowego?</string>
   <string name="notes_seen">Nie pokazuj ponownie</string>
   <string name="notes_paging">Teraz możesz używać przycisków szybkiego przewijania do przodu i do tyłu, aby szybko przewijać strony w górę i w dół w lewym okienku oraz przewijać ikony wideo w prawym okienku.</string>
+  <string name="details_category">Kategoria</string>
+  <string name="details_starttime">Czas rozpoczęcia</string>
+  <string name="details_endtime">Koniec czasu</string>
+  <string name="details_audioprops">Właściwości dźwięku</string>
+  <string name="details_hostname">Nazwa hosta</string>
+  <string name="details_statusname">Stan nagrywania</string>
+  <string name="details_encodername">Koder</string>
+  <string name="details_cast">RZUCAĆ</string>
+  <string name="details_genre">Gatunek muzyczny</string>
+  <string name="details_adddate">Data dodania</string>
+  <string name="details_director">Dyrektor</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Orzecznictwo</string>
 </resources>

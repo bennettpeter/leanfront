@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Ta bort bokmärke</string>
   <string name="menu_remove_lastplaypos">Ta bort senaste spelposition</string>
   <string name="menu_stop_recording">Stoppa inspelning</string>
-  <string name="menu_view_description">Visa beskrivning</string>
+  <string name="menu_view_description">Programinformation</string>
   <string name="menu_dont_stop_recording">Sluta inte spela in</string>
   <string name="menu_stop_livetv">Stoppa live-tv</string>
   <string name="menu_dont_stop_livetv">Stoppa inte live-tv</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Vad är nytt?</string>
   <string name="notes_seen">Visa inte igen</string>
   <string name="notes_paging">Nu kan du använda knapparna för snabbspolning framåt och bakåt för att snabbt bläddra upp och ner i den vänstra rutan och för att rulla videoikoner i den högra rutan.</string>
+  <string name="details_category">Kategori</string>
+  <string name="details_starttime">Starttid</string>
+  <string name="details_endtime">Sluttid</string>
+  <string name="details_audioprops">Ljudegenskaper</string>
+  <string name="details_hostname">Värdnamn</string>
+  <string name="details_statusname">Inspelningsstatus</string>
+  <string name="details_encodername">Kodare</string>
+  <string name="details_cast">KASTA</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">datum tillagt</string>
+  <string name="details_director">Direktör</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Certifiering</string>
 </resources>

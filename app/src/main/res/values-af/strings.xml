@@ -137,7 +137,7 @@
   <string name="menu_remove_bookmark">Verwyder boekmerk</string>
   <string name="menu_remove_lastplaypos">Verwyder laaste speelposisie</string>
   <string name="menu_stop_recording">Hou op opname</string>
-  <string name="menu_view_description">Bekyk beskrywing</string>
+  <string name="menu_view_description">Programbesonderhede</string>
   <string name="menu_dont_stop_recording">Moenie ophou opname nie</string>
   <string name="menu_stop_livetv">Stop Regstreekse TV</string>
   <string name="menu_dont_stop_livetv">Moenie ophou regstreekse TV nie</string>
@@ -375,4 +375,17 @@
   <string name="notes_title">Wat\'s nuut?</string>
   <string name="notes_seen">Moet nie weer wys nie</string>
   <string name="notes_paging">Nou kan jy die snel vorentoe- en terugspoel-knoppies gebruik om vinnig op en af ​​in die linkerpaneel te blaai, en om video-ikone in die regterpaneel te blaai.</string>
+  <string name="details_category">Kategorie</string>
+  <string name="details_starttime">Begin Tyd</string>
+  <string name="details_endtime">Eind tyd</string>
+  <string name="details_audioprops">Oudio-eienskappe</string>
+  <string name="details_hostname">Gasheernaam</string>
+  <string name="details_statusname">Opname Status</string>
+  <string name="details_encodername">Enkodeerder</string>
+  <string name="details_cast">GOOI</string>
+  <string name="details_genre">Genre</string>
+  <string name="details_adddate">datum bygevoeg</string>
+  <string name="details_director">Direkteur</string>
+  <string name="details_studio">Studio</string>
+  <string name="details_certification">Sertifisering</string>
 </resources>
