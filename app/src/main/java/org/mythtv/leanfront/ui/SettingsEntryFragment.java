@@ -136,10 +136,12 @@ private static final String TAG = "lfe";
     @Override
     public GuidanceStylist onCreateGuidanceStylist() {
         return new GuidanceStylist() {
-            @Override
-            public int onProvideLayoutId() {
-                return R.layout.settings_guidance;
-            }
+            // This is commented because save to external directories is no longer
+            // permitted
+//            @Override
+//            public int onProvideLayoutId() {
+//                return R.layout.settings_guidance;
+//            }
         };
     }
 
