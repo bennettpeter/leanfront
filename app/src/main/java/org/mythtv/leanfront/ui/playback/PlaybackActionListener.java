@@ -397,6 +397,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     playbackFragment.mSpeed = (float) value * 0.01f;
                     PlaybackParameters parms = new PlaybackParameters(playbackFragment.mSpeed);
                     playbackFragment.mPlayerGlue.setEnableControls(false);
+                    dialogDismiss.enableControls = true;
                     playbackFragment.mPlayer.setPlaybackParameters(parms);
                 }
                @Override
@@ -700,6 +701,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     private void showAudioSyncSelector() {
         playbackFragment.hideControlsOverlay(true);
         playbackFragment.mPlayerGlue.setEnableControls(false);
+        dialogDismiss.enableControls = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle(R.string.title_select_audiosync)
