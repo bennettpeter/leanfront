@@ -295,5 +295,17 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                 .append(context.getString(R.string.details_hostname)).append(":\t")
                 .append(xml.getString("HostName"));
 
+        XmlNode cast = xml.getNode("Cast").getNode("CastMembers").getNode("CastMember");
+        head = false;
+        while (cast != null) {
+            if (!head)
+                description.append("\n\n")
+                        .append(context.getString(R.string.details_cast)).append("\n");
+            if (head)
+                description.append(", ");
+            description.append(cast.getString("Name"));
+            cast = cast.getNextSibling();
+            head = true;
+        }
     }
 }
