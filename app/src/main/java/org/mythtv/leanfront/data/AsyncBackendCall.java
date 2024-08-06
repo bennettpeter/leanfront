@@ -815,7 +815,7 @@ public class AsyncBackendCall implements Runnable {
                                 "/Dvr/GetRecordedList?RecGroup=LiveTV&Descending=true&Count=5");
                         found = false;
                         int ixFound = -1;
-                        for (int icount = 0; icount < 30 && !found; icount++) {
+                        for (int icount = 0; icount < 60 && !found; icount++) {
                             xmlResult = XmlNode.fetch(urlString, null);
                             Log.d(TAG, CLASS + " Found " + xmlResult.getString("Count") + " recordings");
                             XmlNode programNode = null;

@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@OptIn(markerClass = UnstableApi.class)
 public class MythHttpDataSource extends BaseDataSource implements DataSource {
 
     private DataSpec mDataSpec;
@@ -99,7 +100,6 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         return leng;
     }
 
-    @OptIn(markerClass = UnstableApi.class) @Override
     public int read(@NonNull byte[] buffer, int offset, int readLength) throws IOException {
         if (readLength <= 0)
             return 0;
