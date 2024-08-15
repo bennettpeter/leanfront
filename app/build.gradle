@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 task gitinfo {
-    println 'This version of leanfront should use media branch 1.4.0-lf'
+    println 'This version of leanfront should use media branch 1.2.1-lf'
     ext.describe = 'git describe --dirty'.execute().text.trim()
     def split = ext.describe.split("-")
     ext.version = Integer.parseInt(split[0].substring(1)) * 1000 + Integer.parseInt(split[1])
