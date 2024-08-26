@@ -74,6 +74,10 @@ import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
+import androidx.media3.common.TrackSelectionOverride;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.extractor.text.DefaultSubtitleParserFactory;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -864,12 +868,13 @@ public class PlaybackFragment extends VideoSupportFragment
         String userAgent = Util.getUserAgent(getActivity(), "VideoPlayerGlue");
         mDsFactory = new MythHttpDataSource.Factory(userAgent, this);
         commBreakTable = new CommBreakTable();
+        MediaItem item = MediaItem.fromUri(mediaSourceUri);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
-        ProgressiveMediaSource.Factory pmf = new ProgressiveMediaSource.Factory
+//        ProgressiveMediaSource.Factory pmf = new ProgressiveMediaSource.Factory
+        DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (mDsFactory,
                         extFactory);
-        MediaItem item = MediaItem.fromUri(mediaSourceUri);
-        mMediaSource = pmf.createMediaSource(item);
+        mMediaSource = (ProgressiveMediaSource) pmf.createMediaSource(item);
         mMediaSource.setPossibleEmptyTrack(possibleEmptyTrack);
         mPlayer.setMediaSource(mMediaSource);
         mPlayer.prepare();
@@ -1071,19 +1076,20 @@ public class PlaybackFragment extends VideoSupportFragment
         }
         if (trackSelection >= 0) {
             TrackEntry entry = tracks.trackList.get(trackSelection);
-            if (trackType != C.TRACK_TYPE_TEXT || SubtitleDecoderFactory.DEFAULT.supportsFormat(entry.format)) {
-                DefaultTrackSelector.SelectionOverride ovr
-                        = new DefaultTrackSelector.SelectionOverride(
-                        entry.ixTrackGroup, entry.ixTrack);
+//            if (trackType != C.TRACK_TYPE_TEXT || (new DefaultSubtitleParserFactory()).supportsFormat(format)) {
+//            if (trackType != C.TRACK_TYPE_TEXT || SubtitleDecoderFactory.DEFAULT.supportsFormat(entry.format)) {
+              if (trackType != C.TRACK_TYPE_TEXT || "application/x-media3-cues".equals(entry.format.sampleMimeType)
+                    || "application/cea-608".equals(entry.format.sampleMimeType)) {
+                  TrackSelectionOverride ovr
+                          = new TrackSelectionOverride(
+                          entry.tg, entry.ixTrack);
 
                 MappingTrackSelector.MappedTrackInfo mti = mTrackSelector.getCurrentMappedTrackInfo();
                 TrackGroupArray tga = mti.getTrackGroups(entry.ixRenderer);
                 DefaultTrackSelector.Parameters.Builder parms
                         = mTrackSelector
                         .buildUponParameters()
-                        // deprecated - should use setTrackSelectionOverrides, which
-                        // takes different parameters and works differently
-                        .setSelectionOverride(entry.ixRenderer, tga, ovr);
+                        .addOverride(ovr);
                 if (disable)
                     parms = parms.setRendererDisabled(entry.ixRenderer, false);
                 // This line causes playback to pause when enabling subtitle
@@ -1440,6 +1446,8 @@ public class PlaybackFragment extends VideoSupportFragment
                 return;
             int ccNum=0;
             for (int ixRenderer = 0 ; ixRenderer < mti.getRendererCount(); ixRenderer ++) {
+                Log.i(TAG, CLASS + " Renderer "+ixRenderer+": "+mti.getRendererName(ixRenderer)
+                        +" type: "+mti.getRendererType(ixRenderer));
                 if (mti.getRendererType(ixRenderer) == trackType) {
                     renderList.add(ixRenderer);
                     TrackGroupArray tga = mti.getTrackGroups(ixRenderer);
@@ -1448,6 +1456,8 @@ public class PlaybackFragment extends VideoSupportFragment
                         for (int ixTrackGroup = 0 ; ixTrackGroup < tga.length; ixTrackGroup++) {
                             tg = tga.get(ixTrackGroup);
                             if (tg != null) {
+                                Log.i(TAG, CLASS + " Trk Group "+ixTrackGroup+": "+tg.id
+                                        +" type: "+tg.type);
                                 for (int ixTrack = 0; ixTrack < tg.length; ixTrack++) {
                                     Format format = tg.getFormat(ixTrack);
                                     String description = format.language;
@@ -1463,9 +1473,11 @@ public class PlaybackFragment extends VideoSupportFragment
                                         String langDesc = locale.getDisplayLanguage();
                                         description = ++ccNum + " " + langDesc;
                                     }
+                                    Log.i(TAG, CLASS + " Track "+ixTrack+": "+description
+                                            +" mimetype: "+format.sampleMimeType+" codecs: "+format.codecs);
 
                                     trackList.add (new TrackEntry
-                                        (ixRenderer,ixTrackGroup,ixTrack,format,description));
+                                        (ixRenderer,ixTrackGroup,tg, ixTrack,format,description));
                                 }
                             }
                         }
@@ -1479,14 +1491,16 @@ public class PlaybackFragment extends VideoSupportFragment
         int ixRenderer;
         int ixTrackGroup;
         int ixTrack;
+        TrackGroup tg;
         Format format;
         String description;
-        TrackEntry(int ixRenderer, int ixTrackGroup, int ixTrack, Format format, String description) {
+        TrackEntry(int ixRenderer, int ixTrackGroup, TrackGroup tg, int ixTrack, Format format, String description) {
             this.ixRenderer = ixRenderer;
             this.ixTrackGroup = ixTrackGroup;
             this.ixTrack = ixTrack;
             this.format = format;
             this.description = description;
+            this.tg = tg;
         }
     }
 
