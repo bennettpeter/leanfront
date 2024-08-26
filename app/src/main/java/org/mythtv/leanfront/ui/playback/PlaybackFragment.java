@@ -1078,8 +1078,8 @@ public class PlaybackFragment extends VideoSupportFragment
             TrackEntry entry = tracks.trackList.get(trackSelection);
 //            if (trackType != C.TRACK_TYPE_TEXT || (new DefaultSubtitleParserFactory()).supportsFormat(format)) {
 //            if (trackType != C.TRACK_TYPE_TEXT || SubtitleDecoderFactory.DEFAULT.supportsFormat(entry.format)) {
-              if (trackType != C.TRACK_TYPE_TEXT || "application/x-media3-cues".equals(entry.format.sampleMimeType)
-                    || "application/cea-608".equals(entry.format.sampleMimeType)) {
+//              if (trackType != C.TRACK_TYPE_TEXT || "application/x-media3-cues".equals(entry.format.sampleMimeType)
+//                    || "application/cea-608".equals(entry.format.sampleMimeType)) {
                   TrackSelectionOverride ovr
                           = new TrackSelectionOverride(
                           entry.tg, entry.ixTrack);
@@ -1107,10 +1107,10 @@ public class PlaybackFragment extends VideoSupportFragment
                 }
                 if (msgOn > 0)
                     msg.append(getActivity().getString(msgOn, language));
-            } else {
-                msg.append(getActivity().getString(R.string.msg_subtitle_notsupp,
-                        entry.format.sampleMimeType));
-            }
+//            } else {
+//                msg.append(getActivity().getString(R.string.msg_subtitle_notsupp,
+//                        entry.format.sampleMimeType));
+//            }
         } else if (trackSelection == -1){
             if (tracks.trackList.size() > 0) {
                 for (int ix = 0; ix < tracks.renderList.size(); ix++) {
