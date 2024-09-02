@@ -30,6 +30,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.extractor.DefaultExtractorsFactory;
 import androidx.media3.extractor.Extractor;
 import androidx.media3.extractor.ExtractorsFactory;
+import androidx.media3.extractor.text.DefaultSubtitleParserFactory;
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory;
 import androidx.media3.extractor.ts.TsExtractor;
 import androidx.media3.extractor.ts.TsPayloadReader;
@@ -76,6 +77,8 @@ import java.util.Map;
                         closedCaptionFormats);
                 TsExtractor ts = new TsExtractor(
                         TsExtractor.MODE_SINGLE_PMT,
+                        0,
+                        new DefaultSubtitleParserFactory(),
                         new TimestampAdjuster(0),
                         payloadReaderFactory,
                         Settings.getInt("pref_tweak_ts_search_pkts") * TsExtractor.TS_PACKET_SIZE);
