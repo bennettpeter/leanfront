@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 
 public class XmlNode {
@@ -52,6 +53,7 @@ public class XmlNode {
 
     public static String getIpAndPort(String hostname) throws IOException, XmlPullParserException {
         String backendIP = Settings.getString("pref_backend");
+        backendIP = fixIpAddress(backendIP);
         String mainPort = Settings.getString("pref_http_port");
         if (backendIP.length() == 0 || mainPort.length() == 0) {
             Log.e(TAG, CLASS + " Backend port or IP address not specified");
@@ -74,6 +76,7 @@ public class XmlNode {
             // no setting for BackendServerAddr
             if (hostIp == null || hostIp.startsWith("127.") || hostIp.equalsIgnoreCase("localhost"))
                 hostIp = backendIP;
+            hostIp = fixIpAddress(hostIp);
             // These are removed now. I don't know why this was here
 //            if (hostIp == null || hostIp.length() == 0)
 //                return "";
@@ -102,6 +105,14 @@ public class XmlNode {
             return false;
         }
         return true;
+    }
+
+    public static String fixIpAddress(String ipAddress) {
+        if (ipAddress != null) {
+            if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
+                ipAddress = "[" + ipAddress + "]";
+        }
+        return ipAddress;
     }
 
     public static XmlNode parseStream(InputStream in) throws XmlPullParserException, IOException {

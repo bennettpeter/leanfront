@@ -667,7 +667,12 @@ private static final String TAG = "lfe";
         switch(actualId) {
             case ID_BACKEND_IP:
                 newVal = action.getDescription().toString();
+                // strip any '[' or ']' characters, which are invalid and will
+                // be used for identifying an IPV6
+                newVal = newVal.replace("[","");
+                newVal = newVal.replace("]","");
                 Settings.putString(editor, "pref_backend",newVal);
+                action.setDescription(newVal);
                 mBackendAction.setDescription(newVal);
                 notifyActionChanged(findActionPositionById(ID_BACKEND));
                 break;

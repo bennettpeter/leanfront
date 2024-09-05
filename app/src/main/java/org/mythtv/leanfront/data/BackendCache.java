@@ -35,6 +35,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     private void init() {
         sBackendIP = Settings.getString("pref_backend");
+        sBackendIP = XmlNode.fixIpAddress((sBackendIP));
         sMainPort = Settings.getString("pref_http_port");
         sHostMap = new HashMap<>();
         wsdlDone = false;

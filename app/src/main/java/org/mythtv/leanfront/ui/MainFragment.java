@@ -1141,6 +1141,7 @@ public class MainFragment extends BrowseSupportFragment
                 boolean connection = false;
                 boolean connectionfail = false;
                 String backendIP = Settings.getString("pref_backend");
+                backendIP = XmlNode.fixIpAddress(backendIP);
                 if (backendIP.length() == 0)
                     return;
                 while (!connection) {

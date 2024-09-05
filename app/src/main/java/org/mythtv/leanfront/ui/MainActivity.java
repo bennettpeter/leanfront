@@ -95,7 +95,6 @@ public class MainActivity extends LeanbackActivity {
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 long newKeyTime=System.currentTimeMillis();
                 long diff = newKeyTime - mMultipleKeyTime;
-                Log.i(TAG, CLASS + " diff:" + diff);
                 // Restrict key interval to 50ms to prevent crash
                 if (diff < 50)
                     return true;
