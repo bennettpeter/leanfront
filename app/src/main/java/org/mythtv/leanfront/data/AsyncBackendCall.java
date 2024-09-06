@@ -993,6 +993,15 @@ public class AsyncBackendCall implements Runnable {
                         bCache.supportLastPlayPos = false;
                     Log.i(TAG, CLASS + " Last Play Position Support:" + bCache.supportLastPlayPos);
                     break;
+                case Video.ACTION_GET_HOSTNAME:
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Myth/GetHostName");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception in Myth/GetHostName.", e);
+                    }
+                    break;
                 case Video.ACTION_BACKEND_INFO_HTML:
                     InputStream is = null;
                     urlString = null;

@@ -148,6 +148,7 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_RECORD                 = 62;
     public static final int ACTION_ADDDONTRECORDSCHEDULE  = 63;
     public static final int ACTION_FORGETHISTORY          = 64;
+    public static final int ACTION_GET_HOSTNAME           = 65;
 
     private Video(
             final long id,

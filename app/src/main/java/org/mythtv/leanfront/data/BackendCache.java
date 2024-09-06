@@ -3,6 +3,7 @@ package org.mythtv.leanfront.data;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 // Singleton class to cache frequently used backend data
@@ -28,6 +29,8 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public boolean isConnected;
     public boolean wsdlDone;
 
+    // from GetHostName
+    public String sHostName;
 
     private BackendCache() {
         init();
@@ -44,7 +47,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     private void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall(null, this);
-        call.execute(Video.ACTION_DVR_WSDL, Video.ACTION_BACKEND_INFO);
+        call.execute(Video.ACTION_DVR_WSDL, Video.ACTION_BACKEND_INFO, Video.ACTION_GET_HOSTNAME);
         wsdlDone = true;
     }
 
@@ -66,6 +69,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         if (taskRunner == null)
             return;
         int [] tasks = taskRunner.getTasks();
+        ArrayList<XmlNode> resultsList = taskRunner.getXmlResults();
         XmlNode xml = taskRunner.getXmlResult();
         switch (tasks[0]) {
             case Video.ACTION_DVR_WSDL:
@@ -91,6 +95,12 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                     if (parameterNode != null)
                         canForgetHistory = true;
                 }
+                xml = resultsList.get(2);
+                if (xml == null)
+                    break;
+                sHostName = xml.getString();
+                if (sHostName != null && sBackendIP != null && sMainPort != null)
+                    sHostMap.put(sHostName, sBackendIP + ":" + sMainPort);
                 break;
         }
     }
