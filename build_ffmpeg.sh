@@ -33,9 +33,6 @@ cd "$scriptpath"
 # Clear old builds
 #~ rm -rf ffmpeg/android-libs/*
 FFMPEG_PATH="$(pwd)/../ffmpeg"
-git -C $FFMPEG_PATH pull
-git -C $FFMPEG_PATH checkout release/6.0
-git -C $FFMPEG_PATH pull
 
 cd ../media
 FFMPEG_MODULE_PATH="$(pwd)/libraries/decoder_ffmpeg/src/main"

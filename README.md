@@ -656,12 +656,12 @@ After installing [Android Studio][studio], use SDK Manager to install the emulat
 
 ## Building
 
-- Clone from github.com two repositories bennettpeter/android-MythTV-Leanfront.git and bennettpeter/media.git. These must both be cloned into the same directory on your file system.
-- In the media directory, checkout the correct media branch. That can be found in the android-MythTV-Leanfront directory in file app/build.gradle approximately line 4. Currently this is 1.2.0-lf. That is the leanfront customized vereion of 1.2.0 of android media 3.
+- Clone from github.com bennettpeter/android-MythTV-Leanfront.git.
+- Run ./update_dependencies.sh. This will download 3 repositories and check out the appropriate branches / tags.
 - Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
 - Note the ndk version is referenced in the app/build.gradle file. You need to either download the version that is specified there or else update there to match the version you downloaded.
-- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/20.0.5594570
-- In the root directory, run download_ffmpeg.sh and build_ffmpeg.sh.
+- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/25.1.8937393
+- Run build_ffmpeg.sh.
 - Open the project in [Android Studio][studio].
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
 - It can also be run with an android emulator, but the emulator that comes with android studio does not support MPEG2 playback, so you need to play an h264 or h265 recording.
