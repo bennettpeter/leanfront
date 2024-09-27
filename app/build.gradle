@@ -1,13 +1,11 @@
 apply plugin: 'com.android.application'
 
 task gitinfo {
-    println 'Checkout media branch 1.4.0-lf'
-    println 'Also Checkout glide branch leanfront'
+    println 'bash update_dependencies.sh'.execute().text
     ext.describe = 'git describe --dirty'.execute().text.trim()
     def split = ext.describe.split("-")
     ext.version = Integer.parseInt(split[0].substring(1)) * 1000 + Integer.parseInt(split[1])
-    ext.mediadesc = 'git -C ../media describe --dirty'.execute().text.trim()
-    ext.versionName = ext.describe + '-m' + ext.mediadesc
+    ext.versionName = ext.describe
     println "Version Name: " + ext.versionName + ", Version Code: " + ext.version
 }
 
@@ -39,6 +37,9 @@ android {
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     sourceSets {
         main.java.srcDirs += '../../glide/third_party/gif_decoder/src/main/java'
