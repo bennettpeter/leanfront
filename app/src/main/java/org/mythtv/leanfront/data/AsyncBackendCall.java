@@ -1299,7 +1299,7 @@ public class AsyncBackendCall implements Runnable {
                         urlString = XmlNode.mythApiUrl(null,
                                 urlMethod
                                         + mVideo.recordedid
-                                        + "&OffsetType=Duration");
+                                        + "&OffsetType=Duration&IncludeFps=true");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.w(TAG, CLASS + " " + e);
@@ -1317,7 +1317,8 @@ public class AsyncBackendCall implements Runnable {
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 urlMethod
-                                        + mVideo.recordedid);
+                                        + mVideo.recordedid
+                                        + "&IncludeFps=true");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.w(TAG, CLASS + " " + e);
@@ -1341,7 +1342,7 @@ public class AsyncBackendCall implements Runnable {
                         urlString = XmlNode.mythApiUrl(null,
                                 urlMethod
                                         + mVideo.recordedid
-                                        + "&OffsetType=Duration");
+                                        + "&OffsetType=Duration&IncludeFps=true");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.w(TAG, CLASS + " " + e);
@@ -1358,12 +1359,15 @@ public class AsyncBackendCall implements Runnable {
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 urlMethod
-                                        + mVideo.recordedid);
+                                        + mVideo.recordedid
+                                        + "&IncludeFps=true");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.w(TAG, CLASS + " " + e);
                         break;
                     }
+                    if (commBreakTable != null)
+                        commBreakTable.load(xmlResult);
                     if (commBreakTable.entries.length > 0)
                         commBreakTable.offSetType = CommBreakTable.OFFSET_FRAME;
                     break;

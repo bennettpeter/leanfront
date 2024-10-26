@@ -18,6 +18,7 @@ public class CommBreakTable {
     public static final int MARK_COMM_END   = 5;
     public static final int MARK_CUT_START   = 1;
     public static final int MARK_CUT_END   = 0;
+    public static final int MARK_VIDEO_RATE = 32;
 
     public synchronized void clear(int count) {
         entries = new Entry[count];
@@ -31,14 +32,20 @@ public class CommBreakTable {
             node = node.getNode("Cuttings");
         if (node != null)
             node = node.getNode("Cutting");
-        if (node != null)
-            firstmark = node.getInt("Mark", -99);
         int nodeCount = 0;
         while (node != null) {
-            nodeCount++;
             XmlNode nextNode = node.getNextSibling();
+            int mark = node.getInt("Mark", -99);
+            if (mark == MARK_VIDEO_RATE) {
+                frameratex1000 =  node.getInt("Offset", 1);
+                node = nextNode;
+                continue;
+            }
+            if (firstmark == -1)
+                firstmark = mark;
+            nodeCount++;
             if (nextNode == null)
-                lastmark = node.getInt("Mark", -99);
+                lastmark = mark;
             node = nextNode;
         }
         // Cater for "Cut to start" where there is no start entry
@@ -62,6 +69,11 @@ public class CommBreakTable {
             entries[ix++] = new Entry(0,MARK_CUT_START);
         while (node != null) {
             int mark = node.getInt("Mark", 0);
+            if (mark == MARK_VIDEO_RATE) {
+//                frameratex1000 =  node.getInt("Offset", 1);
+                node = node.getNextSibling();;
+                continue;
+            }
             int duration = node.getInt("Offset", 0);
             if (duration < prior) {
                 Log.e(TAG, CLASS + " CommBreakTable out of sequence:" + prior + "," + duration);

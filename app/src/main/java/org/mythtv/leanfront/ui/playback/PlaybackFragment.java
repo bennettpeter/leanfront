@@ -1271,6 +1271,8 @@ public class PlaybackFragment extends VideoSupportFragment
                 mToast.show();
                 break;
             case Video.ACTION_CUTLIST_LOAD:
+                if (commBreakTable.frameratex1000 > 1)
+                    frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
                 if (commBreakTable.entries.length > 0)
                     mPlaybackActionListener.setNextCommBreak(-1);
                 break;
@@ -1715,6 +1717,8 @@ public class PlaybackFragment extends VideoSupportFragment
         @Override
         public void onPlaybackStateChanged(int state) {
             if (state == Player.STATE_READY && !playWhenPrepared) {
+                if (commBreakTable.frameratex1000 > 1)
+                    frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
                 if (frameRate < 0.0f) {
                     SampleQueue[] sampleQueues = mMediaSource.getSampleQueues();
                     for (SampleQueue sampleQueue : sampleQueues) {
@@ -1783,7 +1787,6 @@ public class PlaybackFragment extends VideoSupportFragment
                                 frameRate = calcFrameRate;
                                 Log.i(TAG, CLASS + " Using Frame Rate:" + frameRate);
                             }
-
                             break;
                         }
                     }
