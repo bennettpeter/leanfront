@@ -170,11 +170,9 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     public void onPlayCompleted(VideoPlayerGlue.MyAction playlistPlayAction) {
         playbackFragment.setBookmark(Video.ACTION_SET_LASTPLAYPOS);
         dismissDialog();
-        if (playbackFragment.mIsBounded) {
-            Log.i(TAG, CLASS + " onPlayCompleted checking File Length.");
-            playbackFragment.mIsPlayResumable = true;
-            playbackFragment.getFileLength(true);
-        }
+        if (playbackFragment.mPlayerGlue.isIncreasing())
+            // This starts it playing again
+            playbackFragment.moveBackward(1000);
         else
             playbackFragment.checkNextShow();
     }

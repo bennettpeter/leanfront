@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import androidx.annotation.OptIn;
+import androidx.media3.common.C;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.BaseDataSource;
 import androidx.media3.datasource.DataSource;
@@ -107,8 +108,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         if (leng == -1) {
             leng = 0;
         }
-        if (!mPlaybackFragment.isBounded() && leng == 0) {
-
+        if (leng == 0) {
             DataSpec dataSpec2 = new DataSpec.Builder()
                     .setUri(mDataSpec.uri)
                     .setHttpMethod(mDataSpec.httpMethod)
@@ -120,11 +120,6 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                     .build();
             mHttpDataSource.close();
 
-            if (mPlaybackFragment.isSpeededUp()) {
-                Activity activity = mPlaybackFragment.getActivity();
-                if (activity != null)
-                    activity.runOnUiThread(() -> mPlaybackFragment.resetSpeed());
-            }
             long leng2 = 0;
             try {
                 try {
@@ -137,7 +132,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                 // Response code 416 = read past eof
                 if (e.responseCode == 416) {
                     leng2 = 0;
-                    Log.i(TAG, CLASS + " End of file.");
+                    Log.i(TAG, CLASS + " End of file. (http code 416)");
                 }
                 else {
                     Log.e(TAG, CLASS + " Bad Http Response Code:" +e.responseCode
@@ -157,7 +152,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         if (leng > 0)
             mCurrentPos += leng;
         else
-            leng = -1;
+            leng = C.RESULT_END_OF_INPUT;
         return leng;
     }
 

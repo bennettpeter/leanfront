@@ -38,6 +38,7 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.CONTENT_URI;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -76,8 +77,6 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.media3.common.TrackSelectionOverride;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
-import androidx.media3.exoplayer.source.MediaSource;
-import androidx.media3.extractor.text.DefaultSubtitleParserFactory;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -117,7 +116,6 @@ import org.mythtv.leanfront.ui.MainFragment;
 import org.mythtv.leanfront.ui.VideoDetailsActivity;
 
 import androidx.media3.exoplayer.source.TrackGroupArray;
-import androidx.media3.exoplayer.text.SubtitleDecoderFactory;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
@@ -226,6 +224,8 @@ public class PlaybackFragment extends VideoSupportFragment
     // Initialized to invalid value so that the playgroup settings
     // will always be initialized on the first playback.
     private String currentPlayGroup = " ";
+    private ScheduledFuture<?> monitorSched;
+    private static final int STATUS_MONITOR_INTERVAL = 5000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -244,10 +244,6 @@ public class PlaybackFragment extends VideoSupportFragment
             endTime = new Date(endTimeL);
         mPlaylist = new Playlist();
         mWatched = (Integer.parseInt(mVideo.progflags, 10) & Video.FL_WATCHED) != 0;
-
-        // For live TV start off as unbounded
-        if (mRecordid > 0)
-            mIsBounded = false;
 
         mVideoLoaderCallbacks = new VideoLoaderCallbacks(mPlaylist);
 
@@ -337,6 +333,8 @@ public class PlaybackFragment extends VideoSupportFragment
     public void onPause() {
         super.onPause();
         boolean isPlaying=false;
+        isIncreasing = false;
+        mPlayerGlue.setIncreasing(isIncreasing);
 
         if (mPlayerGlue != null && mPlayerGlue.isPlaying()) {
             isPlaying = true;
@@ -639,7 +637,8 @@ public class PlaybackFragment extends VideoSupportFragment
         prepareMediaForPlaying(Uri.parse(video.videoUrl));
 
         // This is needed to fix jkjsdevelop bad audio where audio track starts late
-        mPlayerGlue.seekTo(100);
+        if (mBookmark == 0)
+            mPlayerGlue.seekTo(100);
         // set desired playback speed
         PlaybackParameters parms = new PlaybackParameters(mSpeed);
         mPlayer.setPlaybackParameters(parms);
@@ -647,6 +646,23 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayer.setSeekParameters(SeekParameters.CLOSEST_SYNC);
         playWhenPrepared = false;
         audioFix(5000, true);
+        mPlayerGlue.setPlaybackStartTime(System.currentTimeMillis());
+    }
+
+    private void startStatusMonitor() {
+        if (monitorSched == null || monitorSched.isDone() || monitorSched.isCancelled()) {
+            ScheduledExecutorService executor = MainFragment.getExecutor();
+            monitorSched = executor.schedule(() -> {
+                getFileLength(false);
+                if (isSpeededUp()) {
+                    Activity activity = getActivity();
+                    activity.runOnUiThread(() -> {
+                        if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - 10000)
+                            resetSpeed();
+                    });
+                }
+            }, STATUS_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void setPlaySettings(String group) {
@@ -951,7 +967,7 @@ public class PlaybackFragment extends VideoSupportFragment
             mPlayer.clearMediaItems();
             saveLiveRec = false;
             mVideo = v;
-            initializePlayer(false);
+            initializePlayer(true);
         }
 
     }
@@ -1017,26 +1033,32 @@ public class PlaybackFragment extends VideoSupportFragment
     private void moveForward(int millis) {
         if (!mIsBounded)
             seekTo(-1,true);
-        long duration = mPlayerGlue.myGetDuration();
+        long orgDuration = mPlayerGlue.getDuration();
         boolean doReset = false;
-        if (duration > -1) {
+        if (orgDuration > -1) {
             long newPosition = mPlayerGlue.getCurrentPosition() + millis;
-            if (newPosition > duration && isIncreasing)
+            if (newPosition > orgDuration && isIncreasing)
                  doReset = true;
             seekTo(newPosition, doReset);
         }
     }
-
     // set position to -1 for a reset with no seek.
     // set doReset true to refresh file size information.
     // If it is in unbounded state will reset to bounded state
     // regardless of parameters.
     private void seekTo(long position, boolean doReset) {
         long newPosition;
+        if (position > mPlayerGlue.getDuration())
+            doReset = true;
         if (position == -1)
             newPosition = mPlayerGlue.getCurrentPosition();
         else
             newPosition = position;
+        if (newPosition > mPlayerGlue.myGetDuration() - 5000) {
+            newPosition = mPlayerGlue.myGetDuration() - 5000;
+            if (isSpeededUp())
+                resetSpeed();
+        }
         if (mIsBounded && !doReset) {
             if (position != -1)
                 mPlayerGlue.seekTo(newPosition);
@@ -1239,26 +1261,16 @@ public class PlaybackFragment extends VideoSupportFragment
                 }
                 if (mFileLength > -1 && fileLength > mFileLength)
                     isIncreasing = true;
-                if (mIsPlayResumable) {
-                    if (fileLength > mFileLength) {
-                        mFileLength = fileLength;
-                        mIsBounded = false;
-                        mBookmark = 0;
-                        mPlaybackActionListener.priorSampleOffsetUs = 0;
-                        mOffsetBytes = mDataSource.getCurrentPos();
-                        mPlayerGlue.setOffsetMillis(mPlayerGlue.getCurrentPosition());
-                        Log.i(TAG, CLASS + " Resuming Playback.");
-                        play(mVideo);
-                        hideControlsOverlay(false);
-                        mIsPlayResumable = false;
-                        break;
-                    }
-                    else Log.i(TAG, CLASS + " Playback ending at EOF.");
-                }
+                else
+                    isIncreasing = false;
+                mPlayerGlue.setIncreasing(isIncreasing);
+                mPlayerGlue.onUpdateDuration();
                 mFileLength = fileLength;
                 mIsPlayResumable = false;
                 // Now check for a subsequent show if in LiveTV mode
                 // or next show in autoplay mode
+                if (isIncreasing)
+                    startStatusMonitor();
                 if (mPlayerGlue.isPlayCompleted())
                     checkNextShow();
                 break;
@@ -1313,19 +1325,19 @@ public class PlaybackFragment extends VideoSupportFragment
                     }
                     break;
                 }
+                hideControlsOverlay(false);
                 mRecordid = mNextRecordid;
                 mNextRecordid = 0;
                 endTime = nextEndTime;
                 nextEndTime = null;
                 mBookmark = 0;
-                mIsBounded = false;
                 mOffsetBytes = 0;
                 mPlayerGlue.setOffsetMillis(0);
                 mPlayer.stop();
                 mPlayer.clearMediaItems();
                 saveLiveRec = false;
                 mVideo = nextVid;
-                initializePlayer(false);
+                initializePlayer(true);
                 scheduleNext();
                 break;
         }
@@ -1423,7 +1435,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 mPlayerGlue.setOffsetMillis(0);
                 mPlayer.stop();
                 mPlayer.clearMediaItems();
-                initializePlayer(false);
+                initializePlayer(true);
                 return;
             }
             mSpeed = SPEED_START_VALUE;

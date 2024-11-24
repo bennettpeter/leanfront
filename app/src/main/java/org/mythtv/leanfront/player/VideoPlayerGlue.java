@@ -135,6 +135,9 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private long endCommBreakMs = Long.MAX_VALUE;
     private PlaybackActivity activity;
     private long idleTimeoutMillis;
+    private long playbackStartTime;
+    private boolean isIncreasing;
+
 
     public VideoPlayerGlue(
             Activity context,
@@ -427,7 +430,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     // so we can modify the duration
     @OptIn(markerClass = UnstableApi.class)
     @Override
-    protected void onUpdateDuration() {
+    public void onUpdateDuration() {
         PlaybackControlsRow controlsRow = getControlsRow();
         LeanbackPlayerAdapter adapter = getPlayerAdapter();
         if (controlsRow != null) {
@@ -473,12 +476,25 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
                 && System.currentTimeMillis() - activity.getTouchTime() > idleTimeoutMillis)
             mActionListener.onIdleTimeout();
         super.onUpdateProgress();
+        onUpdateDuration();
+    }
+
+    public void setPlaybackStartTime(long playbackStartTime) {
+        this.playbackStartTime = playbackStartTime;
+    }
+
+    public void setIncreasing(boolean increasing) {
+        isIncreasing = increasing;
+    }
+
+    public boolean isIncreasing() {
+        return isIncreasing;
     }
 
     public long myGetDuration() {
         long duration = getDuration();
-        if (duration >= 0)
-            duration += mOffsetMillis;
+        if (isIncreasing && duration > 0 && playbackStartTime > 0)
+            duration += (System.currentTimeMillis() - playbackStartTime);
         if (duration > 0)
             mSavedDuration = duration;
         return duration;
