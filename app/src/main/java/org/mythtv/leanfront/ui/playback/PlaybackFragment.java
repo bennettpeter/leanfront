@@ -168,10 +168,6 @@ public class PlaybackFragment extends VideoSupportFragment
     private MythHttpDataSource.Factory mDsFactory;
     ProgressiveMediaSource mMediaSource;
     private MythHttpDataSource mDataSource;
-    // Bounded indicates we have a fixed file length
-    boolean mIsBounded = true;
-    private long mOffsetBytes = 0;
-    boolean mIsPlayResumable;
     // Settings - These are default values that will be changed if the video
     // uses a different playback group
     private int mSkipFwd = 1000 * Settings.getInt("pref_skip_fwd");
@@ -612,12 +608,6 @@ public class PlaybackFragment extends VideoSupportFragment
         View view = getView();
         view.setBackgroundColor(mBgColor);
 
-        if (mIsBounded) {
-            mOffsetBytes = 0;
-            mPlayerGlue.setOffsetMillis(0);
-        }
-        Log.i(TAG, CLASS + " Playing offset mSec:" + mPlayerGlue.getOffsetMillis());
-
         mPlayerGlue.setTitle(video.title);
 
         StringBuilder subtitle = new StringBuilder();
@@ -879,7 +869,6 @@ public class PlaybackFragment extends VideoSupportFragment
     @OptIn(markerClass = UnstableApi.class)
     private void prepareMediaForPlaying(Uri mediaSourceUri) {
         mFileLength = -1;
-        mIsPlayResumable = false;
         getFileLength(false);
         String userAgent = Util.getUserAgent(getActivity(), "VideoPlayerGlue");
         mDsFactory = new MythHttpDataSource.Factory(userAgent, this);
@@ -896,8 +885,7 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayer.prepare();
         // Get file length again to see if it is increasing
         getFileLength(true);
-        if (mIsBounded)
-            fillTables();
+        fillTables();
     }
 
 
@@ -960,9 +948,6 @@ public class PlaybackFragment extends VideoSupportFragment
         if (v != null) {
             setBookmark(Video.ACTION_SET_LASTPLAYPOS);
             mBookmark = 0;
-            mIsBounded = true;
-            mOffsetBytes = 0;
-            mPlayerGlue.setOffsetMillis(0);
             mPlayer.stop();
             mPlayer.clearMediaItems();
             saveLiveRec = false;
@@ -979,7 +964,7 @@ public class PlaybackFragment extends VideoSupportFragment
         // If more than 1 minute past beginning, seek to start
         // otherwise got to previous video
         if (mPlayerGlue.getCurrentPosition() > 60000) {
-            seekTo(0, false);
+            seekTo(0);
             return;
         }
         Video v = mPlaylist.previous();
@@ -1011,7 +996,7 @@ public class PlaybackFragment extends VideoSupportFragment
     public void moveBackward(int millis) {
         long newPosition = mPlayerGlue.getCurrentPosition() - millis;
         newPosition = (newPosition < 0) ? 0 : newPosition;
-        seekTo(newPosition,false);
+        seekTo(newPosition);
     }
 
 
@@ -1031,24 +1016,17 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     private void moveForward(int millis) {
-        if (!mIsBounded)
-            seekTo(-1,true);
-        long orgDuration = mPlayerGlue.getDuration();
-        boolean doReset = false;
-        if (orgDuration > -1) {
-            long newPosition = mPlayerGlue.getCurrentPosition() + millis;
-            if (newPosition > orgDuration && isIncreasing)
-                 doReset = true;
-            seekTo(newPosition, doReset);
-        }
+        long newPosition = mPlayerGlue.getCurrentPosition() + millis;
+        newPosition = (newPosition < 0) ? 0 : newPosition;
+        seekTo(newPosition);
     }
     // set position to -1 for a reset with no seek.
     // set doReset true to refresh file size information.
-    // If it is in unbounded state will reset to bounded state
-    // regardless of parameters.
-    private void seekTo(long position, boolean doReset) {
+    void seekTo(long position) {
+        boolean doReset = false;
         long newPosition;
-        if (position > mPlayerGlue.getDuration())
+        if (mPlayerGlue.myGetDuration() > mPlayerGlue.getDuration()
+                && position > mPlayerGlue.getDuration())
             doReset = true;
         if (position == -1)
             newPosition = mPlayerGlue.getCurrentPosition();
@@ -1059,15 +1037,12 @@ public class PlaybackFragment extends VideoSupportFragment
             if (isSpeededUp())
                 resetSpeed();
         }
-        if (mIsBounded && !doReset) {
+        if (!doReset) {
             if (position != -1)
                 mPlayerGlue.seekTo(newPosition);
         }
         else {
-            mIsBounded = true;
             mBookmark = newPosition;
-            mOffsetBytes = 0;
-            mPlayerGlue.setOffsetMillis(0);
             mPlayer.stop();
             play(mVideo);
         }
@@ -1266,7 +1241,6 @@ public class PlaybackFragment extends VideoSupportFragment
                 mPlayerGlue.setIncreasing(isIncreasing);
                 mPlayerGlue.onUpdateDuration();
                 mFileLength = fileLength;
-                mIsPlayResumable = false;
                 // Now check for a subsequent show if in LiveTV mode
                 // or next show in autoplay mode
                 if (isIncreasing)
@@ -1331,8 +1305,6 @@ public class PlaybackFragment extends VideoSupportFragment
                 endTime = nextEndTime;
                 nextEndTime = null;
                 mBookmark = 0;
-                mOffsetBytes = 0;
-                mPlayerGlue.setOffsetMillis(0);
                 mPlayer.stop();
                 mPlayer.clearMediaItems();
                 saveLiveRec = false;
@@ -1398,14 +1370,6 @@ public class PlaybackFragment extends VideoSupportFragment
         tickle(false, true);
     }
 
-    public boolean isBounded() {
-        return mIsBounded;
-    }
-
-    public long getOffsetBytes() {
-        return mOffsetBytes;
-    }
-
     public void resetSpeed() {
         mSpeed = SPEED_START_VALUE;
         PlaybackParameters parms = new PlaybackParameters(mSpeed);
@@ -1424,15 +1388,12 @@ public class PlaybackFragment extends VideoSupportFragment
 
     private void fixSpeed() {
         long duration = mPlayerGlue.myGetDuration();
-        if (duration > 0 || !mIsBounded) {
+        if (duration > 0) {
             // If we cannot change speed, switch to ffmpeg audio.
             if (!"ffmpeg".equals(mAudio)) {
                 mAudio = "ffmpeg";
                 if (mBookmark == 0)
                     mBookmark = mPlayerGlue.getCurrentPosition();
-                mIsBounded = true;
-                mOffsetBytes = 0;
-                mPlayerGlue.setOffsetMillis(0);
                 mPlayer.stop();
                 mPlayer.clearMediaItems();
                 initializePlayer(true);

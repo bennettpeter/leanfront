@@ -19,7 +19,6 @@
 
 package org.mythtv.leanfront.data;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.util.Log;
 
@@ -49,7 +48,6 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     private HttpDataSource mHttpDataSource;
     private long mTotalLength;
     private long mCurrentPos;
-    private long mOffsetBytes;
     private static final String TAG = "lfe";
     private static final String CLASS = "MythHttpDataSource";
 
@@ -69,12 +67,11 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     @Override
     public long open(DataSpec dataSpec)
             throws IOException {
-        mOffsetBytes = mPlaybackFragment.getOffsetBytes();
         this.mDataSpec = new DataSpec.Builder()
                 .setUri(dataSpec.uri)
                 .setHttpMethod(dataSpec.httpMethod)
                 .setHttpBody(dataSpec.httpBody)
-                .setPosition(dataSpec.position + mOffsetBytes)
+                .setPosition(dataSpec.position)
                 .setLength(dataSpec.length)
                 .setKey(dataSpec.key)
                 .setFlags(dataSpec.flags)
@@ -96,8 +93,6 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         }
         mTotalLength = mDataSpec.position + leng;
         mCurrentPos = mDataSpec.position;
-        if (!mPlaybackFragment.isBounded())
-            leng = -1;
         return leng;
     }
 

@@ -857,7 +857,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
                 playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
-            playbackFragment.mPlayerGlue.seekTo(newPosition);
+            playbackFragment.seekTo(newPosition);
             comskipToast(mark);
         }
         return newPosition;
@@ -884,7 +884,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
                 playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
-            playbackFragment.mPlayerGlue.seekTo(newPosition);
+            playbackFragment.seekTo(newPosition);
             comskipToast(mark);
         }
         return newPosition;
@@ -953,16 +953,6 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     // off, notify or skip.
     @Override
     public void onCommSkip() {
-        if (!playbackFragment.mIsBounded) {
-            if (playbackFragment.mToast != null)
-                playbackFragment.mToast.cancel();
-            Context ctx = playbackFragment.getContext();
-            playbackFragment.mToast = Toast.makeText(ctx,
-                    ctx.getString(R.string.msg_commskip_unavail),
-                    Toast.LENGTH_LONG);
-            playbackFragment.mToast.show();
-            return;
-        }
         if (!commSkipCheck())
             return;
         AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
@@ -1025,7 +1015,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 //                    playbackFragment.mPlayerGlue.setEnableControls(false);
                     // Comment this To Hide controls while skipping commercials
                     playbackFragment.tickle(false,false);
-                    playbackFragment.mPlayerGlue.seekTo(newPosition);
+                    playbackFragment.seekTo(newPosition);
                     comskipToast(-2);
                     break;
                 case PlaybackFragment.COMMBREAK_NOTIFY:
@@ -1049,7 +1039,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                                                     // Comment this To Hide controls while skipping commercials
                                                     playbackFragment.tickle(false,false);
                                                     dialogDismiss.enableControls = false;
-                                                    playbackFragment.mPlayerGlue.seekTo(finalNewPosition);
+                                                    playbackFragment.seekTo(finalNewPosition);
                                                 }
                                                 break;
                                             // 1 = do not skip commercial. Defaults to doing nothing

@@ -120,7 +120,6 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private MyAction mCommSkipAction;
     private final MyAction mRecordAction;
     private boolean mActionsVisible;
-    private long mOffsetMillis = 0;
     // Skip means go to next or previous track
     // Skip is disallowed when playing Live TV
     private boolean mAllowSkip;
@@ -416,7 +415,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
 
     @Override
     public long getCurrentPosition() {
-        long currentPosition = super.getCurrentPosition() + mOffsetMillis;
+        long currentPosition = super.getCurrentPosition();
         if (currentPosition > 200)
             mSavedCurrentPosition = currentPosition;
         return currentPosition;
@@ -454,23 +453,19 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
 
     @Override
     protected void onUpdateProgress() {
-        if (mOffsetMillis == 0) {
-            // only support comm breaks when offset is zero
-            // i.e. when bounded
-            long currPos = super.getCurrentPosition();
-            if (currPos >= endCommBreakMs) {
-                synchronized (this) {
-                    endCommBreakMs = Long.MAX_VALUE;
-                }
-                mActionListener.onEndCommBreak();
+        long currPos = super.getCurrentPosition();
+        if (currPos >= endCommBreakMs) {
+            synchronized (this) {
+                endCommBreakMs = Long.MAX_VALUE;
             }
-            if (currPos >= nextCommBreakMs) {
-                long next = nextCommBreakMs;
-                synchronized (this) {
-                    nextCommBreakMs = Long.MAX_VALUE;
-                }
-                mActionListener.onCommBreak(next, currPos);
+            mActionListener.onEndCommBreak();
+        }
+        if (currPos >= nextCommBreakMs) {
+            long next = nextCommBreakMs;
+            synchronized (this) {
+                nextCommBreakMs = Long.MAX_VALUE;
             }
+            mActionListener.onCommBreak(next, currPos);
         }
         if (idleTimeoutMillis > 0
                 && System.currentTimeMillis() - activity.getTouchTime() > idleTimeoutMillis)
@@ -502,14 +497,6 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
 
     public long getSavedDuration() {
         return mSavedDuration;
-    }
-
-    public long getOffsetMillis() {
-        return mOffsetMillis;
-    }
-
-    public void setOffsetMillis(long offsetMillis) {
-        this.mOffsetMillis = offsetMillis;
     }
 
     public class  SelectedListener implements WidgetAccess.MySelectedListener {
