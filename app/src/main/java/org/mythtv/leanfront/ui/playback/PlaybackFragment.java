@@ -221,7 +221,9 @@ public class PlaybackFragment extends VideoSupportFragment
     // will always be initialized on the first playback.
     private String currentPlayGroup = " ";
     private ScheduledFuture<?> monitorSched;
+    private ScheduledFuture<?> tablesSched;
     private static final int STATUS_MONITOR_INTERVAL = 5000;
+    private static final int TABLES_MONITOR_INTERVAL = 180000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -331,7 +333,10 @@ public class PlaybackFragment extends VideoSupportFragment
         boolean isPlaying=false;
         isIncreasing = false;
         mPlayerGlue.setIncreasing(isIncreasing);
-
+        if ( monitorSched != null && !monitorSched.isDone() && !monitorSched.isCancelled())
+            monitorSched.cancel(false);
+        if ( tablesSched != null && !tablesSched.isDone() && !tablesSched.isCancelled())
+            tablesSched.cancel(false);
         if (mPlayerGlue != null && mPlayerGlue.isPlaying()) {
             isPlaying = true;
             mPlayerGlue.pause();
@@ -380,8 +385,7 @@ public class PlaybackFragment extends VideoSupportFragment
         long leng = mPlayerGlue.myGetDuration();
         if (pos < 0)
             pos = mPlayerGlue.getSavedCurrentPosition();
-        if (leng == -1 || isIncreasing
-                || (pos > 10000 && pos < leng - 10000)
+        if ( (pos > 10000 && pos < leng - 10000)
                 || action == Video.ACTION_SET_BOOKMARK)
             bookmark = pos;
         else
@@ -652,6 +656,15 @@ public class PlaybackFragment extends VideoSupportFragment
                     });
                 }
             }, STATUS_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void startTablesReload() {
+        if (tablesSched == null || tablesSched.isDone() || tablesSched.isCancelled()) {
+            ScheduledExecutorService executor = MainFragment.getExecutor();
+            tablesSched = executor.scheduleWithFixedDelay(() -> {
+                fillTables();
+            }, TABLES_MONITOR_INTERVAL, TABLES_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -1243,8 +1256,10 @@ public class PlaybackFragment extends VideoSupportFragment
                 mFileLength = fileLength;
                 // Now check for a subsequent show if in LiveTV mode
                 // or next show in autoplay mode
-                if (isIncreasing)
+                if (isIncreasing) {
                     startStatusMonitor();
+                    startTablesReload();
+                }
                 if (mPlayerGlue.isPlayCompleted())
                     checkNextShow();
                 break;
