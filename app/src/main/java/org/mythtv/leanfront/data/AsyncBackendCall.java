@@ -1180,10 +1180,21 @@ public class AsyncBackendCall implements Runnable {
                     // to wait for it to be ready for playing
                     break;
 
-                case Video.ACTION_SEARCHGUIDE:
+                case Video.ACTION_SEARCHGUIDE_TITLE:
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 "/Guide/GetProgramList?Sort=starttime&count=500&TitleFilter="
+                                        + URLEncoder.encode(mStringParameter, "UTF-8"));
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Guide.", e);
+                    }
+                    break;
+
+                case Video.ACTION_SEARCHGUIDE_KEYWORD:
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetProgramList?Sort=starttime&count=500&KeywordFilter="
                                         + URLEncoder.encode(mStringParameter, "UTF-8"));
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {

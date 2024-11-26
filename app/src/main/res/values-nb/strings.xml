@@ -26,9 +26,12 @@
   <string name="settings_description">MythTV-søkeinnstillinger</string>
   <string name="search_result_videos">Opptak og videoresultater for «%1$s»</string>
   <string name="search_result_no_videos">Ingen opptaks- og videoresultater funnet for \'%1$s\'</string>
-  <string name="search_result_progs">Programguideresultater for «%1$s»</string>
-  <string name="search_result_progs_500">De første 500 programguideresultatene for «%1$s»</string>
-  <string name="search_result_no_progs">Ingen programguideresultater funnet for \'%1$s\'</string>
+  <string name="search_result_1_progs">Programguidetittelsøkeresultater for \'%1$s\'</string>
+  <string name="search_result_1_progs_500">First 500 Program Guide Title Search Results for \'%1$s\'</string>
+  <string name="search_result_1_no_progs">Ingen programguidetittelsøkeresultater funnet for \'%1$s\'</string>
+  <string name="search_result_2_progs">Programguide Fullstendige søkeresultater for \'%1$s\'</string>
+  <string name="search_result_2_progs_500">Første 500 programguide fullstendige søkeresultater for \'%1$s\'</string>
+  <string name="search_result_2_no_progs">Ingen programguide fullstendige søkeresultater funnet for \'%1$s\'</string>
   <string name="mobile_welcome_title">Velkommen til MythTV leanfront</string>
   <string name="mobile_welcome_description">MythTV leanfront er designet for Android TV. Berøringsskjermkontroll er ikke optimal.
         For å fortsette, trykk på banneret nedenfor.</string>

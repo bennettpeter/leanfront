@@ -124,7 +124,7 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_GETRECRULEFILTERLIST   = 38;
     public static final int ACTION_ADD_OR_UPDATERECRULE   = 39;
     public static final int ACTION_DELETERECRULE          = 40;
-    public static final int ACTION_SEARCHGUIDE            = 41;
+    public static final int ACTION_SEARCHGUIDE_TITLE      = 41;
     public static final int ACTION_DUMMY                  = 42;
     public static final int ACTION_GETUPCOMINGLIST        = 43;
     public static final int ACTION_PAUSE                  = 44;
@@ -149,6 +149,8 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_ADDDONTRECORDSCHEDULE  = 63;
     public static final int ACTION_FORGETHISTORY          = 64;
     public static final int ACTION_GET_HOSTNAME           = 65;
+    public static final int ACTION_SEARCHGUIDE_KEYWORD    = 66;
+
 
     private Video(
             final long id,

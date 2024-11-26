@@ -64,6 +64,8 @@ import org.mythtv.leanfront.presenter.GuideCardPresenter;
 import org.mythtv.leanfront.presenter.GuideCardView;
 import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 
+import java.util.ArrayList;
+
 /*
  * This class demonstrates how to do in-app search
  */
@@ -146,7 +148,7 @@ public class SearchFragment extends SearchSupportFragment
         if (!mGuideInProgress) {
             AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
             call.setStringParameter(mQuery);
-            call.execute(Video.ACTION_SEARCHGUIDE);
+            call.execute(Video.ACTION_SEARCHGUIDE_TITLE, Video.ACTION_SEARCHGUIDE_KEYWORD);
             mGuideInProgress = true;
         }
     }
@@ -199,50 +201,55 @@ public class SearchFragment extends SearchSupportFragment
     public void onPostExecute(AsyncBackendCall taskRunner) {
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
-            case Video.ACTION_SEARCHGUIDE:
+            case Video.ACTION_SEARCHGUIDE_TITLE:
                 mGuideInProgress = false;
-                loadGuideData(taskRunner.getXmlResult());
+                loadGuideData(taskRunner.getXmlResults());
                 break;
         }
     }
 
-    void loadGuideData(XmlNode result) {
-        if (result == null)
+    private static final int [] RESULT500 = {R.string.search_result_1_progs_500, R.string.search_result_2_progs_500};
+    private static final int [] RESULTPROGS = {R.string.search_result_1_progs, R.string.search_result_2_progs};
+    private static final int [] RESULTNOPROGS = {R.string.search_result_1_no_progs, R.string.search_result_2_no_progs};
+    void loadGuideData(ArrayList <XmlNode> results) {
+        if (results == null)
             return;
-        ArrayObjectAdapter guideAdapter = new ArrayObjectAdapter(new GuideCardPresenter(GuideCardView.TYPE_LARGE));
-        XmlNode programNode = null;
-        for (; ; ) {
-            if (programNode == null)
-                programNode = result.getNode("Programs").getNode("Program");
-            else
-                programNode = programNode.getNextSibling();
-            if (programNode == null)
-                break;
-            XmlNode chanNode = programNode.getNode("Channel");
-            Program program = new Program(programNode, chanNode);
-            String channum = chanNode.getString("ChanNum");
-            String channelname = chanNode.getString("ChannelName");
-            String callsign = chanNode.getString("CallSign");
-            String chanDetails = channum + " " + channelname + " " + callsign;
-            GuideSlot slot = new GuideSlot(program.chanId, -1, callsign, chanDetails);
-            slot.cellType = GuideSlot.CELL_SEARCHRESULT;
-            slot.timeSlot = program.startTime;
-            slot.program = program;
-            guideAdapter.add(slot);
+        for (int ix = 0; ix < results.size() ; ix++) {
+            ArrayObjectAdapter guideAdapter = new ArrayObjectAdapter(new GuideCardPresenter(GuideCardView.TYPE_LARGE));
+            XmlNode result = results.get(ix);
+            XmlNode programNode = null;
+            for (; ; ) {
+                if (programNode == null)
+                    programNode = result.getNode("Programs").getNode("Program");
+                else
+                    programNode = programNode.getNextSibling();
+                if (programNode == null)
+                    break;
+                XmlNode chanNode = programNode.getNode("Channel");
+                Program program = new Program(programNode, chanNode);
+                String channum = chanNode.getString("ChanNum");
+                String channelname = chanNode.getString("ChannelName");
+                String callsign = chanNode.getString("CallSign");
+                String chanDetails = channum + " " + channelname + " " + callsign;
+                GuideSlot slot = new GuideSlot(program.chanId, -1, callsign, chanDetails);
+                slot.cellType = GuideSlot.CELL_SEARCHRESULT;
+                slot.timeSlot = program.startTime;
+                slot.program = program;
+                guideAdapter.add(slot);
+            }
+            int titleRes;
+            if (guideAdapter.size() > 0) {
+                mResultsFound = true;
+                if (guideAdapter.size() == 500)
+                    titleRes = RESULT500[ix];
+                else
+                    titleRes = RESULTPROGS[ix];
+            } else
+                titleRes = RESULTNOPROGS[ix];
+            HeaderItem header = new HeaderItem(getContext().getString(titleRes, mQuery));
+            Row row = new ListRow(header, guideAdapter);
+            mRowsAdapter.add(row);
         }
-        int titleRes;
-        if (guideAdapter.size() > 0) {
-            mResultsFound = true;
-            if (guideAdapter.size() == 500)
-                titleRes = R.string.search_result_progs_500;
-            else
-                titleRes = R.string.search_result_progs;
-        }
-        else
-            titleRes = R.string.search_result_no_progs;
-        HeaderItem header = new HeaderItem(getContext().getString(titleRes,mQuery));
-        Row row = new ListRow(header, guideAdapter);
-        mRowsAdapter.add(row);
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {

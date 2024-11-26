@@ -26,9 +26,12 @@
   <string name="settings_description">MythTV hakuasetukset</string>
   <string name="search_result_videos">Tallennus- ja videotulokset haulle \'%1$s\'</string>
   <string name="search_result_no_videos">Ei tallennus- ja videotuloksia haulle \'%1$s\'</string>
-  <string name="search_result_progs">Ohjelmaoppaan tulokset haulle \'%1$s\'</string>
-  <string name="search_result_progs_500">500 ensimmäistä ohjelmaoppaan tulosta haulle \'%1$s\'</string>
-  <string name="search_result_no_progs">Ohjelmaoppaasta ei löytynyt \'%1$s\'</string>
+  <string name="search_result_1_progs">Ohjelmaoppaan otsikon hakutulokset kohteelle \'%1$s\'</string>
+  <string name="search_result_1_progs_500">Ensimmäiset 500 ohjelmaoppaan otsikon hakutulosta haulle \'%1$s\'</string>
+  <string name="search_result_1_no_progs">Ohjelmaoppaan otsikon hakutuloksia ei löytynyt haulle \'%1$s\'</string>
+  <string name="search_result_2_progs">Ohjelmaoppaan täydelliset hakutulokset haulle \'%1$s\'</string>
+  <string name="search_result_2_progs_500">Ensimmäiset 500 ohjelmaoppaan täydellistä hakutulosta haulle \'%1$s\'</string>
+  <string name="search_result_2_no_progs">Ohjelmaoppaan täydellisiä hakutuloksia ei löytynyt haulle \'%1$s\'</string>
   <string name="mobile_welcome_title">Tervetuloa MythTV leanfronttiin</string>
   <string name="mobile_welcome_description">MythTV leanfront on suunniteltu Android TV:lle. Kosketusnäytön ohjaus ei ole optimaalinen.
         Jatka napauttamalla alla olevaa banneria.</string>

@@ -26,9 +26,12 @@
   <string name="settings_description">Ρυθμίσεις αναζήτησης MythTV</string>
   <string name="search_result_videos">Αποτελέσματα εγγραφής και βίντεο για \'%1$s\'</string>
   <string name="search_result_no_videos">Δεν βρέθηκαν αποτελέσματα ηχογράφησης και βίντεο για το \'%1$s\'</string>
-  <string name="search_result_progs">Αποτελέσματα οδηγού προγράμματος για \'%1$s\'</string>
-  <string name="search_result_progs_500">Τα πρώτα 500 αποτελέσματα του οδηγού προγράμματος για το \'%1$s\'</string>
-  <string name="search_result_no_progs">Δεν βρέθηκαν αποτελέσματα οδηγού προγράμματος για το \'%1$s\'</string>
+  <string name="search_result_1_progs">Οδηγός προγράμματος Αποτελέσματα αναζήτησης τίτλου για \'%1$s\'</string>
+  <string name="search_result_1_progs_500">Αποτελέσματα αναζήτησης τίτλου οδηγού προγράμματος 500 για \'%1$s\'</string>
+  <string name="search_result_1_no_progs">Δεν βρέθηκαν αποτελέσματα αναζήτησης τίτλου οδηγού προγράμματος για το \'%1$s\'</string>
+  <string name="search_result_2_progs">Οδηγός προγράμματος Πλήρη αποτελέσματα αναζήτησης για \'%1$s\'</string>
+  <string name="search_result_2_progs_500">Οδηγός για τα πρώτα 500 προγράμματα Πλήρη αποτελέσματα αναζήτησης για \'%1$s\'</string>
+  <string name="search_result_2_no_progs">Δεν βρέθηκαν Οδηγός προγράμματος Πλήρη αποτελέσματα αναζήτησης για το \'%1$s\'</string>
   <string name="mobile_welcome_title">Καλώς ήρθατε στο MythTV leanfront</string>
   <string name="mobile_welcome_description">Το MythTV leanfront έχει σχεδιαστεί για Android TV. Ο έλεγχος της οθόνης αφής δεν είναι ο βέλτιστος.
         Για να προχωρήσετε, πατήστε το banner παρακάτω.</string>

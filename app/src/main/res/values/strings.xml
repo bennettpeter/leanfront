@@ -53,10 +53,12 @@
 
     <string name="search_result_videos">Recording and Video Results for \'%1$s\'</string>
     <string name="search_result_no_videos">No Recording and Video Results found for \'%1$s\'</string>
-    <string name="search_result_progs">Program Guide Results for \'%1$s\'</string>
-    <string name="search_result_progs_500">First 500 Program Guide Results for \'%1$s\'</string>
-    <string name="search_result_no_progs">No Program Guide Results found for \'%1$s\'</string>
-
+    <string name="search_result_1_progs">Program Guide Title Search Results for \'%1$s\'</string>
+    <string name="search_result_1_progs_500">First 500 Program Guide Title Search Results for \'%1$s\'</string>
+    <string name="search_result_1_no_progs">No Program Guide Title Search Results found for \'%1$s\'</string>
+    <string name="search_result_2_progs">Program Guide Full Search Results for \'%1$s\'</string>
+    <string name="search_result_2_progs_500">First 500 Program Guide Full Search Results for \'%1$s\'</string>
+    <string name="search_result_2_no_progs">No Program Guide Full Search Results found for \'%1$s\'</string>
 
     <string name="mobile_welcome_title">Welcome to MythTV leanfront</string>
     <string name="mobile_welcome_description">

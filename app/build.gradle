@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 task gitinfo {
-    println 'bash update_dependencies.sh'.execute().text
+//    println 'bash update_dependencies.sh'.execute().text
     ext.describe = 'git describe --dirty'.execute().text.trim()
     def split = ext.describe.split("-")
     ext.version = Integer.parseInt(split[0].substring(1)) * 1000 + Integer.parseInt(split[1])

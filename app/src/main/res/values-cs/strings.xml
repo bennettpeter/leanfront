@@ -26,9 +26,12 @@
   <string name="settings_description">Nastavení vyhledávání MythTV</string>
   <string name="search_result_videos">Záznam a video výsledky pro \'%1$s\'</string>
   <string name="search_result_no_videos">Pro \'%1$s\' nebyly nalezeny žádné záznamy a video výsledky</string>
-  <string name="search_result_progs">Výsledky programového průvodce pro \'%1$s\'</string>
-  <string name="search_result_progs_500">Prvních 500 výsledků programového průvodce pro \'%1$s\'</string>
-  <string name="search_result_no_progs">Pro \'%1$s\' nebyly nalezeny žádné výsledky programového průvodce</string>
+  <string name="search_result_1_progs">Výsledky vyhledávání názvu programového průvodce pro „%1$s“</string>
+  <string name="search_result_1_progs_500">Prvních 500 výsledků vyhledávání názvu průvodce programem pro „%1$s“</string>
+  <string name="search_result_1_no_progs">Pro \'%1$s\' nebyly nalezeny žádné výsledky hledání názvu programového průvodce</string>
+  <string name="search_result_2_progs">Programový průvodce Úplné výsledky vyhledávání pro „%1$s“</string>
+  <string name="search_result_2_progs_500">Prvních 500 programového průvodce Úplné výsledky hledání pro \'%1$s\'</string>
+  <string name="search_result_2_no_progs">Nebyl nalezen žádný programový průvodce Kompletní výsledky vyhledávání pro \'%1$s\'</string>
   <string name="mobile_welcome_title">Vítejte v MythTV leanfront</string>
   <string name="mobile_welcome_description">MythTV leanfront je navržen pro Android TV. Ovládání dotykovou obrazovkou není optimální.
         Chcete-li pokračovat, klepněte na banner níže.</string>

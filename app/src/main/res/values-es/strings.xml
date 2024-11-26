@@ -26,9 +26,12 @@
   <string name="settings_description">Configuración de búsqueda de MythTV</string>
   <string name="search_result_videos">Resultados de grabación y vídeo para \'%1$s\'</string>
   <string name="search_result_no_videos">No se encontraron resultados de grabación ni video para \'%1$s\'</string>
-  <string name="search_result_progs">Resultados de la guía de programas para \'%1$s\'</string>
-  <string name="search_result_progs_500">Primeros 500 resultados de la guía de programas para \'%1$s\'</string>
-  <string name="search_result_no_progs">No se encontraron resultados de la guía de programas para \'%1$s\'</string>
+  <string name="search_result_1_progs">Resultados de la búsqueda del título de la guía del programa para \'%1$s\'</string>
+  <string name="search_result_1_progs_500">Resultados de la búsqueda de títulos de la Guía de los primeros 500 programas para \'%1$s\'</string>
+  <string name="search_result_1_no_progs">No se encontraron resultados de búsqueda de títulos en la guía de programas para \'%1$s\'</string>
+  <string name="search_result_2_progs">Guía de programas Resultados completos de la búsqueda para \'%1$s\'</string>
+  <string name="search_result_2_progs_500">Resultados completos de la búsqueda de la guía del programa First 500 para \'%1$s\'</string>
+  <string name="search_result_2_no_progs">No se encontraron resultados de búsqueda completos en la guía de programas para \'%1$s\'</string>
   <string name="mobile_welcome_title">Bienvenido a MythTV leanfront</string>
   <string name="mobile_welcome_description">MythTV leanfront está diseñado para Android TV. El control de la pantalla táctil no es óptimo.
         Para continuar, toque el banner a continuación.</string>

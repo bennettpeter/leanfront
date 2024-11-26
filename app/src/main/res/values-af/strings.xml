@@ -26,9 +26,12 @@
   <string name="settings_description">MythTV-soekinstellings</string>
   <string name="search_result_videos">Opname- en videoresultate vir \'%1$s\'</string>
   <string name="search_result_no_videos">Geen opname- en video-resultate gevind vir \'%1$s\'</string>
-  <string name="search_result_progs">Programgidsresultate vir \'%1$s\'</string>
-  <string name="search_result_progs_500">Eerste 500 programgidsresultate vir \'%1$s\'</string>
-  <string name="search_result_no_progs">Geen programgidsresultate gevind vir \'%1$s\'</string>
+  <string name="search_result_1_progs">Programgids-titelsoekresultate vir \'%1$s\'</string>
+  <string name="search_result_1_progs_500">Eerste 500 Programgids Titel Soekresultate vir \'%1$s\'</string>
+  <string name="search_result_1_no_progs">Geen programgidstitelsoekresultate gevind vir \'%1$s\'</string>
+  <string name="search_result_2_progs">Programgids Volledige soekresultate vir \'%1$s\'</string>
+  <string name="search_result_2_progs_500">Eerste 500 Programgids Volledige soekresultate vir \'%1$s\'</string>
+  <string name="search_result_2_no_progs">Geen programgids volledige soekresultate gevind vir \'%1$s\'</string>
   <string name="mobile_welcome_title">Welkom by MythTV leanfront</string>
   <string name="mobile_welcome_description">MythTV leanfront is ontwerp vir Android TV. Raakskermbeheer is nie optimaal nie.
         Tik op die banier hieronder om voort te gaan.</string>
