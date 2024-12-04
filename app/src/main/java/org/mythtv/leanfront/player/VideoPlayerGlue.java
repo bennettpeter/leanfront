@@ -135,6 +135,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private PlaybackActivity activity;
     private long idleTimeoutMillis;
     private long playbackStartTime;
+    private long recordAdjustment;
     private boolean isIncreasing;
 
 
@@ -476,6 +477,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
 
     public void setPlaybackStartTime(long playbackStartTime) {
         this.playbackStartTime = playbackStartTime;
+        recordAdjustment = 0;
     }
 
     public void setIncreasing(boolean increasing) {
@@ -489,7 +491,9 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     public long myGetDuration() {
         long duration = getDuration();
         if (isIncreasing && duration > 0 && playbackStartTime > 0)
-            duration += (System.currentTimeMillis() - playbackStartTime);
+            recordAdjustment = System.currentTimeMillis();
+        if (recordAdjustment > 0)
+            duration += recordAdjustment - playbackStartTime;
         if (duration > 0)
             mSavedDuration = duration;
         return duration;
