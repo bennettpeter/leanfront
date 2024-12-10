@@ -139,6 +139,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private boolean isIncreasing;
 
 
+    @OptIn(markerClass = UnstableApi.class)
     public VideoPlayerGlue(
             Activity context,
             LeanbackPlayerAdapter playerAdapter,

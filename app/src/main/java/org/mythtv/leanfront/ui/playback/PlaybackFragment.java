@@ -330,7 +330,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onPause() {
         super.onPause();
-        boolean isPlaying=false;
+        setBookmark(Video.ACTION_SET_LASTPLAYPOS);
         isIncreasing = false;
         mPlayerGlue.setIncreasing(isIncreasing);
         if ( monitorSched != null && !monitorSched.isDone() && !monitorSched.isCancelled())
@@ -338,7 +338,6 @@ public class PlaybackFragment extends VideoSupportFragment
         if ( tablesSched != null && !tablesSched.isDone() && !tablesSched.isCancelled())
             tablesSched.cancel(false);
         if (mPlayerGlue != null && mPlayerGlue.isPlaying()) {
-            isPlaying = true;
             mPlayerGlue.pause();
         }
         if (mRecordid > 0) {
@@ -366,8 +365,6 @@ public class PlaybackFragment extends VideoSupportFragment
             mRecordid = -1;
             mNextRecordid = -1;
         }
-        else if (isPlaying)
-            setBookmark(Video.ACTION_SET_LASTPLAYPOS);
         if (Util.SDK_INT <= 23) {
             releasePlayer();
         }
@@ -385,7 +382,7 @@ public class PlaybackFragment extends VideoSupportFragment
         long leng = mPlayerGlue.myGetDuration();
         if (pos < 0)
             pos = mPlayerGlue.getSavedCurrentPosition();
-        if ( (pos > 10000 && pos < leng - 10000)
+        if ( (pos > 10000 && (isIncreasing || pos < leng - 10000))
                 || action == Video.ACTION_SET_BOOKMARK)
             bookmark = pos;
         else
@@ -396,7 +393,7 @@ public class PlaybackFragment extends VideoSupportFragment
         call.setVideo(mVideo);
         switch (action) {
             case Video.ACTION_SET_LASTPLAYPOS:
-                if (leng > 1000 && pos > leng - 10000) {
+                if (leng > 1000 && pos > leng - 10000 && !isIncreasing) {
                     mWatched = true;
                     action2 = Video.ACTION_SET_WATCHED;
                     call.setWatched(mWatched);
@@ -631,8 +628,8 @@ public class PlaybackFragment extends VideoSupportFragment
         prepareMediaForPlaying(Uri.parse(video.videoUrl));
 
         // This is needed to fix jkjsdevelop bad audio where audio track starts late
-        if (mBookmark == 0)
-            mPlayerGlue.seekTo(100);
+        if (mBookmark <= 0 && posBookmark <= 0)
+            mBookmark = 100;
         // set desired playback speed
         PlaybackParameters parms = new PlaybackParameters(mSpeed);
         mPlayer.setPlaybackParameters(parms);
@@ -894,7 +891,9 @@ public class PlaybackFragment extends VideoSupportFragment
                         extFactory);
         mMediaSource = (ProgressiveMediaSource) pmf.createMediaSource(item);
         mMediaSource.setPossibleEmptyTrack(possibleEmptyTrack);
-        mPlayer.setMediaSource(mMediaSource);
+        if (mBookmark < 0)
+            mBookmark = 0;
+        mPlayer.setMediaSource(mMediaSource, mBookmark);
         mPlayer.prepare();
         // Get file length again to see if it is increasing
         getFileLength(true);
@@ -1780,7 +1779,7 @@ public class PlaybackFragment extends VideoSupportFragment
                     }
                 }
                 commBreakTable.frameratex1000 = (long)(frameRate * 1000.0f);
-                if (posBookmark >= 0 && frameRate > 0.0f) {
+                if (mBookmark <= 0 && posBookmark >= 0 && frameRate > 0.0f) {
                     mBookmark = posBookmark * 100000 / (long) (frameRate * 100.0f);
                     posBookmark = -1;
                 }
@@ -1826,7 +1825,6 @@ public class PlaybackFragment extends VideoSupportFragment
                 getActivity().getWindow()
                     .addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             else {
-                setBookmark(Video.ACTION_SET_LASTPLAYPOS);
                 // Enable screen saver during pause
                 getActivity().getWindow()
                         .clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
