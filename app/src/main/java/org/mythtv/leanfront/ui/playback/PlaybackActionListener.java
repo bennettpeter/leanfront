@@ -841,17 +841,17 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         long position = playbackFragment.mPlayerGlue.getCurrentPosition();
         long newPosition = 0;
         int mark = 0;
-        // Get the last entry that satisfies offset < position
-        for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-            long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-            if (offsetMs < position - 20000) {
-                newPosition = offsetMs;
-                mark = entry.mark;
+        synchronized (playbackFragment.commBreakTable) {
+            // Get the last entry that satisfies offset < position
+            for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                if (offsetMs < position - 20000) {
+                    newPosition = offsetMs;
+                    mark = entry.mark;
+                } else
+                    break;
             }
-            else
-                break;
         }
-
         if (newPosition > 0) {
             playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
             // If this is a start point, prevent it from immediately skipping
@@ -869,16 +869,17 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         long position = playbackFragment.mPlayerGlue.getCurrentPosition();
         long newPosition = 0;
         int mark = 0;
-        // Get the first entry that satisfies offset > position
-        for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-            long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-            if (offsetMs > position + 5000) {
-                newPosition = offsetMs;
-                mark = entry.mark;
-                break;
+        synchronized (playbackFragment.commBreakTable) {
+            // Get the first entry that satisfies offset > position
+            for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                if (offsetMs > position + 5000) {
+                    newPosition = offsetMs;
+                    mark = entry.mark;
+                    break;
+                }
             }
         }
-
         if (newPosition > 0) {
             playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
             // If this is a start point, prevent it from immediately skipping
@@ -916,18 +917,19 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             long nextCommBreak = Long.MAX_VALUE;
             CommBreakTable.Entry startEntry = null;
             long startOffsetMs = 0;
-            for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-                long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-                if (entry.mark == CommBreakTable.MARK_CUT_START) {
-                    startEntry = entry;
-                    startOffsetMs = playbackFragment.commBreakTable.getOffsetMs(startEntry);
-                }
-                else {
-                    long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000;
-                    if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END
-                            && startEntry != null && possible != playbackFragment.priorCommBreak) {
-                        nextCommBreak = possible;
-                        break;
+            synchronized (playbackFragment.commBreakTable) {
+                for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                    long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                    if (entry.mark == CommBreakTable.MARK_CUT_START) {
+                        startEntry = entry;
+                        startOffsetMs = playbackFragment.commBreakTable.getOffsetMs(startEntry);
+                    } else {
+                        long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000;
+                        if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END
+                                && startEntry != null && possible != playbackFragment.priorCommBreak) {
+                            nextCommBreak = possible;
+                            break;
+                        }
                     }
                 }
             }
@@ -988,19 +990,20 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         switch (playbackFragment.commBreakOption) {
             case PlaybackFragment.COMMBREAK_SKIP:
             case PlaybackFragment.COMMBREAK_NOTIFY:
-                for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-                    long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-                    // Skip past earlier entries
-                    if (offsetMs <= nextCommBreakMs)
-                        continue;
-                    // We should now be at the MARK_CUT_END of the selected comm break
-                    // If not or if we are past it, do nothing.
-                    if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END) {
-                        newPosition = offsetMs + (long)Settings.getInt("pref_commskip_end") * 1000;
+                synchronized (playbackFragment.commBreakTable) {
+                    for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                        long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                        // Skip past earlier entries
+                        if (offsetMs <= nextCommBreakMs)
+                            continue;
+                        // We should now be at the MARK_CUT_END of the selected comm break
+                        // If not or if we are past it, do nothing.
+                        if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END) {
+                            newPosition = offsetMs + (long) Settings.getInt("pref_commskip_end") * 1000;
+                        } else
+                            Log.e(TAG, CLASS + " No end commbreak entry for: " + nextCommBreakMs);
+                        break;
                     }
-                    else
-                        Log.e(TAG, CLASS + " No end commbreak entry for: " + nextCommBreakMs);
-                    break;
                 }
                 break;
             default:
