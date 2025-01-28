@@ -224,6 +224,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private ScheduledFuture<?> tablesSched;
     private static final int STATUS_MONITOR_INTERVAL = 5000;
     private static final int TABLES_MONITOR_INTERVAL = 180000;
+    private boolean tablesFilled = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -600,36 +601,44 @@ public class PlaybackFragment extends VideoSupportFragment
         }
     }
 
+    // This is called with a null video to plat mVideo after table is filled
+    // based on the tablesFilled flag.
     @OptIn(markerClass = UnstableApi.class)
     private void play(Video video) {
 
-        mVideo = video;
+        if (video != null) {
+            mVideo = video;
+            tablesFilled = false;
+            commBreakTable = new CommBreakTable();
+            fillTables();
+            return;
+        }
+
         setPlaySettings(mVideo.playGroup);
 
         View view = getView();
         view.setBackgroundColor(mBgColor);
 
-        mPlayerGlue.setTitle(video.title);
+        mPlayerGlue.setTitle(mVideo.title);
 
         StringBuilder subtitle = new StringBuilder();
 
         // This is to mark unwatched when play starts - does not seem a good idea.
         // possible characters for watched - "👁" "⏿" "👀"
-        //        int progflags = Integer.parseInt(video.progflags);
-        //        if ((progflags & video.FL_WATCHED) != 0)
+        //        int progflags = Integer.parseInt(mVideo.progflags);
+        //        if ((progflags & mVideo.FL_WATCHED) != 0)
         //            markWatched(false);
 
-        if (video.season != null && video.season.compareTo("0") > 0) {
-            subtitle.append('S').append(video.season).append('E').append(video.episode)
+        if (mVideo.season != null && mVideo.season.compareTo("0") > 0) {
+            subtitle.append('S').append(mVideo.season).append('E').append(mVideo.episode)
                     .append(' ');
         }
-        subtitle.append(video.subtitle);
+        subtitle.append(mVideo.subtitle);
         mPlayerGlue.setSubtitle(subtitle);
-        prepareMediaForPlaying(Uri.parse(video.videoUrl));
-
         // This is needed to fix jkjsdevelop bad audio where audio track starts late
         if (mBookmark <= 0 && posBookmark <= 0)
             mBookmark = 100;
+        prepareMediaForPlaying(Uri.parse(mVideo.videoUrl));
         // set desired playback speed
         PlaybackParameters parms = new PlaybackParameters(mSpeed);
         mPlayer.setPlaybackParameters(parms);
@@ -882,7 +891,6 @@ public class PlaybackFragment extends VideoSupportFragment
         getFileLength(false);
         String userAgent = Util.getUserAgent(getActivity(), "VideoPlayerGlue");
         mDsFactory = new MythHttpDataSource.Factory(userAgent, this);
-        commBreakTable = new CommBreakTable();
         MediaItem item = MediaItem.fromUri(mediaSourceUri);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
 //        ProgressiveMediaSource.Factory pmf = new ProgressiveMediaSource.Factory
@@ -897,7 +905,6 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayer.prepare();
         // Get file length again to see if it is increasing
         getFileLength(true);
-        fillTables();
     }
 
 
@@ -1275,6 +1282,10 @@ public class PlaybackFragment extends VideoSupportFragment
                     frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
                 if (commBreakTable.entries.length > 0)
                     mPlaybackActionListener.setNextCommBreak(-1);
+                if (!tablesFilled) {
+                    tablesFilled = true;
+                    play(null);
+                }
                 break;
             case Video.ACTION_LIVETV:
                 mNextRecordid = taskRunner.getRecordId();
