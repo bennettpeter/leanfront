@@ -439,6 +439,8 @@ public class VideoDbBuilder {
             String channum = channelNode.getString(XMLTAG_CHANNUM);
             String callsign = channelNode.getString(XMLTAG_CALLSIGN);
             String channelname = channelNode.getString(XMLTAG_CHANNELNAME);
+            String videoUrlPath = "/Channel/GetChannelInfo?Chanid=" + chanid;
+
             if (channum == null || channum.length() == 0) {
                 channum = " ";
             }
@@ -473,6 +475,7 @@ public class VideoDbBuilder {
             channelValues.put(VideoContract.VideoEntry.COLUMN_TITLE, title);
             channelValues.put(VideoContract.VideoEntry.COLUMN_TITLEMATCH, title);
             channelValues.put(VideoContract.VideoEntry.COLUMN_SUBTITLE, channum + " " + channelname + " " + callsign);
+            channelValues.put(VideoContract.VideoEntry.COLUMN_VIDEO_URL_PATH, videoUrlPath);
             channelValues.put(VideoContract.VideoEntry.COLUMN_CHANID, chanid);
             channelValues.put(VideoContract.VideoEntry.COLUMN_CHANNUM, channum);
             channelValues.put(VideoContract.VideoEntry.COLUMN_RECORDEDID, chanid);
