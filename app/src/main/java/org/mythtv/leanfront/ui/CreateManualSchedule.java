@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @SuppressLint("SimpleDateFormat")
@@ -115,16 +116,20 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
                 .id(ID_CHANNEL)
                 .title(R.string.sched_channel)
                 .build());
+        // remove fractional minutes
+        long startTime = System.currentTimeMillis() / 60000;
+        startTime *= 60000;
         mainActions.add(actionDate = new GuidedDatePickerAction.Builder(getActivity())
                 .id(ID_DATE)
-                .date(System.currentTimeMillis())
-                .maxDate(System.currentTimeMillis()+ 1000L * 60L * 60L * 24L * 30L)
-                .minDate(System.currentTimeMillis())
+                .date(startTime)
+                // 30 days maximum
+                .maxDate(startTime + 1000L * 60L * 60L * 24L * 30L)
+                .minDate(startTime)
                 .title(R.string.sched_date)
                 .build());
         mainActions.add(actionTime = new GuidedTimePickerAction.Builder(getActivity())
                 .id(ID_TIME)
-                .time(System.currentTimeMillis())
+                .time(startTime)
                 .title(R.string.sched_time)
                 .build());
         mainActions.add(actionDuration = new GuidedAction.Builder(getActivity())
@@ -235,13 +240,25 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
     public void setManualParms(RecordRule rule) {
         rule.chanId = chanid;
         rule.station = station;
-        // 86400000 is number of milliseconds in a day
-        rule.startTime = new Date(actionDate.getDate()  / 86400000 * 86400000
-                + actionTime.getTime() % 86400000);
+        Date date = new Date(actionDate.getDate());
+        GregorianCalendar calDate = new GregorianCalendar();
+        calDate.setTime(date);
+        Date time = new Date(actionTime.getTime());
+        GregorianCalendar calTime = new GregorianCalendar();
+        calTime.setTime(time);
+        GregorianCalendar calStart = new GregorianCalendar(
+                calDate.get(Calendar.YEAR),
+                calDate.get(Calendar.MONTH),
+                calDate.get(Calendar.DATE),
+                calTime.get(Calendar.HOUR_OF_DAY),
+                calTime.get(Calendar.MINUTE),
+                0
+        );
+        rule.startTime = calStart.getTime();
         // 60000 is number of milliseconds in a minute
         rule.endTime = new Date(rule.startTime.getTime()
                 + Long.parseLong((actionDuration.getDescription().toString())) * 60000);
-        rule.title = actionTitle.getDescription().toString();
+        rule.title = actionTitle.getDescription().toString() + " (" + getContext().getString(R.string.sched_manual_srch) + ")";
         if (rule.title.length() == 0) {
             java.text.DateFormat timeFormatter = android.text.format.DateFormat.getTimeFormat(getContext());
             java.text.DateFormat dateFormatter = android.text.format.DateFormat.getLongDateFormat(getContext());

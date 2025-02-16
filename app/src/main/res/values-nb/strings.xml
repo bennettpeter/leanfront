@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Tittelsøk</string>
   <string name="sched_keyword_srch">Stikkordsøk</string>
   <string name="sched_people_srch">People Search</string>
-  <string name="sched_manual_srch">Manuelt opptak</string>
+  <string name="sched_manual_srch">Manuell søk</string>
   <string name="sched_title">Tittel</string>
   <string name="sched_subtitle">Undertekst</string>
   <string name="sched_channel">Kanal</string>

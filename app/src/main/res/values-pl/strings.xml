@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Wyszukiwanie tytułu</string>
   <string name="sched_keyword_srch">Szukanie słowa kluczowego</string>
   <string name="sched_people_srch">Ludzie szukają</string>
-  <string name="sched_manual_srch">Nagrywanie ręczne</string>
+  <string name="sched_manual_srch">Wyszukiwanie ręczne</string>
   <string name="sched_title">Tytuł</string>
   <string name="sched_subtitle">Podtytuł</string>
   <string name="sched_channel">Kanał</string>

@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Pesquisa de título</string>
   <string name="sched_keyword_srch">Pesquisa por palavra-chave</string>
   <string name="sched_people_srch">Pesquisa de pessoas</string>
-  <string name="sched_manual_srch">Gravação Manual</string>
+  <string name="sched_manual_srch">Pesquisa manual</string>
   <string name="sched_title">Título</string>
   <string name="sched_subtitle">Legenda</string>
   <string name="sched_channel">Canal</string>

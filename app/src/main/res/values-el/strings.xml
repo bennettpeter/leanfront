@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Αναζήτηση τίτλου</string>
   <string name="sched_keyword_srch">Αναζήτηση με λέξη κλειδί</string>
   <string name="sched_people_srch">Αναζήτηση ατόμων</string>
-  <string name="sched_manual_srch">Χειροκίνητη εγγραφή</string>
+  <string name="sched_manual_srch">Χειροκίνητη αναζήτηση</string>
   <string name="sched_title">Τίτλος</string>
   <string name="sched_subtitle">Υπότιτλος</string>
   <string name="sched_channel">Κανάλι</string>

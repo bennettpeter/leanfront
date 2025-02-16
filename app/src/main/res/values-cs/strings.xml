@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Vyhledávání titulů</string>
   <string name="sched_keyword_srch">Vyhledávání klíčových slov</string>
   <string name="sched_people_srch">Vyhledávání lidí</string>
-  <string name="sched_manual_srch">Ruční nahrávání</string>
+  <string name="sched_manual_srch">Manuální vyhledávání</string>
   <string name="sched_title">Titul</string>
   <string name="sched_subtitle">Titulky</string>
   <string name="sched_channel">Kanál</string>

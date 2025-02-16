@@ -331,7 +331,7 @@
   <string name="sched_title_srch">Otsikkohaku</string>
   <string name="sched_keyword_srch">Sanahaku</string>
   <string name="sched_people_srch">Ihmisten haku</string>
-  <string name="sched_manual_srch">Manuaalinen tallennus</string>
+  <string name="sched_manual_srch">Manuaalinen haku</string>
   <string name="sched_title">Otsikko</string>
   <string name="sched_subtitle">Tekstitys</string>
   <string name="sched_channel">Kanava</string>

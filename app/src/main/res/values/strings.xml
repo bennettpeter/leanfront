@@ -382,7 +382,7 @@
     <string name="sched_title_srch">Title Search</string>
     <string name="sched_keyword_srch">Keyword Search</string>
     <string name="sched_people_srch">People Search</string>
-    <string name="sched_manual_srch">Manual Recording</string>
+    <string name="sched_manual_srch">Manual Search</string>
     <string name="sched_title">Title</string>
     <string name="sched_subtitle">Subtitle</string>
     <string name="sched_channel">Channel</string>
