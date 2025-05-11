@@ -40,6 +40,8 @@
   <string name="pref_title_backend">MythTV-backend</string>
   <string name="pref_title_myth_port">MythTV-backendpoort</string>
   <string name="pref_title_http_port">Statuspoort</string>
+  <string name="pref_title_backend_userid">Gebruikersnaam</string>
+  <string name="pref_title_backend_passwd">Wachtwoord</string>
   <string name="pref_bookmark_mythtv">Indien niet aangevinkt: Opslaan in MythTV</string>
   <string name="pref_bookmark_local">Bewaar laatste speelpositie in Android</string>
   <string name="pref_title_skip_fwd">Seconden vooruit overslaan</string>
@@ -119,6 +121,7 @@
   <string name="pref_refresh_mins">Aantal minuten tussen vernieuwingen van de backend</string>
   <string name="msg_no_connection">Fout: geen verbinding met MythTV-backend.</string>
   <string name="msg_no_delayshutdown">Waarschuwing: kan het afsluiten van de backend bij inactiviteit niet voorkomen.</string>
+  <string name="msg_backend_login_req">Fout: backend vereist geldig gebruikers -ID en wachtwoord.</string>
   <string name="all_title">Alle</string>
   <string name="recents_title">Recent bekeken</string>
   <string name="lb_playback_controls_fast_forward">Spring vooruit</string>

@@ -31,6 +31,9 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     // from GetHostName
     public String sHostName;
+    // Authorization token
+    public String authorization;
+    public boolean loginNeeded;
 
     private BackendCache() {
         init();

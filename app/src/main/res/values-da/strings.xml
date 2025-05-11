@@ -40,6 +40,8 @@
   <string name="pref_title_backend">MythTV Backend</string>
   <string name="pref_title_myth_port">MythTV Backend Port</string>
   <string name="pref_title_http_port">Statusport</string>
+  <string name="pref_title_backend_userid">Brugernavn</string>
+  <string name="pref_title_backend_passwd">Adgangskode</string>
   <string name="pref_bookmark_mythtv">Hvis det ikke er markeret, gem i MythTV</string>
   <string name="pref_bookmark_local">Gem sidste spilleposition i Android</string>
   <string name="pref_title_skip_fwd">Spring sekunder frem</string>
@@ -119,6 +121,7 @@
   <string name="pref_refresh_mins">Antal minutter mellem backend-opdateringer</string>
   <string name="msg_no_connection">Fejl: Ingen forbindelse til MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Advarsel: Kan ikke forhindre nedlukning af inaktiv backend.</string>
+  <string name="msg_backend_login_req">Fejl: backend kræver gyldigt bruger -id og adgangskode.</string>
   <string name="all_title">Alle</string>
   <string name="recents_title">Senest set</string>
   <string name="lb_playback_controls_fast_forward">Hop videre</string>

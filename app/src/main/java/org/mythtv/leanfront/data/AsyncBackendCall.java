@@ -649,6 +649,9 @@ public class AsyncBackendCall implements Runnable {
                             urlConnection = (HttpURLConnection) url.openConnection();
                             urlConnection.addRequestProperty("Cache-Control", "no-cache");
                             urlConnection.addRequestProperty("Accept-Encoding", "identity");
+                            String auth = BackendCache.getInstance().authorization;
+                            if (auth != null && auth.length() > 0 )
+                                urlConnection.addRequestProperty("Authorization", auth);
                             urlConnection.setConnectTimeout(1000);
                             urlConnection.setReadTimeout(1000);
                             urlConnection.setRequestMethod("HEAD");
@@ -1012,6 +1015,9 @@ public class AsyncBackendCall implements Runnable {
                         URL url = new URL(urlString);
                         urlConnection = (HttpURLConnection) url.openConnection();
                         urlConnection.addRequestProperty("Cache-Control", "no-cache");
+                        String auth = BackendCache.getInstance().authorization;
+                        if (auth != null && auth.length() > 0 )
+                            urlConnection.addRequestProperty("Authorization", auth);
                         urlConnection.setConnectTimeout(5000);
                         urlConnection.setReadTimeout(30000);
                         Log.i(TAG, CLASS + " URL: " + urlString);

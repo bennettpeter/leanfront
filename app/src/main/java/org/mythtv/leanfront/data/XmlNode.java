@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.AccessDeniedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -181,6 +182,9 @@ public class XmlNode {
             url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
+            String auth = BackendCache.getInstance().authorization;
+            if (auth != null && auth.length() > 0 )
+                urlConnection.addRequestProperty("Authorization", auth);
             urlConnection.setConnectTimeout(5000);
             // 5 minutes - should never be this long.
             urlConnection.setReadTimeout(300000);
@@ -193,8 +197,14 @@ public class XmlNode {
             ret = XmlNode.parseStream(is);
             bCache.isConnected = true;
         } catch(FileNotFoundException e) {
-            Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
+            int respCode =  urlConnection.getResponseCode();
+            Log.i(TAG, CLASS + " Response: " + respCode
                     + " " + urlConnection.getResponseMessage());
+            if (respCode == 401) {
+                // MythTask will process login
+                MainFragment.restartMythTask();
+                throw new IOException("Unauthorized: 401", e);
+            }
             throw e;
         } catch(IOException e) {
             bCache.isConnected = false;

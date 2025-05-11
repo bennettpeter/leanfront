@@ -101,6 +101,8 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -273,9 +275,15 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 .centerCrop()
                 .error(mDefaultBackground);
 
+        String auth =  BackendCache.getInstance().authorization;
+        LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+        if (auth != null && auth.length() > 0)
+            lzhb.addHeader("Authorization", auth);
+        GlideUrl url = new GlideUrl(uri, lzhb.build());
+
         Glide.with(this)
                 .asBitmap()
-                .load(uri)
+                .load(url)
                 .apply(options)
                 .into(new CustomTarget<Bitmap>(mMetrics.widthPixels, mMetrics.heightPixels) {
                     @Override
@@ -885,13 +893,20 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                     .load(defaultIcon)
                     .apply(options)
                     .into(target);
-        else
+        else {
+
+            String auth =  BackendCache.getInstance().authorization;
+            LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+            if (auth != null && auth.length() > 0)
+                lzhb.addHeader("Authorization", auth);
+            GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
+
             Glide.with(this)
                     .asBitmap()
-                    .load(imageUrl)
+                    .load(url)
                     .apply(options)
                     .into(target);
-
+        }
         mActionsAdapter = new SparseArrayObjectAdapter();
         if (mSelectedVideo.rectype == RECTYPE_CHANNEL) {
             mActionsAdapter.set(0, new Action(Video.ACTION_LIVETV, getResources()

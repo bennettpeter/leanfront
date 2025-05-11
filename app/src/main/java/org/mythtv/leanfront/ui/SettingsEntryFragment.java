@@ -41,6 +41,7 @@ import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
 
 import org.mythtv.leanfront.R;
+import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.VideoDbHelper;
 import org.mythtv.leanfront.model.Settings;
 
@@ -68,7 +69,7 @@ private static final String TAG = "lfe";
     private static final int ID_SORT_ORIG_AIRDATE = 12;
     private static final int ID_DESCENDING = 13;
     private static final int ID_BACKEND_MAC = 14;
-    private static final int ID_BACKEND = 15;
+    public static final int ID_BACKEND = 15;
     private static final int ID_AUDIO = 16;
     private static final int ID_AUDIO_AUTO = 17;
     private static final int ID_AUDIO_MEDIACODEC = 18;
@@ -115,6 +116,8 @@ private static final String TAG = "lfe";
     private static final int ID_SPEED = 61;
     private static final int ID_MAX_VIDS = 62;
     private static final int ID_REFRESH_MINS = 63;
+    private static final int ID_BACKEND_USERID = 64;
+    private static final int ID_BACKEND_PASSWD = 65;
 
     private static final String KEY_EXPAND = "EXPAND";
 
@@ -188,6 +191,22 @@ private static final String TAG = "lfe";
                 .descriptionEditable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
+        if (BackendCache.getInstance().loginNeeded) {
+            subActions.add(new GuidedAction.Builder(getActivity())
+                    .id(ID_BACKEND_USERID)
+                    .title(R.string.pref_title_backend_userid)
+                    .description(Settings.getString("pref_backend_userid"))
+                    .descriptionEditable(true)
+                    .build());
+            subActions.add(new GuidedAction.Builder(getActivity())
+                    .id(ID_BACKEND_PASSWD)
+                    .title(R.string.pref_title_backend_passwd)
+                    .description(Settings.getString("pref_backend_passwd"))
+                    .descriptionEditable(true)
+                    // Specifyng a password field turns off speech recgnition
+//                .descriptionEditInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                    .build());
+        }
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_BACKEND_MAC)
                 .title(R.string.pref_title_backend_mac)
@@ -680,6 +699,14 @@ private static final String TAG = "lfe";
                 Settings.putString(editor, "pref_http_port",
                     validateNumber(action, 1, 65535, 6544));
                 break;
+            case ID_BACKEND_USERID:
+                Settings.putString(editor, "pref_backend_userid",action.getDescription().toString());
+                BackendCache.getInstance().authorization = null;
+                break;
+            case ID_BACKEND_PASSWD:
+                Settings.putString(editor, "pref_backend_passwd",action.getDescription().toString());
+                BackendCache.getInstance().authorization = null;
+                break;
             case ID_BACKEND_MAC:
                 Settings.putString(editor, "pref_backend_mac",action.getDescription().toString());
                 break;
@@ -786,6 +813,12 @@ private static final String TAG = "lfe";
         switch(actualId) {
             case ID_BACKEND_IP:
                 action.setDescription(Settings.getString("pref_backend"));
+                break;
+            case ID_BACKEND_USERID:
+                action.setDescription(Settings.getString("pref_backend_userid"));
+                break;
+            case ID_BACKEND_PASSWD:
+                action.setDescription(Settings.getString("pref_backend_passwd"));
                 break;
             case ID_BACKEND_MAC:
                 action.setDescription(Settings.getString("pref_backend_mac"));
@@ -1182,5 +1215,6 @@ private static final String TAG = "lfe";
         mPriorHttpPort = null;
         mPriorRowsize = null;
         mPriorParental = null;
+        MainFragment.restartMythTask();
     }
 }

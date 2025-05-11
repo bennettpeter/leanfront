@@ -71,7 +71,9 @@
     <string name="pref_title_backend">MythTV Backend</string>
     <string name="pref_title_myth_port">MythTV Backend Port</string>
     <string name="pref_title_http_port">Status Port</string>
-<!--    This is actually last play pos but stored as pref_bookmark-->
+    <string name="pref_title_backend_userid">User Name</string>
+    <string name="pref_title_backend_passwd">Password</string>
+    <!--    This is actually last play pos but stored as pref_bookmark-->
 <!--    for backward compatibility-->
     <string name="pref_bookmark_mythtv">If Unchecked, Store in MythTV</string>
     <string name="pref_bookmark_local">Store Last Play Position in Android</string>
@@ -155,6 +157,7 @@
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
+    <string name="msg_backend_login_req">Error: Backend Requires Valid User ID and Password.</string>
     <string name="all_title">All</string>
     <string name="recents_title">Recently Viewed</string>
     <string name="lb_playback_controls_fast_forward">Jump Fwd</string>

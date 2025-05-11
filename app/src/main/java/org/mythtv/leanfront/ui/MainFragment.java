@@ -84,6 +84,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -110,6 +112,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -215,6 +218,7 @@ public class MainFragment extends BrowseSupportFragment
             mFetchTime = 0;
             mActiveFragment = null;
             showNotes();
+            mythTask.context = getContext();
         } else {
             mBaseName = intent.getStringExtra(KEY_BASENAME);
             mRowName = intent.getStringExtra(KEY_ROWNAME);
@@ -372,12 +376,14 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     public static void restartMythTask() {
-        synchronized (mythTask) {
-            if (!scheduledTaskRunning) {
-                if (executor != null)
-                    executor.shutdown();
-                executor = Executors.newScheduledThreadPool(1);
-                executor.scheduleAtFixedRate(mythTask, 0, TASK_INTERVAL, TimeUnit.SECONDS);
+        if (!scheduledTaskRunning) {
+            synchronized (mythTask) {
+                if (!scheduledTaskRunning) {
+                    if (executor != null)
+                        executor.shutdown();
+                    executor = Executors.newScheduledThreadPool(1);
+                    executor.scheduleWithFixedDelay(mythTask, 0, TASK_INTERVAL, TimeUnit.SECONDS);
+                }
             }
         }
     }
@@ -590,9 +596,15 @@ public class MainFragment extends BrowseSupportFragment
                 .centerCrop()
                 .error(mDefaultBackground);
 
+        String auth =  BackendCache.getInstance().authorization;
+        LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+        if (auth != null && auth.length() > 0)
+            lzhb.addHeader("Authorization", auth);
+        GlideUrl url = new GlideUrl(uri, lzhb.build());
+
         Glide.with(this)
                 .asBitmap()
-                .load(uri)
+                .load(url)
                 .apply(options)
                 .into(new CustomTarget<Bitmap>(width, height) {
                     @Override
@@ -1130,13 +1142,16 @@ public class MainFragment extends BrowseSupportFragment
         builder.show();
     }
 
-
+    private static final String KEY_EXPAND = "EXPAND";
     private static class MythTask implements Runnable {
         boolean mVersionMessageShown = false;
+        Context context;
 
         @Override
         public synchronized void run() {
             try {
+                boolean loginTried = false;
+                boolean loginNeededNow = false;
                 scheduledTaskRunning = true;
                 boolean connection = false;
                 boolean connectionfail = false;
@@ -1157,6 +1172,29 @@ public class MainFragment extends BrowseSupportFragment
                         return;
                     int toastMsg = 0;
                     int toastLeng = 0;
+                    if (loginNeededNow) {
+                        BackendCache.getInstance().loginNeeded = true;
+                        try {
+                            String result = null;
+                            StringBuilder urlBuilder = new StringBuilder
+                                    (XmlNode.mythApiUrl(null,
+                                            "/Myth/LoginUser"))
+                                    .append("?UserName=")
+                                    .append(URLEncoder.encode(Settings.getString("pref_backend_userid"), "UTF-8"))
+                                    .append("&Password=")
+                                    .append(URLEncoder.encode(Settings.getString("pref_backend_passwd"), "UTF-8"));
+                            XmlNode loginXml = XmlNode.fetch(urlBuilder.toString(), "POST");
+                            result = loginXml.getString();
+                            connection = true;
+                            if (result.length() == 0)
+                                Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
+                            else
+                                BackendCache.getInstance().authorization = result;
+                        } catch (Exception e) {
+                            Log.e(TAG, CLASS + " Exception in LoginUser.", e);
+                        }
+                        loginTried = true;
+                    }
                     try {
                         String result = null;
                         String url = XmlNode.mythApiUrl(null,
@@ -1177,7 +1215,20 @@ public class MainFragment extends BrowseSupportFragment
                         connection = true;
                         Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", ex);
                     } catch (IOException e) {
-                        toastMsg = R.string.msg_no_connection;
+                        if ("Unauthorized: 401".equals(e.getMessage())) {
+                            if (Settings.getString("pref_backend_userid").length() == 0
+                                || Settings.getString("pref_backend_passwd").length() == 0
+                                || loginTried) {
+                                toastMsg = R.string.msg_backend_login_req;
+                                Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
+                                intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_BACKEND);
+                                context.startActivity(intent);
+                            }
+                            else
+                                loginNeededNow = true;
+                        }
+                        else
+                            toastMsg = R.string.msg_no_connection;
                         toastLeng = Toast.LENGTH_LONG;
                         connectionfail = true;
                         mFetchTime = 0; // Force a fetch when it comes back
@@ -1197,6 +1248,8 @@ public class MainFragment extends BrowseSupportFragment
                             Thread.sleep(5000);
                         } catch (InterruptedException ignored) {
                         }
+                        if (toastMsg == R.string.msg_backend_login_req)
+                            return;
                     }
                 }
                 if (mFetchTime <= System.currentTimeMillis()

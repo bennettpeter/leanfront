@@ -43,9 +43,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.AsyncBackendCall;
+import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.Video;
@@ -206,11 +209,19 @@ public class CardPresenter extends Presenter {
                     .apply(options)
                     .into(image);
         }
-        else
+        else {
+
+            String auth =  BackendCache.getInstance().authorization;
+            LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+            if (auth != null && auth.length() > 0)
+                lzhb.addHeader("Authorization", auth);
+            GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
+
             Glide.with(cardView.getContext())
-                    .load(imageUrl)
+                    .load(url)
                     .apply(options)
                     .into(image);
+        }
     }
 
     @Override

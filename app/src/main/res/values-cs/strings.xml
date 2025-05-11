@@ -40,6 +40,8 @@
   <string name="pref_title_backend">Backend MythTV</string>
   <string name="pref_title_myth_port">Backend Port MythTV</string>
   <string name="pref_title_http_port">Stavový port</string>
+  <string name="pref_title_backend_userid">Uživatelské jméno</string>
+  <string name="pref_title_backend_passwd">Heslo</string>
   <string name="pref_bookmark_mythtv">Pokud není zaškrtnuto, uložte do MythTV</string>
   <string name="pref_bookmark_local">Store Last Play Position v Androidu</string>
   <string name="pref_title_skip_fwd">Přeskočit vpřed sekundy</string>
@@ -119,6 +121,7 @@
   <string name="pref_refresh_mins">Počet minut mezi aktualizacemi backendu</string>
   <string name="msg_no_connection">Chyba: Žádné připojení k MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varování: Nelze zabránit nečinnosti backendu.</string>
+  <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné ID uživatele a heslo.</string>
   <string name="all_title">Všechno</string>
   <string name="recents_title">nedávno shlédnutý</string>
   <string name="lb_playback_controls_fast_forward">Skok vpřed</string>

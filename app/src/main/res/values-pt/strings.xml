@@ -40,6 +40,8 @@
   <string name="pref_title_backend">Back-end da MyTV</string>
   <string name="pref_title_myth_port">Porta de back-end MythTV</string>
   <string name="pref_title_http_port">Porta de status</string>
+  <string name="pref_title_backend_userid">Nome de usuário</string>
+  <string name="pref_title_backend_passwd">Senha</string>
   <string name="pref_bookmark_mythtv">Se desmarcado, armazene em MythTV</string>
   <string name="pref_bookmark_local">Armazene a última posição de jogo no Android</string>
   <string name="pref_title_skip_fwd">Avançar segundos</string>
@@ -119,6 +121,7 @@
   <string name="pref_refresh_mins">Número de minutos entre atualizações de back-end</string>
   <string name="msg_no_connection">Erro: Sem conexão com o back-end do MythTV.</string>
   <string name="msg_no_delayshutdown">Aviso: não é possível evitar o desligamento inativo do back-end.</string>
+  <string name="msg_backend_login_req">Erro: o back -end requer ID de usuário e senha válidos.</string>
   <string name="all_title">Todos</string>
   <string name="recents_title">Visualizado recentemente</string>
   <string name="lb_playback_controls_fast_forward">Ir para frente</string>

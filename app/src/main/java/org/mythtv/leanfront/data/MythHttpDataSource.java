@@ -57,6 +57,9 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         mPlaybackFragment = playbackFragment;
         Map<String, String> defaultRequestProperties = new HashMap<>();
         defaultRequestProperties.put("accept-encoding","identity");
+        String auth = BackendCache.getInstance().authorization;
+        if (auth != null && auth.length() > 0)
+            defaultRequestProperties.put("Authorization",auth);
         mHttpDataSource = new DefaultHttpDataSource.Factory()
                 .setUserAgent(userAgent)
                 .setDefaultRequestProperties(defaultRequestProperties)
