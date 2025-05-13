@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class SettingsEntryFragment extends GuidedStepSupportFragment {
-private static final String TAG = "lfe";
+    private static final String TAG = "lfe";
     private static final String CLASS = "SettingsEntryFragment";
     // For multiple occurrence items (e.g. playback groups),
     // add 100, 200, 300 etc to the number
@@ -135,6 +135,7 @@ private static final String TAG = "lfe";
     private String mPriorRowsize;
     private String mPriorParental;
     private ArrayList<String> mPlayGroupList;
+    public static boolean isActive = false;
 
     @Override
     public GuidanceStylist onCreateGuidanceStylist() {
@@ -1196,6 +1197,7 @@ private static final String TAG = "lfe";
 
     @Override
     public void onResume() {
+        isActive = true;
         mPriorBackend = Settings.getString("pref_backend");
         mPriorHttpPort =  Settings.getString("pref_http_port");
         mPriorRowsize =  Settings.getString("pref_livetv_rowsize");
@@ -1215,6 +1217,7 @@ private static final String TAG = "lfe";
         mPriorHttpPort = null;
         mPriorRowsize = null;
         mPriorParental = null;
+        isActive = false;
         MainFragment.restartMythTask();
     }
 }

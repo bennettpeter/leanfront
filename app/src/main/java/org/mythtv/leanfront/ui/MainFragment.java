@@ -74,7 +74,6 @@ import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1160,6 +1159,13 @@ public class MainFragment extends BrowseSupportFragment
                 if (backendIP.length() == 0)
                     return;
                 while (!connection) {
+                    if (SettingsEntryFragment.isActive) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        continue;
+                    }
                     if (ProcessLifecycleOwner.get().getLifecycle().getCurrentState()
                             == Lifecycle.State.CREATED) {
                         // process is now in the background
@@ -1219,6 +1225,7 @@ public class MainFragment extends BrowseSupportFragment
                             if (Settings.getString("pref_backend_userid").length() == 0
                                 || Settings.getString("pref_backend_passwd").length() == 0
                                 || loginTried) {
+                                BackendCache.getInstance().loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
                                 Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
                                 intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_BACKEND);
@@ -1248,8 +1255,6 @@ public class MainFragment extends BrowseSupportFragment
                             Thread.sleep(5000);
                         } catch (InterruptedException ignored) {
                         }
-                        if (toastMsg == R.string.msg_backend_login_req)
-                            return;
                     }
                 }
                 if (mFetchTime <= System.currentTimeMillis()
