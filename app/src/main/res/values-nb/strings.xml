@@ -40,6 +40,8 @@
   <string name="pref_title_backend">MythTV Backend</string>
   <string name="pref_title_myth_port">MythTV Backend Port</string>
   <string name="pref_title_http_port">Statusport</string>
+  <string name="pref_title_http_ssl">Statusport bruker SSL</string>
+  <string name="pref_title_http_ssl_desc">For SSL må du legge inn SSL -porten ovenfor (normalt 6554) og sette opp SSL -sertifikater på MythBackend.</string>
   <string name="pref_title_backend_userid">Brukernavn</string>
   <string name="pref_title_backend_passwd">Passord</string>
   <string name="pref_bookmark_mythtv">Hvis avmerket, lagre i MythTV</string>

@@ -44,7 +44,8 @@
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode"
         android:usesCleartextTraffic="true"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name="org.mythtv.leanfront.ui.MainActivity"
             android:icon="@drawable/ic_launcher_lean"

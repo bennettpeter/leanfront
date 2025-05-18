@@ -40,6 +40,8 @@
   <string name="pref_title_backend">MythTV Backend</string>
   <string name="pref_title_myth_port">MythTV Backend Port</string>
   <string name="pref_title_http_port">Statuspoort</string>
+  <string name="pref_title_http_ssl">Statuspoort gebruik SSL</string>
+  <string name="pref_title_http_ssl_desc">Vir SSL moet u die SSL -poort hierbo (normaalweg 6554) invoer en SSL -sertifikate op die mites opgestel.</string>
   <string name="pref_title_backend_userid">Gebruikersnaam</string>
   <string name="pref_title_backend_passwd">Wagwoord</string>
   <string name="pref_bookmark_mythtv">As dit nie gemerk is nie, stoor dit in MythTV</string>

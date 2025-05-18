@@ -359,7 +359,10 @@ public class XmlNode {
         String ipAndPort = getIpAndPort(hostName);
         if (ipAndPort == null || ipAndPort.length() == 0)
             return "";
-        String url = "http://" + ipAndPort;
+        String url = "http://";
+        if ("true".equals(Settings.getString("pref_http_ssl")))
+            url = "https://";
+        url = url + ipAndPort;
         if (params != null)
             url = url + params;
         return url;

@@ -118,6 +118,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_REFRESH_MINS = 63;
     private static final int ID_BACKEND_USERID = 64;
     private static final int ID_BACKEND_PASSWD = 65;
+    private static final int ID_HTTP_SSL = 66;
 
     private static final String KEY_EXPAND = "EXPAND";
 
@@ -178,6 +179,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
 
+        String str;
         List<GuidedAction> subActions = new ArrayList<>();
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_BACKEND_IP)
@@ -191,6 +193,14 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .description(Settings.getString("pref_http_port"))
                 .descriptionEditable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
+                .build());
+        str = Settings.getString("pref_http_ssl");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_HTTP_SSL)
+                .title(R.string.pref_title_http_ssl)
+                .checked("true".equals(str))
+                .description(R.string.pref_title_http_ssl_desc)
+                .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         if (BackendCache.getInstance().loginNeeded) {
             subActions.add(new GuidedAction.Builder(getActivity())
@@ -221,7 +231,6 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .subActions(subActions)
                 .build());
 
-        String str;
         // playback entries one per playback group
         for (int ix = 0 ; ix < mPlayGroupList.size(); ix++) {
             int addon = 100 * ix;
@@ -886,6 +895,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         int groupId = id / 100;
         String group = mPlayGroupList.get(groupId);
         switch(actualId) {
+            case ID_HTTP_SSL:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_http_ssl", "true");
+                else
+                    Settings.putString(editor, "pref_http_ssl", "false");
+                break;
             case ID_BOOKMARK_LOCAL:
                 if (action.isChecked())
                     Settings.putString(editor, "pref_bookmark", "local");
