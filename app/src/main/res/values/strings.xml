@@ -71,8 +71,8 @@
     <string name="pref_title_backend">MythTV Backend</string>
     <string name="pref_title_myth_port">MythTV Backend Port</string>
     <string name="pref_title_http_port">Status Port</string>
-    <string name="pref_title_http_ssl">Status Port uses SSL</string>
-    <string name="pref_title_http_ssl_desc">For SSL you must enter the SSL port above (normally 6554) and set up ssl certificates on mythbackend.</string>
+    <string name="pref_title_http_ssl">Status Port uses SSL (EXPERIMENTAL)</string>
+    <string name="pref_title_http_ssl_desc">For SSL you must use the SSL status port (normally 6554) and set up ssl certificates on mythbackend.</string>
     <string name="pref_title_backend_userid">User Name</string>
     <string name="pref_title_backend_passwd">Password</string>
     <!--    This is actually last play pos but stored as pref_bookmark-->

@@ -40,8 +40,8 @@
   <string name="pref_title_backend">MythTV Backend</string>
   <string name="pref_title_myth_port">MythTV Backend Port</string>
   <string name="pref_title_http_port">Θύρα κατάστασης</string>
-  <string name="pref_title_http_ssl">Η θύρα κατάστασης χρησιμοποιεί το SSL</string>
-  <string name="pref_title_http_ssl_desc">Για το SSL πρέπει να εισαγάγετε τη θύρα SSL παραπάνω (κανονικά 6554) και να ρυθμίσετε τα πιστοποιητικά SSL στο Mythbackend.</string>
+  <string name="pref_title_http_ssl">Η θύρα κατάστασης χρησιμοποιεί SSL (πειραματική)</string>
+  <string name="pref_title_http_ssl_desc">Για το SSL πρέπει να χρησιμοποιήσετε τη θύρα κατάστασης SSL (κανονικά 6554) και να ρυθμίσετε τα πιστοποιητικά SSL στο MythbackEnd.</string>
   <string name="pref_title_backend_userid">Ονομα χρήστη</string>
   <string name="pref_title_backend_passwd">Σύνθημα</string>
   <string name="pref_bookmark_mythtv">Εάν δεν είναι επιλεγμένο, αποθηκεύστε το στο MythTV</string>

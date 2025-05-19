@@ -40,8 +40,8 @@
   <string name="pref_title_backend">MythTV-backend</string>
   <string name="pref_title_myth_port">MythTV-backendpoort</string>
   <string name="pref_title_http_port">Statuspoort</string>
-  <string name="pref_title_http_ssl">Statuspoort gebruikt SSL</string>
-  <string name="pref_title_http_ssl_desc">Voor SSL moet u de SSL -poort hierboven invoeren (normaal 6554) en SSL -certificaten op Mythbackend instellen.</string>
+  <string name="pref_title_http_ssl">Statuspoort gebruikt SSL (experimenteel)</string>
+  <string name="pref_title_http_ssl_desc">Voor SSL moet u de SSL -statuspoort (normaal 6554) gebruiken en SSL -certificaten op Mythbackend instellen.</string>
   <string name="pref_title_backend_userid">Gebruikersnaam</string>
   <string name="pref_title_backend_passwd">Wachtwoord</string>
   <string name="pref_bookmark_mythtv">Indien niet aangevinkt: Opslaan in MythTV</string>

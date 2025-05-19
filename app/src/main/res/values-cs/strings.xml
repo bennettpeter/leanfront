@@ -40,8 +40,8 @@
   <string name="pref_title_backend">Backend MythTV</string>
   <string name="pref_title_myth_port">Backend Port MythTV</string>
   <string name="pref_title_http_port">Stavový port</string>
-  <string name="pref_title_http_ssl">Stavový port používá SSL</string>
-  <string name="pref_title_http_ssl_desc">Pro SSL musíte zadat výše uvedený port SSL (normálně 6554) a nastavit certifikáty SSL na MythBackend.</string>
+  <string name="pref_title_http_ssl">Stavový port používá SSL (experimentální)</string>
+  <string name="pref_title_http_ssl_desc">Pro SSL musíte použít stavový port SSL (normálně 6554) a nastavit certifikáty SSL na MythBackend.</string>
   <string name="pref_title_backend_userid">Uživatelské jméno</string>
   <string name="pref_title_backend_passwd">Heslo</string>
   <string name="pref_bookmark_mythtv">Pokud není zaškrtnuto, uložte do MythTV</string>

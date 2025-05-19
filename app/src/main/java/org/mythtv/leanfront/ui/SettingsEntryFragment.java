@@ -194,14 +194,6 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .descriptionEditable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
-        str = Settings.getString("pref_http_ssl");
-        subActions.add(new GuidedAction.Builder(getActivity())
-                .id(ID_HTTP_SSL)
-                .title(R.string.pref_title_http_ssl)
-                .checked("true".equals(str))
-                .description(R.string.pref_title_http_ssl_desc)
-                .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
-                .build());
         if (BackendCache.getInstance().loginNeeded) {
             subActions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_BACKEND_USERID)
@@ -590,6 +582,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
         subActions = new ArrayList<>();
 
+        // Advanced
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_TWEAK_SEARCH_PKTS)
                 .title(R.string.pref_tweak_ts_search_pkts)
@@ -628,6 +621,14 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .title(R.string.pref_audio_pause)
                 .checked("true".equals(str))
                 .description(R.string.pref_audio_pause_desc)
+                .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
+                .build());
+        str = Settings.getString("pref_http_ssl");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_HTTP_SSL)
+                .title(R.string.pref_title_http_ssl)
+                .checked("true".equals(str))
+                .description(R.string.pref_title_http_ssl_desc)
                 .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         actions.add(new GuidedAction.Builder(getActivity())

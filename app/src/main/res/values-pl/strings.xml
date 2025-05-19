@@ -40,8 +40,8 @@
   <string name="pref_title_backend">Backend MythTV</string>
   <string name="pref_title_myth_port">Port zaplecza MythTV</string>
   <string name="pref_title_http_port">Port stanu</string>
-  <string name="pref_title_http_ssl">Port stanu używa SSL</string>
-  <string name="pref_title_http_ssl_desc">W przypadku SSL musisz wprowadzić port SSL powyżej (zwykle 6554) i skonfigurować certyfikaty SSL na Mythbackend.</string>
+  <string name="pref_title_http_ssl">Port statusowy używa SSL (eksperymentalne)</string>
+  <string name="pref_title_http_ssl_desc">W przypadku SSL musisz użyć portu statusu SSL (zwykle 6554) i skonfigurować certyfikaty SSL na Mythbackend.</string>
   <string name="pref_title_backend_userid">Nazwa użytkownika</string>
   <string name="pref_title_backend_passwd">Hasło</string>
   <string name="pref_bookmark_mythtv">Jeśli nie jest zaznaczone, przechowuj w MythTV</string>

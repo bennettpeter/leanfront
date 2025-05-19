@@ -40,8 +40,8 @@
   <string name="pref_title_backend">MythTV taustaohjelma</string>
   <string name="pref_title_myth_port">MythTV portti</string>
   <string name="pref_title_http_port">Tilaportti</string>
-  <string name="pref_title_http_ssl">Tilaportti käyttää SSL: tä</string>
-  <string name="pref_title_http_ssl_desc">SSL: lle sinun on annettava yllä oleva SSL -portti (yleensä 6554) ja asetettava SSL -varmenteet Mythbackendille.</string>
+  <string name="pref_title_http_ssl">Tilaportti käyttää SSL: tä (kokeellinen)</string>
+  <string name="pref_title_http_ssl_desc">SSL: lle sinun on käytettävä SSL -tilaporttia (yleensä 6554) ja asetettava SSL -varmenteet Mythbackendille.</string>
   <string name="pref_title_backend_userid">Käyttäjänimi</string>
   <string name="pref_title_backend_passwd">Salasana</string>
   <string name="pref_bookmark_mythtv">Jos tätä ei ole valittu, tallenna MythTV:hen</string>
