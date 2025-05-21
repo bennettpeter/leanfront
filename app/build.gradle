@@ -18,6 +18,7 @@ android {
         applicationId "org.mythtv.leanfront"
         minSdkVersion 21
         targetSdkVersion 34
+        compileSdk 35
         versionCode gitinfo.ext.version
         versionName gitinfo.ext.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
