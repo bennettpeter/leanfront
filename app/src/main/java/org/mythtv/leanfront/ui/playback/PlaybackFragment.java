@@ -76,6 +76,7 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.media3.common.TrackSelectionOverride;
+import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
@@ -1075,7 +1076,6 @@ public class PlaybackFragment extends VideoSupportFragment
     @OptIn(markerClass = UnstableApi.class)
     int trackSelector(int trackType, int trackSelection, int msgOn,
             int msgOff, boolean disable, boolean doChange) {
-        boolean isPlaying = mPlayerGlue.isPlaying();
         TrackInfo tracks = new TrackInfo(this, trackType);
         StringBuilder msg = new StringBuilder();
         if (doChange) {
@@ -1092,25 +1092,18 @@ public class PlaybackFragment extends VideoSupportFragment
         }
         if (trackSelection >= 0) {
             TrackEntry entry = tracks.trackList.get(trackSelection);
-//            if (trackType != C.TRACK_TYPE_TEXT || (new DefaultSubtitleParserFactory()).supportsFormat(format)) {
-//            if (trackType != C.TRACK_TYPE_TEXT || SubtitleDecoderFactory.DEFAULT.supportsFormat(entry.format)) {
             if (trackType != C.TRACK_TYPE_TEXT || "application/x-media3-cues".equals(entry.format.sampleMimeType)
                       || "application/cea-608".equals(entry.format.sampleMimeType)
                       || "application/cea-708".equals(entry.format.sampleMimeType)) {
-                  TrackSelectionOverride ovr
-                          = new TrackSelectionOverride(
-                          entry.tg, entry.ixTrack);
-
-                MappingTrackSelector.MappedTrackInfo mti = mTrackSelector.getCurrentMappedTrackInfo();
-                TrackGroupArray tga = mti.getTrackGroups(entry.ixRenderer);
-                DefaultTrackSelector.Parameters.Builder parms
-                        = mTrackSelector
-                        .buildUponParameters()
-                        .addOverride(ovr);
-                if (disable)
-                    parms = parms.setRendererDisabled(entry.ixRenderer, false);
-                // This line causes playback to pause when enabling subtitle
-                mTrackSelector.setParameters(parms);
+                mPlayer.setTrackSelectionParameters(
+                        mPlayer.getTrackSelectionParameters()
+                                .buildUpon()
+                                .setTrackTypeDisabled(trackType,false)
+                                .setOverrideForType(
+                                    new TrackSelectionOverride(entry.tg, entry.ixTrack)
+                                )
+                                .build()
+                );
                 String language = entry.format.language;
                 if (language == null) {
                     if (MimeTypes.APPLICATION_CEA608.equals(entry.format.sampleMimeType))
@@ -1129,15 +1122,12 @@ public class PlaybackFragment extends VideoSupportFragment
                         entry.format.sampleMimeType));
             }
         } else if (trackSelection == -1){
-            if (tracks.trackList.size() > 0) {
-                for (int ix = 0; ix < tracks.renderList.size(); ix++) {
-                    mTrackSelector.setParameters(
-                            mTrackSelector
-                                    .buildUponParameters()
-                                    .setRendererDisabled(tracks.renderList.get(ix), true)
-                    );
-                }
-            }
+            mPlayer.setTrackSelectionParameters(
+                    mPlayer.getTrackSelectionParameters()
+                            .buildUpon()
+                            .setTrackTypeDisabled(trackType,true)
+                            .build()
+            );
             if (msgOff > 0)
                 msg.append(getActivity().getString(msgOff));
         }
