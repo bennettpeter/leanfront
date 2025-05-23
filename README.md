@@ -16,7 +16,6 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - [Search](#search)
 - [Tools](#tools)
 - [Settings](#settings)
-  - [Backup / Restore](#backup--restore)
 - [Backend Status](#backend-status)
 - [Manage Recordings](#manage-recordings)
 - [Program Guide](#program-guide)
@@ -53,7 +52,6 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
   - [Program List](#program-list)
   - [Details page](#details-page)
   - [Playback](#playback)
-- [Leanfront Restrictions / Limitations](#leanfront-restrictions--limitations)
 - [Install on Laptop or Desktop](#install-on-laptop-or-desktop)
 - [Building](#building)
 - [Internationalization](#internationalization)
@@ -186,17 +184,11 @@ At the bottom of each list screen is a row named "Tools", that provides applicat
 ## Settings
 ![](ScreenShots/Settings.png)
 
-### Backup / Restore
-
-A button at the top of the page allows backup and restore of settings and the local SQLite database. These are backed up into the documents directory of your Android TV device. If you install a file explorer such as File Manager Plus or Cx File Explorer, you can use ftp to download the files on to a computer.
-
-Thi feature always backs up the settings to leanfront_settings.xml and the database to leanfront.db. If you do a second backup it overwrites the prior one. To save a prior backup, rename the backup file before taking a new backup.
-
-If you use "Recently Viewed" to keep track of what you are watching, bear in mind it keeps the list locally on Android, so each Android TV device has its own list. The database backup can be restored to a different Android TV device to transfer your recently viewed list.
-
-The settings can be restored to a different Android TV device to avoid having to set them up on the new device. These backups can also be used to restore settings and database if you uninstall leanfront and then install it again.
-
 <details><summary>Notes</summary>
+
+### MythTV Backend
+
+If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanback needs these to communicate with the backend. These do not show iff you do not have a user authentication requirement, so most people will never see these prompts.
 
 ### Playback groups
 
@@ -210,7 +202,9 @@ The advanced section of settings includes a value that may need to be changed to
 
 - **Maximum Recordings/Videos to load.** Leanfront can handle an unlimited number of recordings and videos. However loading huge numbers of recordings and videos results in excessively long times to load the listing. WIth 60,000 recordings it takes about 3 minutes to load he list from the backend and another 3 to 4 minutes to format the display. To avoid this, the system defaults to loading the only the most recent 10,000. If you are happy with waiting minutes for the screen to refresh, you can increase the value. If you want a quicker refresh you can reduce the value.
 
-- **Number of Minutes Between Backend Refreshes.** The system refreshes the list periodically from the backend to pick up new recordings or changes. This setting must be a multiple of 4. If you need to see recordings in the list as soon as possible, set a low number. If you have a huge number of recordings it may take long to refresh so this setting may not help. In that case adjust the  **Maximum Recordings/Videos to load** setting. 
+- **Number of Minutes Between Backend Refreshes.** The system refreshes the list periodically from the backend to pick up new recordings or changes. This setting must be a multiple of 4. If you need to see recordings in the list as soon as possible, set a low number. If you have a huge number of recordings it may take long to refresh so this setting may not help. In that case adjust the  **Maximum Recordings/Videos to load** setting.
+
+- **Status Port uses SSL (EXPERIMENTAL)** If you have SSL enabled on the backend, and your domain is registered, leanfront can communicate via SSL. This seems an unlikely situation, requiring a lot of work and expense and having no real advantage if you are using leanfront on your local network. It is marked as experimental because there are problems with random 408 errors from the server. That results in some slow responses and missing artwork. If anybody seriously wants to use SSL, I can investigate this and see what fix is possible. Open an issue in github.
 
 </details>
 
@@ -355,7 +349,7 @@ You can see a list of changes in each version by looking at the commit list in g
 - Pressing Back dismisses the OSD controls. Pressing Up a couple of times will also dismiss them. This is better because you will not accidentally end playback if you press Up when they are already timing out.
 - Left and right arrow will skip back and forward. Holding down the arrow moves quickly through the video. The number of seconds for forward and back skip are customizable in Settings.
 - Up and down arrow can be used for bigger jumps by setting a jump interval in settings. I recommend against using this because it interferes with navigation in the OSD. You can move very quickly through playback by holding down left or right arrow, so jump is not really needed. Jumping can be disabled by setting blank or 0 in the jump interval in Settings. When jumping with up and down arrows, the arrow buttons are disabled for up/down use in the OSD, and this can cause confusion.
-- YOu can customize the up/down, left/right and ff/rew buttons to skip, jump or commercial skip.
+- You can customize the up/down, left/right and ff/rew buttons to skip, jump or commercial skip.
 - If you are playing a recording that is in progress of being recorded or a LiveTV channel, the behavior will be as follows. When you start watching, the OSD will show the duration being as much as has been recorded at that time. This duration will remain at that figure as you continue watching. Once you get to that point in the recording, there is a slight pause, then playback continues, with duration shown as "---", which means unknown duration. While in this state, if you press forward or back skip, it will revert to showing the amount recorded to date, and perform the forward or back skip requested. When you eventually get to the end as it was when you did the skip operation, it will revert to duration showing as "---" while playback continues.
 
 ### Frame Rate Synchronization
