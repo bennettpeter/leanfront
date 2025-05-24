@@ -26,7 +26,6 @@ package org.mythtv.leanfront.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,7 +34,6 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -83,6 +81,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
@@ -129,11 +128,10 @@ public class MainFragment extends BrowseSupportFragment
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private ArrayObjectAdapter mCategoryRowAdapter;
-    private Drawable mDefaultBackground;
-    private Uri mDefaultBackgroundURI;
+    private Drawable mDefaultBgDrawable;
     private DisplayMetrics mMetrics;
     private Runnable mBackgroundTask;
-    private Uri mBackgroundURI;
+    private String mBackgroundUrl;
     private BackgroundManager mBackgroundManager;
     int mType;
     public static final String KEY_TYPE = "LEANFRONT_TYPE";
@@ -503,15 +501,8 @@ public class MainFragment extends BrowseSupportFragment
     private void prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(getActivity());
         mBackgroundManager.attach(getActivity().getWindow());
-        int resourceId = R.drawable.background;
         Resources resources = getResources();
-        mDefaultBackgroundURI = new Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(resources.getResourcePackageName(resourceId))
-                .appendPath(resources.getResourceTypeName(resourceId))
-                .appendPath(resources.getResourceEntryName(resourceId))
-                .build();
-        mDefaultBackground = resources.getDrawable(R.drawable.background, null);
+        mDefaultBgDrawable = resources.getDrawable(R.drawable.background, null);
         mBackgroundTask = new UpdateBackgroundTask();
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
@@ -588,36 +579,35 @@ public class MainFragment extends BrowseSupportFragment
         int width = mMetrics.widthPixels;
         int height = mMetrics.heightPixels;
 
-        if (uri == null)
-            return;
-
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .error(mDefaultBackground);
+                .error(mDefaultBgDrawable);
 
-        String auth =  BackendCache.getInstance().authorization;
-        LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-        if (auth != null && auth.length() > 0)
-            lzhb.addHeader("Authorization", auth);
-        GlideUrl url = new GlideUrl(uri, lzhb.build());
-
-        Glide.with(this)
-                .asBitmap()
-                .load(url)
-                .apply(options)
-                .into(new CustomTarget<Bitmap>(width, height) {
-                    @Override
-                    public void onResourceReady(
-                            @NonNull Bitmap resource,
-                            Transition<? super Bitmap> transition) {
-                        mBackgroundManager.setBitmap(resource);
-                    }
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        if (mBackgroundManager != null && mBackgroundManager.getDrawable() != null)
-                            mBackgroundManager.clearDrawable();
-                    }
-                });
+        RequestBuilder bld =  Glide.with(this)
+                .asBitmap();
+        if (uri == null)
+            bld = bld.load(R.drawable.background);
+        else {
+            String auth =  BackendCache.getInstance().authorization;
+            LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+            if (auth != null && auth.length() > 0)
+                lzhb.addHeader("Authorization", auth);
+            bld = bld.load(new GlideUrl(uri, lzhb.build()));
+        }
+        bld.apply(options)
+            .into(new CustomTarget<Bitmap>(width, height) {
+                @Override
+                public void onResourceReady(
+                        @NonNull Bitmap resource,
+                        Transition<? super Bitmap> transition) {
+                    mBackgroundManager.setBitmap(resource);
+                }
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) {
+                    if (mBackgroundManager != null && mBackgroundManager.getDrawable() != null)
+                        mBackgroundManager.clearDrawable();
+                }
+            });
     }
 
     private void startBackgroundTimer() {
@@ -695,7 +685,6 @@ public class MainFragment extends BrowseSupportFragment
         Video video = new Video.VideoBuilder()
                 .id(-1).title(getString(R.string.button_settings))
                 .subtitle("")
-                .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                 .progflags("0")
                 .build();
         video.type = TYPE_SETTINGS;
@@ -704,7 +693,6 @@ public class MainFragment extends BrowseSupportFragment
         video = new Video.VideoBuilder()
                 .id(-1).title(getString(R.string.button_refresh_lists))
                 .subtitle("")
-                .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                 .progflags("0")
                 .build();
         video.type = TYPE_REFRESH;
@@ -713,7 +701,6 @@ public class MainFragment extends BrowseSupportFragment
         video = new Video.VideoBuilder()
                 .id(-1).title(getString(R.string.button_backend_status))
                 .subtitle("")
-                .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                 .progflags("0")
                 .build();
         video.type = TYPE_INFO;
@@ -722,7 +709,6 @@ public class MainFragment extends BrowseSupportFragment
         video = new Video.VideoBuilder()
                 .id(-1).title(getString(R.string.title_program_guide))
                 .subtitle("")
-                .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                 .progflags("0")
                 .build();
         video.type = TYPE_GUIDE;
@@ -731,7 +717,6 @@ public class MainFragment extends BrowseSupportFragment
         video = new Video.VideoBuilder()
                 .id(-1).title(getString(R.string.button_manage_recordings))
                 .subtitle("")
-                .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                 .progflags("0")
                 .build();
         video.type = TYPE_MANAGE;
@@ -753,9 +738,7 @@ public class MainFragment extends BrowseSupportFragment
     private class UpdateBackgroundTask implements Runnable {
         @Override
         public void run() {
-            if (mBackgroundURI != null) {
-                updateBackground(mBackgroundURI.toString());
-            }
+            updateBackground(mBackgroundUrl);
         }
     }
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
@@ -861,11 +844,8 @@ public class MainFragment extends BrowseSupportFragment
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                 RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if (item instanceof Video && ((Video) item).bgImageUrl != null)
-                mBackgroundURI = Uri.parse(((Video) item).bgImageUrl);
-            else
-                mBackgroundURI = mDefaultBackgroundURI;
-
+            if (item instanceof Video)
+                mBackgroundUrl = ((Video) item).bgImageUrl;
             startBackgroundTimer();
             scrollSupport.onItemSelected(itemViewHolder,rowViewHolder, getRowsSupportFragment());
         }

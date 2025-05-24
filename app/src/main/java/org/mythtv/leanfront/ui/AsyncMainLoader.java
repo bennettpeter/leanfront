@@ -547,7 +547,6 @@ public class AsyncMainLoader implements Runnable {
                         .id(-1).title(itemname)
                         .recordedid(itemname)
                         .subtitle("")
-                        .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                         .progflags("0")
                         .build();
             video.type = itemType;
@@ -560,7 +559,6 @@ public class AsyncMainLoader implements Runnable {
                     tVideo = new Video.VideoBuilder()
                             .id(-1).channel(context.getString(R.string.row_header_channels))
                             .rectype(RECTYPE_CHANNEL)
-                            .bgImageUrl("android.resource://org.mythtv.leanfront/" + R.drawable.background)
                             .progflags("0")
                             .build();
                     tVideo.type = TYPE_CHANNEL_ALL;
