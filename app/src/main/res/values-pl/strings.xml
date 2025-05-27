@@ -123,7 +123,7 @@
   <string name="pref_refresh_mins">Liczba minut między odświeżeniami zaplecza</string>
   <string name="msg_no_connection">Błąd: brak połączenia z backendem MythTV.</string>
   <string name="msg_no_delayshutdown">Ostrzeżenie: nie można zapobiec wyłączeniu backendu w stanie bezczynności.</string>
-  <string name="msg_backend_login_req">Błąd: Backend wymaga prawidłowego identyfikatora użytkownika i hasła.</string>
+  <string name="msg_backend_login_req">Błąd: Backend wymaga prawidłowej nazwy użytkownika i hasła.</string>
   <string name="all_title">Wszystko</string>
   <string name="recents_title">Ostatnio oglądane</string>
   <string name="lb_playback_controls_fast_forward">Skocz do przodu</string>

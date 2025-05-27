@@ -123,7 +123,7 @@
   <string name="pref_refresh_mins">Anzahl der Minuten zwischen Backend-Aktualisierungen</string>
   <string name="msg_no_connection">Fehler: Keine Verbindung zum MythTV-Backend.</string>
   <string name="msg_no_delayshutdown">Warnung: Das Herunterfahren des Backends im Leerlauf kann nicht verhindert werden.</string>
-  <string name="msg_backend_login_req">Fehler: Backend erfordert eine gültige Benutzer -ID und ein Passwort.</string>
+  <string name="msg_backend_login_req">Fehler: Backend erfordert einen gültigen Benutzernamen und Kennwort.</string>
   <string name="all_title">Alle</string>
   <string name="recents_title">zuletzt angesehen</string>
   <string name="lb_playback_controls_fast_forward">Vorwärts springen</string>

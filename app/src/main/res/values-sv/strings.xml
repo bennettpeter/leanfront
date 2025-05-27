@@ -123,7 +123,7 @@
   <string name="pref_refresh_mins">Antal minuter mellan backend-uppdateringar</string>
   <string name="msg_no_connection">Fel: Ingen anslutning till MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varning: Det går inte att förhindra inaktiv avstängning av backend.</string>
-  <string name="msg_backend_login_req">Fel: Backend kräver giltigt användar -ID och lösenord.</string>
+  <string name="msg_backend_login_req">Fel: Backend kräver giltigt användarnamn och lösenord.</string>
   <string name="all_title">Allt</string>
   <string name="recents_title">nyss sedda</string>
   <string name="lb_playback_controls_fast_forward">Hoppa framåt</string>

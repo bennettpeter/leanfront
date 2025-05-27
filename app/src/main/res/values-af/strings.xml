@@ -123,7 +123,7 @@
   <string name="pref_refresh_mins">Aantal minute tussen backend-verversings</string>
   <string name="msg_no_connection">Fout: Geen verbinding met MythTV Backend nie.</string>
   <string name="msg_no_delayshutdown">Waarskuwing: Kan nie die afskakeling van die agterkant nie verhoed nie.</string>
-  <string name="msg_backend_login_req">Fout: backend benodig geldige gebruikers -ID en wagwoord.</string>
+  <string name="msg_backend_login_req">Fout: Backend benodig geldige gebruikersnaam en wagwoord.</string>
   <string name="all_title">Almal</string>
   <string name="recents_title">Onlangs bekyk</string>
   <string name="lb_playback_controls_fast_forward">Spring voort</string>

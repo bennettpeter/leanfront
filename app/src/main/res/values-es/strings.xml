@@ -123,7 +123,7 @@
   <string name="pref_refresh_mins">Número de minutos entre actualizaciones de backend</string>
   <string name="msg_no_connection">Error: No hay conexión con el backend de MythTV.</string>
   <string name="msg_no_delayshutdown">Advertencia: No se puede evitar el apagado inactivo del backend.</string>
-  <string name="msg_backend_login_req">Error: el backend requiere una identificación de usuario y contraseña válidas.</string>
+  <string name="msg_backend_login_req">Error: el backend requiere un nombre de usuario y contraseña válidos.</string>
   <string name="all_title">Todo</string>
   <string name="recents_title">visto recientemente</string>
   <string name="lb_playback_controls_fast_forward">Saltar hacia adelante</string>
