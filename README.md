@@ -188,7 +188,7 @@ At the bottom of each list screen is a row named "Tools", that provides applicat
 
 ### MythTV Backend
 
-If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanback needs these to communicate with the backend. These do not show iff you do not have a user authentication requirement, so most people will never see these prompts.
+If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanback needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
 
 ### Playback groups
 
@@ -204,7 +204,7 @@ The advanced section of settings includes a value that may need to be changed to
 
 - **Number of Minutes Between Backend Refreshes.** The system refreshes the list periodically from the backend to pick up new recordings or changes. This setting must be a multiple of 4. If you need to see recordings in the list as soon as possible, set a low number. If you have a huge number of recordings it may take long to refresh so this setting may not help. In that case adjust the  **Maximum Recordings/Videos to load** setting.
 
-- **Status Port uses SSL (EXPERIMENTAL)** If you have SSL enabled on the backend, and your domain is registered, leanfront can communicate via SSL. This seems an unlikely situation, requiring a lot of work and expense and having no real advantage if you are using leanfront on your local network. It is marked as experimental because there are problems with random 408 errors from the server. That results in some slow responses and missing artwork. If anybody seriously wants to use SSL, I can investigate this and see what fix is possible. Open an issue in github.
+- **Status Port uses SSL (EXPERIMENTAL)** If you have SSL enabled on the backend, and your domain is registered, leanfront can communicate via SSL. This seems an unlikely situation, requiring a lot of work and expense and having no real advantage if you are using leanfront on your local network. It is marked as experimental because there are problems with random 408 errors from the server. That results in some slow responses and missing artwork. If anybody seriously wants to use SSL, I can investigate this and see what fix is possible. Open an issue in github. If using SSL, the SSL port must be specified in backend settings status port (default is 6554).
 
 </details>
 
@@ -280,12 +280,12 @@ You need an Android TV device, which can be a [Nvidia Shield](https://www.nvidia
 
 ### Amazon Fire TV
 If you have an Amazon Fire TV, Fire Stick or Fire Cube, you can install from Amazon App store.
-For a new installation, just press the microphone button on your remote and say "MythTV". Alternatively, log on to amazon.com, search for MythTV or leanfronte, and request it to be installed to your device.
+For a new installation, just press the microphone button on your remote and say "MythTV". Alternatively, log on to amazon.com, search for MythTV or leanfront, and request it to be installed to your device.
 
-If you already have leanfront installed by downloading from orangedox, to install from the app store you will have to first uninstall it.
+If you already have leanfront installed by downloading from google, to install from the app store you will have to first uninstall it.
 
 ### Non Amazon devices
-Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront), for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from orangedox.com, you do not need to uninstall, the play store will upgrade it.
+Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront), for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from google, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
 Preferably use the play store or app store for installation.
@@ -295,7 +295,7 @@ Packages are also available here, in case you want to install on a phone or tabl
 To install a side load version you can download the apk file from the above link. Put it on your android device using direct download, a USB cable or another method. Open a file manager, select the apk file and tap on it to install. Alternatively you can use adb to install from a computer if you have developer mode enabled on the android device.
 
 ### After Installation
-The first time you run the app it will prompt you for the MythTV Backend settings. Supply the IP address or DNS name of the master backend. If you have MythTV V32 or V33, change the [status port](#status-port) from 6544 to 6744. (Note that 6544 still works but does not support the latest features). In V34, port 6544 now has full support. In future port 6744 may be removed.
+The first time you run the app it will prompt you for the MythTV Backend settings. Supply the IP address or DNS name of the master backend. If you have MythTV V32 or V33, change the [status port](#status-port) from 6544 to 6744. (Note that 6544 still works but does not support the latest features). In V34 and later, use port 6544. In future port 6744 may be removed.
 
 ## History
 
@@ -360,7 +360,7 @@ You can see a list of changes in each version by looking at the commit list in g
 
 Bookmarks in a recording or video can be stored in the android device or in the MythTV backend. In Settings, Playback you can select an option to store them locally. On versions of mythbackend before v32-Pre-658-g48557d32c2 or v31.0-73-g7bf1284867, video bookmarks are always stored locally.
 
-Bookmarks must be set explicity using the bookmark OSD option of playback menu. They can be removed from the video details page menu.
+Bookmarks must be set explicitly using the bookmark OSD option of playback menu. They can be removed from the video details page menu.
 
 Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the Video deatils page menu.
 
@@ -382,7 +382,7 @@ If "Automatically Skip" is selected, playback will automatically skip each cut o
 
 The three options can also be selected or changed during playback by using the playback menu and selecting "Commercial or Cut Skip". Changes made here only affect the current playback.
 
-You can skip forward and backward to the next or prior commercial break. This is similar to using the z and q keys in mythfrontend. Since there are very few buttons available on most android tv remotes, the Settings page allows you to reassign certain buttons to the skip commercial functions.
+You can skip forward and backward to the next or prior commercial break. This is similar to using the z and q keys in mythfrontend. Since there are very few buttons available on most android TV remotes, the Settings page allows you to reassign certain buttons to the skip commercial functions.
 
 - You can set left/right, up/down, or rew/ff to commercial skip instead of their normal usage.
 - The Playback Control Icons |< and >| will skip back and forward to the next commercial break. After the last break they skip to the prior or next episode in the series, as they have always done.
@@ -433,7 +433,7 @@ The following controls are available when pressing enter during playback. Select
 | Rewind                | This skips back by the time set in the settings.                                                                                                  |
 | Jump Forward          | This skips forward by the time set in the settings.                                                                                               |
 | Skip Next             | Skip forward to the next commercial break, or to the next episode if there are no more commercials (see [Related Videos](#related-videos)).       |
-| Change Playback Speed | Speeds up or slow down playback by increments to a maximum of 800%. Shows a seekbar where any desired speed can be selected in increments of 10%  |
+| Change Playback Speed | Speeds up or slow down playback by increments to a maximum of 800%. Shows a seek bar where any desired speed can be selected in increments of 10%  |
 | Playback Menu         | Shows a menu of playback actions that can be taken.                                                                                               |
 
 **Note:** When using *Change Playback Speed* the program will disable digital audio pass-through if it is in use, by temporarily selecting *FFmpeg* audio decode. This will disable surround sound until you exit playback.
@@ -507,15 +507,21 @@ If "Use Up/Down Arrows for Jump" is selected in settings, the following apply. H
 
 ### Status Port
 
-In mythbackend V32 and later, the web server has been rewritten and there is a new status port. The old status port still works but does not support the latest features, like "Last Play Position". To use the latest features, change your port number in settings to 6744. If you have any problems with this please open a ticket.
+In mythbackend V32 and V33, the web server has been rewritten and there is a new status port. The old status port still works but does not support the latest features, like "Last Play Position". To use the latest features, change your port number in settings to 6744. If you have any problems with this please open a ticket.
 
 This is a temporary change, in V34 the port changes back to 6544, with the new features. Port 6744 is still supported in V34 and is an alternative port for the same code as port 6544. At some point, 6744 may be disabled. You will then have to change your settings back to port 6544.
+
+### Authentication
+
+In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leranfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
+
+If you expose port 6544 to the internet, you can run leanfront remotely. In this case it is recommended to set a user id and password as described in the wiki article.
 
 ### Screen saver and idle shutdown
 
 If you have a mythbackend earlier than v30 you need to disable the mythbackend idle shutdown, as leanfront cannot prevent shutdown, even while playing. On v30 and later, leanfront prevents backend shutdown while leanfront is in the foreground on the TV.
 
-If you have screen saver enabled on the android tv stick, if nothing is playing it can start the screen saver. When it starts leanfront will go into the background. While leanfront is in the background mythbackend can shut down. When you press a remote key, the tv shows leanfront again but the backend may be shut down. Leanfront does not recover gracefully from this. Attempts to play will display a generic error message.
+If you have screen saver enabled on the android tv stick, if nothing is playing it can start the screen saver. When it starts leanfront will go into the background. While leanfront is in the background mythbackend can shut down. When you press a remote key, the TV shows leanfront again but the backend may be shut down. Leanfront does not recover gracefully from this. Attempts to play will display a generic error message.
 
 If you have auto shutdown enabled on the backend, then I recommend you disable the tv stick screen saver or else set it to a long period and be aware that when waking again, the backend must be restarted if it has shut down.
 
@@ -531,7 +537,7 @@ There is support for the MythTV parental level on videos. It does not support th
 
 ### Refresh Lists
 
-There is a "Refresh Lists" icon on the tools row to refresh the list of recordings and videos from the backend. The list is also refreshed after using Settings if you change the backend ip address or port number. Refresh only refreshes what is on the current view. On the main screen (the one with the MythTV Icon at the top), it refreshes everything. The refresh does not perform a video rescan at the backend, currently you will have to do it from a normal frontend or run "mythutil \-\-scanvideos" on the backend. Refresh is also performed automatically in teh background every hour or other interval as specified in Settings, Advanced.
+There is a "Refresh Lists" icon on the tools row to refresh the list of recordings and videos from the backend. The list is also refreshed after using Settings if you change the backend ip address or port number. Refresh only refreshes what is on the current view. On the main screen (the one with the MythTV Icon at the top), it refreshes everything. The refresh does not perform a video rescan at the backend, currently you will have to do it from a normal frontend or run "mythutil \-\-scanvideos" on the backend. Refresh is also performed automatically in the background every hour or other interval as specified in Settings, Advanced.
 
 If refresh takes a long time, it is likely caused by lookups on the recordedartwork table. This can be caused by the lack of a database index. This has been fixed in v32-Pre-642-ga0017739a0. If you are running an earlier version you can run the following command to create the index. You can do this on any version of MythTV. If you later upgrade to v32 it will detect if the index has already been created and will not create it again.
 
@@ -549,8 +555,6 @@ Creating this index changed the refresh time on my system from 38 seconds to 4 s
 ### Copy from one Android device to another
 
 If you use "Recently Viewed" to keep track of what you are watching, bear in mind it keeps the list locally on Android, so each Android TV device has its own list.
-
-See [Backup / Restore](#backup--restore) for the best way to copy these files. The script described below only works on debug builds, so it will not help with leanfront installed from the app store or play store. The [Backup / Restore](#backup--restore) feature works on both debug and production builds.
 
 There is a script to copy files to and from an android device debug application.
 
