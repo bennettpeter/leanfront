@@ -1866,8 +1866,12 @@ public class PlaybackFragment extends VideoSupportFragment
                     case ExoPlaybackException.TYPE_SOURCE:
                         msgNum = R.string.pberror_source;
                         cause = error.getSourceException();
-                        if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException"))
-                            msgNum=R.string.pberror_extractor_array;
+                        if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
+                            msgNum = R.string.pberror_extractor_array;
+                            break;
+                        }
+                        else
+                            setPossibleEmptyTrack = true;
                         break;
                     case ExoPlaybackException.TYPE_UNEXPECTED:
                         msgNum = R.string.pberror_unexpected;
