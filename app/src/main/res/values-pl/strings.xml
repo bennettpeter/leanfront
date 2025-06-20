@@ -102,6 +102,8 @@
   <string name="pref_captions">Numer podpisu do włączenia</string>
   <string name="pref_speed">Szybkość odtwarzania w procentach (10-800). Domyślnie 100.</string>
   <string name="pref_audio_sync">Regulacja synchronizacji dźwięku w milisekundach</string>
+  <string name="pref_poss_empty">Zignoruj ​​dodatkowy utwór</string>
+  <string name="pref_poss_empty_desc">Ustaw to, jeśli masz nagrania z zniekształconą drugą ścieżką audio (np. UK FreeView).</string>
   <string name="pref_commskip_adj_title">Korekty pozycji początkowej i końcowej</string>
   <string name="pref_commskip_adj_desc">Poniższe liczby można ustawić jako ujemne lub dodatnie, aby rozpocząć lub zakończyć przeskakiwanie wcześniej lub później.</string>
   <string name="pref_commskip_start">Regulacja pozycji początkowej (sekundy)</string>
@@ -226,6 +228,7 @@
         Dekoduj, wybierz FFmpeg.</string>
   <string name="pberror_recommend_audio">Nieobsługiwany dźwięk: w ustawieniach Leanfront -&gt; Dekodowanie audio,
         wybierz Auto lub FFmpeg lub zmień ustawienia audio Androida.</string>
+  <string name="pberror_recommend_ignoreextra">Zadowolony plik: W ustawieniach leanfront -&gt; Grupa odtwarzania -&gt; Ustaw ignoruj ​​dodatkowy utwór.</string>
   <string name="pberror_extractor_array">Błąd: wyjątek OutOfBoundsException w BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Kontynuować</string>
   <string name="pberror_button_exit">Wyjście</string>

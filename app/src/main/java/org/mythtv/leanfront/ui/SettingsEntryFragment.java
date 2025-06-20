@@ -119,6 +119,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_BACKEND_USERID = 64;
     private static final int ID_BACKEND_PASSWD = 65;
     private static final int ID_HTTP_SSL = 66;
+    private static final int ID_POSS_EMPTY = 67;
 
     private static final String KEY_EXPAND = "EXPAND";
 
@@ -375,6 +376,15 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .descriptionEditable(true)
                     .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                     .build());
+            str = Settings.getString("pref_poss_empty", group);
+            subActions.add(new GuidedAction.Builder(getActivity())
+                    .id(ID_POSS_EMPTY + addon)
+                    .title(R.string.pref_poss_empty)
+                    .checked("true".equals(str))
+                    .description(R.string.pref_poss_empty_desc)
+                    .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
+                    .build());
+
             str = getContext().getString(R.string.pref_title_playback,group);
             actions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_PLAYBACK + addon)
@@ -1046,6 +1056,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     Settings.putString(editor, "pref_autoplay", group, "true");
                 else
                     Settings.putString(editor, "pref_autoplay", group, "false");
+                break;
+            case ID_POSS_EMPTY:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_poss_empty", group, "true");
+                else
+                    Settings.putString(editor, "pref_poss_empty", group, "false");
                 break;
             case ID_COMMSKIP_OFF:
                 if (action.isChecked())

@@ -102,6 +102,8 @@
   <string name="pref_captions">Numéro de légende à activer</string>
   <string name="pref_speed">Vitesse de lecture en pourcentage (10-800). Par défaut 100.</string>
   <string name="pref_audio_sync">Ajustement de la synchronisation audio en millisecondes</string>
+  <string name="pref_poss_empty">Ignorez la piste supplémentaire</string>
+  <string name="pref_poss_empty_desc">Définissez-le si vous avez des enregistrements avec la deuxième piste audio mal formulée (par exemple UK FreeView).</string>
   <string name="pref_commskip_adj_title">Ajustements de la position de début et de fin</string>
   <string name="pref_commskip_adj_desc">Les nombres ci-dessous peuvent être définis en négatif ou en positif pour démarrer ou terminer les sauts plus tôt ou plus tard.</string>
   <string name="pref_commskip_start">Ajustement de la position de départ (secondes)</string>
@@ -226,6 +228,7 @@
         Décodez, sélectionnez FFmpeg.</string>
   <string name="pberror_recommend_audio">Audio non pris en charge : dans Paramètres Leanfront -&gt; Décodage audio,
         sélectionnez Auto ou FFmpeg ou bien modifiez vos paramètres audio Android.</string>
+  <string name="pberror_recommend_ignoreextra">Fichier malformé: dans les paramètres Leanfront -&gt; Group de lecture -&gt; Set Ignore Extra Track.</string>
   <string name="pberror_extractor_array">Erreur : OutOfBoundsException dans BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Continuer</string>
   <string name="pberror_button_exit">Sortie</string>

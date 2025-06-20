@@ -102,6 +102,8 @@
   <string name="pref_captions">Ota käyttöön kuvatekstinumero</string>
   <string name="pref_speed">Toistonopeus prosentteina (10-800). Oletusarvo 100.</string>
   <string name="pref_audio_sync">Äänen u säätö millisekunteina</string>
+  <string name="pref_poss_empty">Ohita ylimääräinen kappale</string>
+  <string name="pref_poss_empty_desc">Aseta tämä, jos sinulla on nauhoituksia epämuodollisella toisella ääniradalla (esim. UK Freeview).</string>
   <string name="pref_commskip_adj_title">Säädöt aloitus- ja loppuasentoon</string>
   <string name="pref_commskip_adj_desc">Alla olevat numerot voidaan asettaa negatiivisiksi tai positiivisiksi aloittamaan tai lopettamaan ohituksia aikaisin tai myöhään.</string>
   <string name="pref_commskip_start">Aloitusasennon säätö (sekuntia)</string>
@@ -226,6 +228,7 @@
         Pura, valitse FFmpeg.</string>
   <string name="pberror_recommend_audio">Ei tuettu ääni: kohdassa Leanfront Settings -&gt; Audio Decode,
         valitse Auto tai FFmpeg tai muuta Android-ääniasetuksiasi.</string>
+  <string name="pberror_recommend_ignoreextra">Väärin muotoiltu tiedosto: LeanFront -asetuksissa -&gt; Toistoryhmä -&gt; Set Ohita ylimääräinen kappale.</string>
   <string name="pberror_extractor_array">Virhe: Indeksivirhe BundledExtractorsAdapterissa.</string>
   <string name="pberror_button_continue">Jatka</string>
   <string name="pberror_button_exit">Poistu</string>

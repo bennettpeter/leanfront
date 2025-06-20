@@ -700,6 +700,7 @@ public class PlaybackFragment extends VideoSupportFragment
         }
         mCaptions = Settings.getInt("pref_captions",group);
         mSpeed = (float)Settings.getInt("pref_speed",group) / 100.0f;
+        possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty",mVideo.playGroup));
         commBreakOption = Settings.getInt("pref_commskip");
         switch(Settings.getString("pref_updown",group)) {
             case "controls": optUpDown = CMD_CONTROLS; break;
@@ -1928,6 +1929,12 @@ public class PlaybackFragment extends VideoSupportFragment
                                 mBookmark = currPos;
                             if (setPossibleEmptyTrack && !possibleEmptyTrack) {
                                 possibleEmptyTrack = true;
+                                if (mToast != null)
+                                    mToast.cancel();
+                                mToast = Toast.makeText(getActivity(),
+                                        getActivity().getString(R.string.pberror_recommend_ignoreextra),
+                                        Toast.LENGTH_LONG);
+                                mToast.show();
                                 mPlayer.stop();
                                 initializePlayer(true);
                             }

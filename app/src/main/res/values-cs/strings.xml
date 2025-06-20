@@ -102,6 +102,8 @@
   <string name="pref_captions">Číslo titulku, které chcete povolit</string>
   <string name="pref_speed">Rychlost přehrávání v procentech (10-800). Výchozí 100.</string>
   <string name="pref_audio_sync">Nastavení synchronizace zvuku v milisekundách</string>
+  <string name="pref_poss_empty">Ignorujte další skladbu</string>
+  <string name="pref_poss_empty_desc">Nastavte to, pokud máte nahrávky s malformovanou druhou zvukovou stopou (např. UK Freeview).</string>
   <string name="pref_commskip_adj_title">Úpravy počáteční a koncové polohy</string>
   <string name="pref_commskip_adj_desc">Čísla níže mohou být nastavena jako záporná nebo kladná pro začátek nebo konec přeskočení dříve nebo později.</string>
   <string name="pref_commskip_start">Nastavení počáteční pozice (sekundy)</string>
@@ -226,6 +228,7 @@
         Dekódovat, vyberte FFmpeg.</string>
   <string name="pberror_recommend_audio">Nepodporovaný zvuk: V nastavení leanfront -&gt; Audio Decode,
         vyberte Auto nebo FFmpeg nebo změňte nastavení zvuku Android.</string>
+  <string name="pberror_recommend_ignoreextra">Malformovaný soubor: V nastavení LeanFront -&gt; Skupina přehrávání -&gt; Nastavit další stopu.</string>
   <string name="pberror_extractor_array">Chyba: OutOfBoundsException v BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Pokračovat</string>
   <string name="pberror_button_exit">Výstup</string>

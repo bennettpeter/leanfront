@@ -137,6 +137,8 @@
     <string name="pref_captions">Caption number to enable</string>
     <string name="pref_speed">Playback speed as percentage (10-800). Default 100.</string>
     <string name="pref_audio_sync">Audio Sync Adjustment in milliseconds</string>
+    <string name="pref_poss_empty">Ignore Extra Track</string>
+    <string name="pref_poss_empty_desc">Set this if you have recordings with malformed second audio track (e.g. UK FreeView).</string>
     <string name="pref_commskip_adj_title">Adjustments to Start and End Position</string>
     <string name="pref_commskip_adj_desc">The numbers below can be set negative or positive to start or end skips early or late.</string>
     <string name="pref_commskip_start">Start Position Adjustment (seconds)</string>
@@ -269,6 +271,7 @@
         Decode, select FFmpeg.</string>
     <string name="pberror_recommend_audio">Unsupported Audio: In leanfront Settings -&gt; Audio Decode,
         select Auto or FFmpeg or else change your Android audio settings.</string>
+    <string name="pberror_recommend_ignoreextra">Malformed file: In leanfront Settings -&gt; Playback Group -> set Ignore Extra Track.</string>
     <string name="pberror_extractor_array">Error: OutOfBoundsException in BundledExtractorsAdapter.</string>
     <string name="pberror_button_continue">Continue</string>
     <string name="pberror_button_exit">Exit</string>
@@ -497,6 +500,7 @@
     <string name="sdef_leftright" translatable="false">rewff</string>
     <string name="sdef_rewff" translatable="false">rewff</string>
     <string name="sdef_speed" translatable="false">100</string>
+    <string name="sdef_poss_empty" translatable="false">false</string>
     <string name="sdef_max_vids" translatable="false">20000</string>
     <string name="sdef_refresh_mins" translatable="false">60</string>
     <string name="sdef_chan_group" translatable="false"></string>

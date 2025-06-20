@@ -102,6 +102,8 @@
   <string name="pref_captions">Numero della didascalia da abilitare</string>
   <string name="pref_speed">Velocità di riproduzione in percentuale (10-800). Predefinito 100.</string>
   <string name="pref_audio_sync">Regolazione della sincronizzazione audio in millisecondi</string>
+  <string name="pref_poss_empty">Ignora traccia extra</string>
+  <string name="pref_poss_empty_desc">Imposta questo se si dispone di registrazioni con la seconda traccia audio malformata (ad esempio UK Freeview).</string>
   <string name="pref_commskip_adj_title">Aggiustamenti alla posizione iniziale e finale</string>
   <string name="pref_commskip_adj_desc">I numeri seguenti possono essere impostati negativi o positivi per iniziare o terminare i salti in anticipo o in ritardo.</string>
   <string name="pref_commskip_start">Regolazione della posizione iniziale (secondi)</string>
@@ -226,6 +228,7 @@
         Decodifica, seleziona FFmpeg.</string>
   <string name="pberror_recommend_audio">Audio non supportato: in Impostazioni Leanfront -&gt; Decodifica audio,
         seleziona Auto o FFmpeg oppure modifica le impostazioni audio Android.</string>
+  <string name="pberror_recommend_ignoreextra">File malformato: nelle impostazioni di Leanfront -&gt; Gruppo di riproduzione -&gt; Imposta ignorare la traccia extra.</string>
   <string name="pberror_extractor_array">Errore: OutOfBoundsException in BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Continua</string>
   <string name="pberror_button_exit">Uscita</string>

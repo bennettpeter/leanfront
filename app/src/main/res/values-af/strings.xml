@@ -102,6 +102,8 @@
   <string name="pref_captions">Onderskrifnommer om te aktiveer</string>
   <string name="pref_speed">Terugspeelspoed as persentasie (10-800). Verstek 100.</string>
   <string name="pref_audio_sync">Oudio-sinkronisering aanpassing in millisekondes</string>
+  <string name="pref_poss_empty">Ignoreer ekstra snit</string>
+  <string name="pref_poss_empty_desc">Stel dit in as u opnames het met misvormde tweede klankbaan (bv. UK Freeview).</string>
   <string name="pref_commskip_adj_title">Aanpassings aan begin- en eindposisie</string>
   <string name="pref_commskip_adj_desc">Die getalle hieronder kan negatief of positief gestel word om oorslaan vroeg of laat te begin of te beëindig.</string>
   <string name="pref_commskip_start">Beginposisie-aanpassing (sekondes)</string>
@@ -226,6 +228,7 @@
         Dekodeer, kies FFmpeg.</string>
   <string name="pberror_recommend_audio">Ongesteunde oudio: in leanfront-instellings -&gt; oudio-dekodeer,
         kies Auto of FFmpeg of verander anders jou Android-klankinstellings.</string>
+  <string name="pberror_recommend_ignoreextra">Misvormde lêer: in Leanfront Instellings -&gt; Playback Group -&gt; Set Ignoreer Extra Track.</string>
   <string name="pberror_extractor_array">Fout: OutOfBoundsException in BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Aanhou</string>
   <string name="pberror_button_exit">Verlaat</string>

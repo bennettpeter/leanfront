@@ -102,6 +102,8 @@
   <string name="pref_captions">Bildtextnummer för att aktivera</string>
   <string name="pref_speed">Uppspelningshastighet i procent (10-800). Standard 100.</string>
   <string name="pref_audio_sync">Ljudsynkroniseringsjustering i millisekunder</string>
+  <string name="pref_poss_empty">Ignorera extra spår</string>
+  <string name="pref_poss_empty_desc">Ställ in detta om du har inspelningar med Malformed Second Audio Track (t.ex. UK Freeview).</string>
   <string name="pref_commskip_adj_title">Justeringar av start- och slutposition</string>
   <string name="pref_commskip_adj_desc">Siffrorna nedan kan ställas in negativt eller positivt för att starta eller avsluta överhoppningar tidigt eller sent.</string>
   <string name="pref_commskip_start">Startpositionsjustering (sekunder)</string>
@@ -226,6 +228,7 @@
         Avkoda, välj FFmpeg.</string>
   <string name="pberror_recommend_audio">Ljud som inte stöds: I leanfront-inställningar -&gt; Ljudavkodning,
         välj Auto eller FFmpeg eller ändra dina Android-ljudinställningar.</string>
+  <string name="pberror_recommend_ignoreextra">Malformad fil: I Leanfront -inställningar -&gt; Playback Group -&gt; Ställ in ignorera extra spår.</string>
   <string name="pberror_extractor_array">Fel: OutOfBoundsException i BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Fortsätta</string>
   <string name="pberror_button_exit">Utgång</string>

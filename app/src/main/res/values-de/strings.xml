@@ -102,6 +102,8 @@
   <string name="pref_captions">Zu aktivierende Untertitelnummer</string>
   <string name="pref_speed">Wiedergabegeschwindigkeit in Prozent (10-800). Standard 100.</string>
   <string name="pref_audio_sync">Audio-Sync-Anpassung in Millisekunden</string>
+  <string name="pref_poss_empty">Ignorieren Sie zusätzliche Strecke</string>
+  <string name="pref_poss_empty_desc">Legen Sie dies fest, wenn Sie Aufnahmen mit missgebildeten zweiten Audiospur (z. B. UK Freeview) haben.</string>
   <string name="pref_commskip_adj_title">Anpassungen der Start- und Endposition</string>
   <string name="pref_commskip_adj_desc">Die folgenden Zahlen können negativ oder positiv eingestellt werden, um Sprünge früher oder später zu beginnen oder zu beenden.</string>
   <string name="pref_commskip_start">Anpassung der Startposition (Sekunden)</string>
@@ -226,6 +228,7 @@
         Dekodieren, FFmpeg auswählen.</string>
   <string name="pberror_recommend_audio">Nicht unterstütztes Audio: In Leanfront-Einstellungen -&gt; Audio-Dekodierung,
         Wählen Sie „Auto“ oder „FFmpeg“ oder ändern Sie Ihre Android-Audioeinstellungen.</string>
+  <string name="pberror_recommend_ignoreextra">Fehlformierte Datei: In Leanfront -Einstellungen -&gt; Wiedergabegruppe -&gt; Ignorieren Sie den zusätzlichen Track.</string>
   <string name="pberror_extractor_array">Fehler: OutOfBoundsException in BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Weitermachen</string>
   <string name="pberror_button_exit">Ausfahrt</string>

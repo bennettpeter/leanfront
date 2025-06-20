@@ -102,6 +102,8 @@
   <string name="pref_captions">Αριθμός λεζάντας για ενεργοποίηση</string>
   <string name="pref_speed">Ταχύτητα αναπαραγωγής ως ποσοστό (10-800). Προεπιλογή 100.</string>
   <string name="pref_audio_sync">Ρύθμιση συγχρονισμού ήχου σε χιλιοστά του δευτερολέπτου</string>
+  <string name="pref_poss_empty">Αγνοήστε επιπλέον κομμάτι</string>
+  <string name="pref_poss_empty_desc">Ρυθμίστε αυτό εάν έχετε εγγραφές με δυσμορφωμένο δεύτερο κομμάτι ήχου (π.χ. UK FreeView).</string>
   <string name="pref_commskip_adj_title">Προσαρμογές στη θέση έναρξης και λήξης</string>
   <string name="pref_commskip_adj_desc">Οι παρακάτω αριθμοί μπορούν να οριστούν αρνητικοί ή θετικοί για να ξεκινούν ή να τελειώνουν οι παραλείψεις νωρίς ή αργά.</string>
   <string name="pref_commskip_start">Προσαρμογή θέσης έναρξης (δευτερόλεπτα)</string>
@@ -226,6 +228,7 @@
         Αποκωδικοποιήστε, επιλέξτε FFmpeg.</string>
   <string name="pberror_recommend_audio">Μη υποστηριζόμενος ήχος: Σε leanfront Settings -&gt; Audio Decode,
         επιλέξτε Auto ή FFmpeg ή αλλιώς αλλάξτε τις ρυθμίσεις ήχου Android.</string>
+  <string name="pberror_recommend_ignoreextra">Μικρολογημένο αρχείο: Στις ρυθμίσεις LeAnfront -&gt; Ομάδα αναπαραγωγής -&gt; Set Ignore Extra Track.</string>
   <string name="pberror_extractor_array">Σφάλμα: OutOfBoundsException στο BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Να συνεχίσει</string>
   <string name="pberror_button_exit">Εξοδος</string>

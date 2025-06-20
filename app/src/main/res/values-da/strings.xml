@@ -102,6 +102,8 @@
   <string name="pref_captions">Billedtekstnummer for at aktivere</string>
   <string name="pref_speed">Afspilningshastighed i procent (10-800). Standard 100.</string>
   <string name="pref_audio_sync">Justering af lydsynkronisering i millisekunder</string>
+  <string name="pref_poss_empty">Ignorer ekstra spor</string>
+  <string name="pref_poss_empty_desc">Indstil dette, hvis du har optagelser med misdannet andet lydspor (f.eks. UK Freeview).</string>
   <string name="pref_commskip_adj_title">Justering af start- og slutposition</string>
   <string name="pref_commskip_adj_desc">Tallene nedenfor kan indstilles som negative eller positive for at starte eller afslutte overspring tidligt eller sent.</string>
   <string name="pref_commskip_start">Justering af startposition (sekunder)</string>
@@ -226,6 +228,7 @@
         Afkode, vælg FFmpeg.</string>
   <string name="pberror_recommend_audio">Ikke-understøttet lyd: I leanfront-indstillinger -&gt; Lydafkodning,
         vælg Auto eller FFmpeg, ellers ændre dine Android-lydindstillinger.</string>
+  <string name="pberror_recommend_ignoreextra">Malformet fil: I LeaningFront -indstillinger -&gt; Afspilningsgruppe -&gt; Indstil ignorere ekstra spor.</string>
   <string name="pberror_extractor_array">Fejl: OutOfBoundsException i BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Blive ved</string>
   <string name="pberror_button_exit">Afslut</string>
