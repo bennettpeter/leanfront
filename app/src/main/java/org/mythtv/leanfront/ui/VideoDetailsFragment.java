@@ -101,6 +101,7 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
@@ -154,7 +155,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private ClassPresenterSelector mPresenterSelector;
     private BackgroundManager mBackgroundManager;
     private Drawable mDefaultBackground;
-    private Uri mDefaultBackgroundURI;
     private DisplayMetrics mMetrics;
     private CursorObjectAdapter mVideoCursorAdapter;
     private FullWidthDetailsOverviewSharedElementHelper mHelper;
@@ -255,49 +255,51 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private void prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(getActivity());
         mBackgroundManager.attach(getActivity().getWindow());
-        int resourceId = R.drawable.background;
-        Resources resources = getResources();
-        mDefaultBackgroundURI = new Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(resources.getResourcePackageName(resourceId))
-                .appendPath(resources.getResourceTypeName(resourceId))
-                .appendPath(resources.getResourceEntryName(resourceId))
-                .build();
+//        int resourceId = R.drawable.background;
+//        Resources resources = getResources();
+//        mDefaultBackgroundURI = new Uri.Builder()
+//                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+//                .authority(resources.getResourcePackageName(resourceId))
+//                .appendPath(resources.getResourceTypeName(resourceId))
+//                .appendPath(resources.getResourceEntryName(resourceId))
+//                .build();
         mDefaultBackground = getResources().getDrawable(R.drawable.background, null);
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     private void updateBackground(String uri) {
-        if (uri == null)
-            uri = mDefaultBackgroundURI.toString();
+
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .error(mDefaultBackground);
 
-        String auth =  BackendCache.getInstance().authorization;
-        LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-        if (auth != null && auth.length() > 0)
-            lzhb.addHeader("Authorization", auth);
-        GlideUrl url = new GlideUrl(uri, lzhb.build());
+       RequestBuilder bld =  Glide.with(this)
+                .asBitmap();
+        if (uri == null)
+            bld = bld.load(R.drawable.background);
 
-        Glide.with(this)
-                .asBitmap()
-                .load(url)
-                .apply(options)
-                .into(new CustomTarget<Bitmap>(mMetrics.widthPixels, mMetrics.heightPixels) {
-                    @Override
-                    public void onResourceReady(
-                            @NonNull Bitmap resource,
-                            Transition<? super Bitmap> transition) {
-                        mBackgroundManager.setBitmap(resource);
-                    }
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        if (mBackgroundManager != null && mBackgroundManager.getDrawable() != null)
-                            mBackgroundManager.clearDrawable();
-                    }
-                });
+        else {
+            String auth = BackendCache.getInstance().authorization;
+            LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
+            if (auth != null && auth.length() > 0)
+                lzhb.addHeader("Authorization", auth);
+            bld = bld.load(new GlideUrl(uri, lzhb.build()));
+        }
+        bld.apply(options)
+            .into(new CustomTarget<Bitmap>(mMetrics.widthPixels, mMetrics.heightPixels) {
+                @Override
+                public void onResourceReady(
+                        @NonNull Bitmap resource,
+                        Transition<? super Bitmap> transition) {
+                    mBackgroundManager.setBitmap(resource);
+                }
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) {
+                    if (mBackgroundManager != null && mBackgroundManager.getDrawable() != null)
+                        mBackgroundManager.clearDrawable();
+                }
+            });
     }
 
     private void setupAdapter() {
