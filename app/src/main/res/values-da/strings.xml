@@ -385,7 +385,7 @@
   <string name="msg_db_busy">Kan ikke udføre handlingen, fordi databasen er optaget.</string>
   <string name="notes_title">Hvad er nyt?</string>
   <string name="notes_seen">Vis ikke igen</string>
-  <string name="notes_paging">Nu kan du bruge hurtig frem- og tilbage-knapperne til hurtigt at bladre op og ned i venstre rude og til at rulle videoikoner i højre rude.</string>
+  <string name="notes_paging">Du kan bruge hurtige fremad og spole tilbage knapper til hurtigt at sidde op og ned i venstre rude og til at rulle videoikoner i højre rude.</string>
   <string name="details_category">Kategori</string>
   <string name="details_starttime">Starttidspunkt</string>
   <string name="details_endtime">Sluttid</string>

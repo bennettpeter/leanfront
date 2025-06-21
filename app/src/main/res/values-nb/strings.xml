@@ -385,7 +385,7 @@
   <string name="msg_db_busy">Kan ikke utføre handlingen fordi databasen er opptatt.</string>
   <string name="notes_title">Hva er nytt?</string>
   <string name="notes_seen">Ikke vis igjen</string>
-  <string name="notes_paging">Nå kan du bruke frem- og tilbakespolingsknappene for raskt å bla opp og ned i venstre rute, og for å bla gjennom videoikoner i høyre rute.</string>
+  <string name="notes_paging">Du kan bruke Fast fremover og spole tilbake knapper for raskt å side opp og ned i venstre rute, og for å bla videoikoner i høyre rute.</string>
   <string name="details_category">Kategori</string>
   <string name="details_starttime">Starttid</string>
   <string name="details_endtime">Sluttid</string>

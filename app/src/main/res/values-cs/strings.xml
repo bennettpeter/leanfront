@@ -385,7 +385,7 @@
   <string name="msg_db_busy">Akci nelze provést, protože databáze je zaneprázdněna.</string>
   <string name="notes_title">Co je nového?</string>
   <string name="notes_seen">Znovu se neukazuj</string>
-  <string name="notes_paging">Nyní můžete používat tlačítka rychlého převíjení vpřed a vzad k rychlému posunu nahoru a dolů v levém podokně a k posouvání ikon videa v pravém podokně.</string>
+  <string name="notes_paging">Tlačítka rychlého a převíjejícího se tlačítka můžete použít k rychlému zabudování nahoru a dolů v levém podokně a k posouvání ikon videa v pravém podokně.</string>
   <string name="details_category">Kategorie</string>
   <string name="details_starttime">Doba spuštění</string>
   <string name="details_endtime">Čas ukončení</string>

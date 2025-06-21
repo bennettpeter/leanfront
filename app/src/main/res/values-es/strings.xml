@@ -385,7 +385,7 @@
   <string name="msg_db_busy">No se puede realizar la acción porque la base de datos está ocupada.</string>
   <string name="notes_title">¿Qué hay de nuevo?</string>
   <string name="notes_seen">No mostrar de nuevo</string>
-  <string name="notes_paging">Ahora puede usar los botones de avance rápido y rebobinado para avanzar y retroceder rápidamente en el panel izquierdo y desplazar los íconos de video en el panel derecho.</string>
+  <string name="notes_paging">Puede usar los botones de avance rápido y rebobinar para que se presente rápidamente hacia arriba y hacia abajo en el panel izquierdo, y para desplazar a los iconos de video en el panel derecho.</string>
   <string name="details_category">Categoría</string>
   <string name="details_starttime">Hora de inicio</string>
   <string name="details_endtime">Hora de finalización</string>

@@ -385,7 +385,7 @@
   <string name="msg_db_busy">Die Aktion kann nicht ausgeführt werden, da die Datenbank ausgelastet ist.</string>
   <string name="notes_title">Was ist neu?</string>
   <string name="notes_seen">Nicht mehr anzeigen</string>
-  <string name="notes_paging">Jetzt können Sie mit den Schnellvorlauf- und Rücklaufschaltflächen im linken Bereich schnell nach oben und unten blättern und durch die Videosymbole im rechten Bereich scrollen.</string>
+  <string name="notes_paging">Sie können die schnellen Vorwärts- und Rückspulenschaltflächen verwenden, um schnell nach oben und unten im linken Bereich aufzusagen und Video -Symbole im rechten Bereich zu scrollen.</string>
   <string name="details_category">Kategorie</string>
   <string name="details_starttime">Startzeit</string>
   <string name="details_endtime">Endzeit</string>

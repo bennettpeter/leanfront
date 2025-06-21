@@ -446,7 +446,7 @@
     <!--  Release Notes  -->
     <string name="notes_title">What\'s New?</string>
     <string name="notes_seen">Do not show again</string>
-    <string name="notes_paging">Now you can use the fast forward and rewind buttons to quickly page up and down in the left pane, and to scroll video icons in the right pane.</string>
+    <string name="notes_paging">You can use the fast forward and rewind buttons to quickly page up and down in the left pane, and to scroll video icons in the right pane.</string>
 
     <!--Fragment tag-->
     <string name="playback_tag" translatable="false">PLAYBACK_TAG</string>
