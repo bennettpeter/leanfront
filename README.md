@@ -194,6 +194,10 @@ If your backend has been set up to require user authentication for the service A
 
 If you have playback groups defined in mythfrontend, the Playback section is repeated for each playback group. The settings can be varied for each playback group. When adding a playback group in mythfrontend, the new playback group will have default settings in leanfront. If you have a setting that you want to change for all playback groups, you have to set it here in each playback group.
 
+#### Ignore Extra Track
+
+There is a setting called "Ignore Extra Track" in the playback group. This can be used if you have tracks that are malformed, especially second audio tracks that have no data (for example UK Freeview). These can cause playback to hang at the start especially when resuming from a prior position. Enabling this will improve performance with these tracks but may cause the wrong audio track to play with recordings that have a **VALID** second audio track.
+
 ### Advanced
 
 The advanced section of settings includes a value that may need to be changed to suit unusual circumstances. Be careful when changing it as you may cause bad things to happen if you use inappropriate values.
