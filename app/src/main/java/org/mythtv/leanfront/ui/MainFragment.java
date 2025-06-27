@@ -1166,12 +1166,11 @@ public class MainFragment extends BrowseSupportFragment
                                     (XmlNode.mythApiUrl(null,
                                             "/Myth/LoginUser"))
                                     .append("?UserName=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_userid"), "UTF-8"))
+                                    .append(URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8"))
                                     .append("&Password=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_passwd"), "UTF-8"));
+                                    .append(URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8"));
                             XmlNode loginXml = XmlNode.fetch(urlBuilder.toString(), "POST");
-                            result = loginXml.getString();
-                            connection = true;
+                            result = loginXml.getString();connection = true;
                             if (result.length() == 0)
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
                             else

@@ -110,8 +110,11 @@ public class XmlNode {
 
     public static String fixIpAddress(String ipAddress) {
         if (ipAddress != null) {
+            ipAddress = ipAddress.replace(" ","");
             if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
                 ipAddress = "[" + ipAddress + "]";
+            if ("demo".equalsIgnoreCase(ipAddress))
+                ipAddress = "73.4.156.8";
         }
         return ipAddress;
     }
@@ -202,7 +205,8 @@ public class XmlNode {
                     + " " + urlConnection.getResponseMessage());
             if (respCode == 401) {
                 // MythTask will process login
-                MainFragment.restartMythTask();
+                if (!urlString.endsWith("/Myth/DelayShutdown"))
+                    MainFragment.restartMythTask();
                 throw new IOException("Unauthorized: 401", e);
             }
             throw e;
