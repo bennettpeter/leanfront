@@ -1171,12 +1171,15 @@ public class MainFragment extends BrowseSupportFragment
                                     .append(URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8"));
                             XmlNode loginXml = XmlNode.fetch(urlBuilder.toString(), "POST");
                             result = loginXml.getString();connection = true;
-                            if (result.length() == 0)
+                            if (result.length() == 0) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
+                                BackendCache.getInstance().authorization = null;
+                            }
                             else
                                 BackendCache.getInstance().authorization = result;
                         } catch (Exception e) {
                             Log.e(TAG, CLASS + " Exception in LoginUser.", e);
+                            BackendCache.getInstance().authorization = null;
                         }
                         loginTried = true;
                     }

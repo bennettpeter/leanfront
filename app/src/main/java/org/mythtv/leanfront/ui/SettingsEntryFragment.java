@@ -208,7 +208,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .description(Settings.getString("pref_backend_passwd"))
                     .descriptionEditable(true)
                     // Specifyng a password field turns off speech recgnition
-//                .descriptionEditInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                    .descriptionEditInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
                     .build());
         }
         subActions.add(new GuidedAction.Builder(getActivity())
@@ -715,17 +715,22 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 action.setDescription(newVal);
                 mBackendAction.setDescription(newVal);
                 notifyActionChanged(findActionPositionById(ID_BACKEND));
+                BackendCache.getInstance().authorization = null;
                 break;
             case ID_HTTP_PORT:
                 Settings.putString(editor, "pref_http_port",
                     validateNumber(action, 1, 65535, 6544));
                 break;
             case ID_BACKEND_USERID:
-                Settings.putString(editor, "pref_backend_userid",action.getDescription().toString());
+                newVal = action.getDescription().toString().trim();
+                Settings.putString(editor, "pref_backend_userid",newVal);
+                action.setDescription(newVal);
                 BackendCache.getInstance().authorization = null;
                 break;
             case ID_BACKEND_PASSWD:
-                Settings.putString(editor, "pref_backend_passwd",action.getDescription().toString());
+                newVal = action.getDescription().toString().trim();
+                Settings.putString(editor, "pref_backend_passwd",newVal);
+                action.setDescription(newVal);
                 BackendCache.getInstance().authorization = null;
                 break;
             case ID_BACKEND_MAC:
