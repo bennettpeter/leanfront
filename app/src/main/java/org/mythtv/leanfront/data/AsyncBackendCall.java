@@ -588,13 +588,13 @@ public class AsyncBackendCall implements Runnable {
                 case Video.ACTION_UPDATE_RECGROUP:
                     try {
                         int type;
-                        if (mStringParameter == null)
-                            mStringParameter = "";
+                        if (mStringParameter != null)
+                            mVideo.recGroup = mStringParameter;
                         if (isRecording) {
                             urlString = XmlNode.mythApiUrl(mVideo.hostname,
                                     "/Dvr/UpdateRecordedMetadata?RecordedId="
                                             + mVideo.recordedid + "&RecGroup=" + mVideo.recGroup
-                                            + "&AutoExpire=" + mStringParameter);
+                                            + "&AutoExpire=false");
                             type = VideoContract.VideoEntry.RECTYPE_RECORDING;
                             xmlResult = XmlNode.fetch(urlString, "POST");
                             if (context != null)

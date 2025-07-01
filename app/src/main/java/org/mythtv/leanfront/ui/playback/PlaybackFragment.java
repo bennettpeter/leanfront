@@ -1190,7 +1190,6 @@ public class PlaybackFragment extends VideoSupportFragment
             AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
             mVideo.recGroup = "Default";
             call.setVideo(mVideo);
-            call.setStringParameter("false");  // Auto Expire set to false
             call.execute(Video.ACTION_UPDATE_RECGROUP);
             if (mToast != null)
                 mToast.cancel();
