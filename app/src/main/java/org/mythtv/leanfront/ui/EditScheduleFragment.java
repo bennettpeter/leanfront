@@ -195,10 +195,12 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                         mRecordRule.parentId = mRecordId;
                         mRecordRule.recordId = 0;
                         mRecordRule.type = "Not Recording";
-                        mRecordRule.searchType = "None";
+                        if (!"Manual Search".equals(mRecordRule.searchType))
+                            mRecordRule.searchType = "None";
                     }
                     if (isOverride) {
                         mRecordRule.inactive = false;
+                        mRecordRule.recStatusCode = mProgDetails.recStatusCode;
                         mRecordRule.recordingStatus = mProgDetails.recordingStatus;
                         mRecordRule.startTime = mProgDetails.startTime;
                         mRecordRule.chanId = mProgDetails.chanId;
@@ -236,11 +238,23 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                     break;
             }
         }
-        if (mProgDetails != null
-            && ("None".equals(mRecordRule.searchType)
-                || "Manual Search".equals(mRecordRule.searchType)))
-            mRecordRule.mergeProgram(mProgDetails);
-
+        if (mProgDetails != null) {
+            if ("None".equals(mRecordRule.searchType))
+                mRecordRule.mergeProgram(mProgDetails);
+            else if ("Manual Search".equals(mRecordRule.searchType)) {
+                // startTime is correct for this showing but endTime
+                // is the original end time from the rule. Convert
+                // end time to the same date as start time.
+                long startTm = mRecordRule.startTime.getTime();
+                long endTm = mRecordRule.endTime.getTime();
+                long startDt = startTm / (24l*60l*60l*1000l);
+                endTm = endTm % (24l*60l*60l*1000l);
+                endTm = startDt * (24l*60l*60l*1000l) + endTm;
+                if (endTm < startTm)
+                    endTm += (24l*60l*60l*1000l);
+                mRecordRule.endTime.setTime(endTm);
+            }
+        }
         // Lists
         mPlayGroupList = XmlNode.getStringList(mDetailsList.get(2)); // ACTION_GETPLAYGROUPLIST
         mRecGroupList = XmlNode.getStringList(mDetailsList.get(3)); // ACTION_GETRECGROUPLIST
@@ -400,11 +414,15 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
                 typePrompts.add(R.string.sched_type_dont_rec_override);
                 typeOptions.add("Do not Record");
             }
-            typePrompts.add(R.string.sched_type_never_rec_override);
-            typeOptions.add("Never Record");
+            if (!"Manual Search".equals(mRecordRule.searchType)) {
+                typePrompts.add(R.string.sched_type_never_rec_override);
+                typeOptions.add("Never Record");
+            }
             if (BackendCache.getInstance().canForgetHistory) {
-                if ("CurrentRecording".equals(mRecordRule.recordingStatus)
-                        || "PreviousRecording".equals(mRecordRule.recordingStatus)) {
+                // current recording = 3, prev recording = 2, never rec = 11
+                if (mRecordRule.recStatusCode == 2
+                    || mRecordRule.recStatusCode == 3
+                    || mRecordRule.recStatusCode == 11) {
                     typePrompts.add(R.string.sched_type_forget_history);
                     typeOptions.add("Forget History");
                 }

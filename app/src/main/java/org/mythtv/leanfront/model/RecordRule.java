@@ -65,6 +65,7 @@ public class RecordRule {
     public int     transcoder;
     public Date    lastRecorded;
     public String  recordingStatus;
+    public int     recStatusCode;
     public String  encoderName;
 
     public boolean isFromProgram;
@@ -119,6 +120,7 @@ public class RecordRule {
         XmlNode recording = programNode.getNode("Recording");
         if (recording != null) {
             recordId = recording.getInt("RecordId", 0);
+            recStatusCode = recording.getInt("Status", 0);
             recordingStatus = recording.getString("StatusName");
             if (recordingStatus == null)
                 recordingStatus = recording.getString("Status");

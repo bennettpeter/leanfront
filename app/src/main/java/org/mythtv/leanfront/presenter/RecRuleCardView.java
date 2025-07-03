@@ -88,8 +88,10 @@ public class RecRuleCardView extends BaseCardView {
                     bgColor = COLOR_WILLRECORD;
             }
             else {
-                if ("WillRecord".equals(card.recordingStatus)
-                    || "Recording".equals(card.recordingStatus))
+                // Recorded = -3, Recording = -2, WillRecord = -1,
+                if (card.recStatusCode == -3
+                    || card.recStatusCode == -2
+                    || card.recStatusCode == -1)
                     bgColor = COLOR_WILLRECORD;
                 else
                     bgColor = COLOR_WONTRECORD;
