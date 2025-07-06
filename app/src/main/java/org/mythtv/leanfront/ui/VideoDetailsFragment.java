@@ -37,41 +37,28 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_TITLEMAT
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_VIDEO_URL;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.CONTENT_URI;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_CHANNEL;
-import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_RECORDING;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.UiModeManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.TabStopSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
@@ -89,7 +76,6 @@ import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
-import androidx.leanback.widget.OnActionClickedListener;
 import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
@@ -109,7 +95,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 import org.mythtv.leanfront.R;
-import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
@@ -122,10 +107,7 @@ import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /*
  * VideoDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
@@ -133,8 +115,7 @@ import java.util.Date;
  */
 @SuppressLint("SimpleDateFormat")
 public class VideoDetailsFragment extends DetailsSupportFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>,
-        AsyncBackendCall.OnBackendCallListener, OnActionClickedListener {
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "lfe";
     private static final String CLASS = "VideoDetailsFragment";
@@ -159,17 +140,13 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private CursorObjectAdapter mVideoCursorAdapter;
     private FullWidthDetailsOverviewSharedElementHelper mHelper;
     private final VideoCursorMapper mVideoCursorMapper = new VideoCursorMapper();
-    private long mBookmark = 0;     // milliseconds
-    private long mPosBookmark = -1;  // position in frames
-    private long mLastPlay = 0;     // milliseconds
-    private long mPosLastPlay = -1;  // position in frames
     private SparseArrayObjectAdapter mActionsAdapter = null;
     private DetailsOverviewRow mDetailsOverviewRow = null;
     private boolean mWatched;
     private DetailsDescriptionPresenter mDetailsDescriptionPresenter;
-    private ProgressBar mProgressBar = null;
     private ItemViewClickedListener itemViewClickedListener = new ItemViewClickedListener();
     private ItemViewSelectedListener itemViewSelectedListener = new ItemViewSelectedListener();
+    private VideoAction videoAction;
     private ScrollSupport scrollSupport;
     private boolean isTV;
     private boolean actionInitialSelect;
@@ -187,15 +164,17 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
         scrollSupport = new ScrollSupport((getContext()));
         prepareBackgroundManager();
-        mVideoCursorAdapter = new CursorObjectAdapter(new CardPresenter());
+        mVideoCursorAdapter = new CursorObjectAdapter(new CardPresenter(this));
         mVideoCursorAdapter.setMapper(mVideoCursorMapper);
 
         mSelectedVideo = getActivity().getIntent()
                 .getParcelableExtra(PlaybackActivity.VIDEO);
 
+        videoAction = new VideoAction(this, mSelectedVideo);
+
         if (savedInstanceState != null) {
-            mBookmark = savedInstanceState.getLong("mBookmark");
-            mPosBookmark = savedInstanceState.getLong("posBookmark");
+            videoAction.mBookmark = savedInstanceState.getLong("mBookmark");
+            videoAction.mPosBookmark = savedInstanceState.getLong("posBookmark");
         }
 
         if (mSelectedVideo != null) {
@@ -208,9 +187,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             int progflags = Integer.parseInt(mSelectedVideo.progflags);
             mWatched = ((progflags & Video.FL_WATCHED) != 0);
             if (mSelectedVideo.rectype != RECTYPE_CHANNEL) {
-                AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_REFRESH);
+                videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
             }
 
             // When a Related Video item is clicked.
@@ -220,8 +197,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     }
 
     public void onSaveInstanceState (Bundle outState) {
-        outState.putLong("mBookmark", mBookmark);
-        outState.putLong("posBookmark", mPosBookmark);
+        outState.putLong("mBookmark", videoAction.mBookmark);
+        outState.putLong("posBookmark", videoAction.mPosBookmark);
         super.onSaveInstanceState(outState);
     }
 
@@ -255,14 +232,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private void prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(getActivity());
         mBackgroundManager.attach(getActivity().getWindow());
-//        int resourceId = R.drawable.background;
-//        Resources resources = getResources();
-//        mDefaultBackgroundURI = new Uri.Builder()
-//                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-//                .authority(resources.getResourcePackageName(resourceId))
-//                .appendPath(resources.getResourceTypeName(resourceId))
-//                .appendPath(resources.getResourceEntryName(resourceId))
-//                .build();
         mDefaultBackground = getResources().getDrawable(R.drawable.background, null);
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
@@ -304,6 +273,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
     private void setupAdapter() {
         mDetailsDescriptionPresenter = new DetailsDescriptionPresenter();
+        videoAction.setDetailsDescriptionPresenter(mDetailsDescriptionPresenter);
         // Set detail background and style.
         FullWidthDetailsOverviewRowPresenter detailsPresenter =
                 new FullWidthDetailsOverviewRowPresenter(mDetailsDescriptionPresenter,
@@ -321,7 +291,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         detailsPresenter.setParticipatingEntranceTransition(false);
         prepareEntranceTransition();
 
-        detailsPresenter.setOnActionClickedListener(this);
+        detailsPresenter.setOnActionClickedListener(videoAction);
 
         mPresenterSelector = new ClassPresenterSelector();
         mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
@@ -349,309 +319,16 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     }
 
 
-    @Override
     public void onActionClicked(Action action) {
-        int id = (int) action.getId();
-        long bookmark = 0;
-        long posbookmark = -1;
-        ArrayList<String> prompts = null;
-        ArrayList<Action> actions = null;
-        String alertTitle = null;
-        Log.e(TAG, CLASS + " selectedPosition:" + getRowsSupportFragment().getSelectedPosition());
-
-        if (mSelectedVideo.rectype == RECTYPE_CHANNEL
-            && (id == Video.ACTION_PLAY_FROM_BOOKMARK || id == Video.ACTION_PLAY
-                || id == Video.ACTION_PLAY_FROM_LASTPOS))
-            id = Video.ACTION_LIVETV;
-        if (id == Video.ACTION_PLAY_FROM_LASTPOS && mLastPlay <= 0 && mPosLastPlay <= 0)
-            id = Video.ACTION_PLAY_FROM_BOOKMARK;
-        AsyncBackendCall call;
-        boolean set = false;
-        switch (id) {
-            case Video.ACTION_PLAY_FROM_BOOKMARK:
-                bookmark = mBookmark;
-                posbookmark = mPosBookmark;
-                set = true;
-            case Video.ACTION_PLAY_FROM_LASTPOS:
-                if (!set) {
-                    bookmark = mLastPlay;
-                    posbookmark = mPosLastPlay;
-                    set = true;
-                }
-            case Video.ACTION_PLAY:
-                Intent intent = new Intent(getActivity(), PlaybackActivity.class);
-                intent.putExtra(PlaybackActivity.VIDEO, mSelectedVideo);
-                intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
-                intent.putExtra(PlaybackActivity.POSBOOKMARK, posbookmark);
-                startActivityForResult(intent, Video.ACTION_PLAY);
-                break;
-            case Video.ACTION_LIVETV:
-                setProgressBar(true);
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setStartTime(null);
-                call.setChanid(Integer.parseInt(mSelectedVideo.chanid));
-                call.setCallSign(mSelectedVideo.callsign);
-                call.execute(Video.ACTION_LIVETV, Video.ACTION_ADD_OR_UPDATERECRULE, Video.ACTION_WAIT_RECORDING);
-                break;
-            case Video.ACTION_DELETE:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_REFRESH, Video.ACTION_DELETE,
-                                Video.ACTION_PAUSE, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_DELETE_AND_RERECORD:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_REFRESH, Video.ACTION_DELETE_AND_RERECORD,
-                                Video.ACTION_PAUSE, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_ALLOW_RERECORD:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_ALLOW_RERECORD);
-                break;
-            case Video.ACTION_UNDELETE:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_UNDELETE, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_SET_WATCHED:
-            case Video.ACTION_SET_UNWATCHED:
-                mWatched = (id == Video.ACTION_SET_WATCHED);
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.setWatched(mWatched);
-                call.execute(Video.ACTION_SET_WATCHED, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_REMOVE_LASTPLAYPOS:
-                mBookmark = 0;
-                mPosBookmark = 0;
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.setLastPlay(mBookmark);
-                call.setPosLastPlay(mPosBookmark);
-                call.execute(Video.ACTION_SET_LASTPLAYPOS, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_REMOVE_BOOKMARK:
-                mBookmark = 0;
-                mPosBookmark = 0;
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.setBookmark(mBookmark);
-                call.setPosBookmark(mPosBookmark);
-                call.execute(Video.ACTION_SET_BOOKMARK, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_QUERY_STOP_RECORDING:
-                prompts = new ArrayList<>();
-                actions = new ArrayList<>();
-                alertTitle = getString(R.string.title_are_you_sure);
-                prompts.add(getString(R.string.menu_dont_stop_recording));
-                actions.add(new Action(Video.ACTION_CANCEL));
-                prompts.add(getString(R.string.menu_stop_recording));
-                actions.add(new Action(Video.ACTION_STOP_RECORDING));
-                break;
-            case Video.ACTION_STOP_RECORDING:
-                if (mSelectedVideo.recordedid != null) {
-                    // Terminate a recording that may be a scheduled event
-                    // so don't remove the record rule.
-                    call = new AsyncBackendCall(getActivity(), this);
-                    call.setVideo(mSelectedVideo);
-                    call.setRecordedId(Integer.parseInt(mSelectedVideo.recordedid));
-                    call.execute(Video.ACTION_STOP_RECORDING,
-                                    Video.ACTION_PAUSE,
-                                    Video.ACTION_REFRESH);
-                }
-                break;
-            case Video.ACTION_GETRECGROUPLIST:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.execute(Video.ACTION_GETRECGROUPLIST);
-                break;
-            case Video.ACTION_QUERY_UPDATE_RECGROUP:
-                alertTitle = getString(R.string.menu_update_recgrp);
-                prompts = (ArrayList<String>) mRecGroupList.clone();
-                prompts.remove("LiveTV");
-                prompts.add(getString(R.string.sched_new_entry));
-                final ArrayList<String> groups = prompts;
-                AlertDialog.Builder listBbuilder = new AlertDialog.Builder(getActivity(),
-                        R.style.Theme_AppCompat_Dialog_Alert);
-                listBbuilder
-                        .setTitle(alertTitle)
-                        .setItems(groups.toArray(new String[0]),
-                                (dialog, which) -> {
-                                    // The 'which' argument contains the index position
-                                    // of the selected item
-                                    // Last item in the list is "Create
-                                    if (which == groups.size() - 1) {
-                                        mNewValueText="";
-                                        promptForNewValue(R.string.sched_rec_group, Video.ACTION_UPDATE_RECGROUP);
-                                    } else {
-                                        mNewValueText = groups.get(which);
-                                        onActionClicked(new Action(Video.ACTION_UPDATE_RECGROUP));
-                                    }
-                                });
-                listBbuilder.show();
-
-                break;
-            case Video.ACTION_UPDATE_RECGROUP:
-                if (mSelectedVideo.recordedid != null && mNewValueText.length() > 0) {
-                    call = new AsyncBackendCall(getActivity(), this);
-                    mSelectedVideo.recGroup = mNewValueText;
-                    call.setVideo(mSelectedVideo);
-                    call.execute(Video.ACTION_UPDATE_RECGROUP);
-                }
-                break;
-            case Video.ACTION_CANCEL:
-                break;
-            case Video.ACTION_VIEW_DESCRIPTION:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_VIEW_DESCRIPTION);
-                break;
-            case Video.ACTION_REMOVE_RECENT:
-                call = new AsyncBackendCall(getActivity(), this);
-                call.setVideo(mSelectedVideo);
-                call.execute(Video.ACTION_REMOVE_RECENT, Video.ACTION_REFRESH);
-                break;
-            case Video.ACTION_PLAY_FROM_OTHER:
-                prompts = new ArrayList<>();
-                actions = new ArrayList<>();
-
-                if (mLastPlay > 0 || mPosLastPlay > 0) {
-                    prompts.add(getString(R.string.resume_last_1) + " "
-                            + getString(R.string.resume_last_2));
-                    actions.add(new Action(Video.ACTION_PLAY_FROM_LASTPOS));
-                }
-                if (mBookmark > 0 || mPosBookmark > 0) {
-                    prompts.add(getString(R.string.resume_bkmrk_1) + " "
-                            + getString(R.string.resume_bkmrk_2));
-                    actions.add(new Action(Video.ACTION_PLAY_FROM_BOOKMARK));
-                }
-                prompts.add(getString(R.string.play_1) + " "
-                        + getString(R.string.play_2));
-                actions.add(new Action(Video.ACTION_PLAY));
-                break;
-            case Video.ACTION_OTHER:
-                if (mSelectedVideo.rectype != RECTYPE_RECORDING
-                        && mSelectedVideo.rectype != RECTYPE_VIDEO)
-                    break;
-                prompts = new ArrayList<>();
-                actions = new ArrayList<>();
-                boolean busyRecording = false;
-                // Check End Time
-                try {
-                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
-                    if (mSelectedVideo.endtime != null) {
-                        Date dateEnd = dbFormat.parse(mSelectedVideo.endtime + "+0000");
-                        long dateMS = dateEnd.getTime();
-                        // If end time is more than 2 mins in the future allow stopping
-                        if (dateMS > System.currentTimeMillis() + 120000)
-                            busyRecording = true;
-                    }
-                } catch (ParseException e) {
-                    Log.e(TAG, CLASS + " Exception parsing endtime.", e);
-                }
-                if (mSelectedVideo.rectype == RECTYPE_RECORDING && !busyRecording) {
-                    if ("Deleted".equals(mSelectedVideo.recGroup)) {
-                        prompts.add(getString(R.string.menu_undelete));
-                        actions.add(new Action(Video.ACTION_UNDELETE));
-                    } else {
-                        prompts.add(getString(R.string.menu_delete));
-                        actions.add(new Action(Video.ACTION_DELETE));
-                        prompts.add(getString(R.string.menu_delete_rerecord));
-                        actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
-                    }
-                    prompts.add(getString(R.string.menu_rerecord));
-                    actions.add(new Action(Video.ACTION_ALLOW_RERECORD));
-                    if (BackendCache.getInstance().canUpdateRecGroup) {
-                        prompts.add(getString(R.string.menu_update_recgrp));
-                        actions.add(new Action(Video.ACTION_GETRECGROUPLIST));
-                    }
-                }
-                if (mWatched) {
-                    prompts.add(getString(R.string.menu_mark_unwatched));
-                    actions.add(new Action(Video.ACTION_SET_UNWATCHED));
-                } else {
-                    prompts.add(getString(R.string.menu_mark_watched));
-                    actions.add(new Action(Video.ACTION_SET_WATCHED));
-                }
-                if (mLastPlay > 0 || mPosLastPlay > 0) {
-                    prompts.add(getString(R.string.menu_remove_lastplaypos));
-                    actions.add(new Action(Video.ACTION_REMOVE_LASTPLAYPOS));
-                }
-                if (mBookmark > 0 || mPosBookmark > 0) {
-                    prompts.add(getString(R.string.menu_remove_bookmark));
-                    actions.add(new Action(Video.ACTION_REMOVE_BOOKMARK));
-                }
-                if (mSelectedVideo.isRecentViewed()) {
-                    prompts.add(getString(R.string.menu_remove_from_recent));
-                    actions.add(new Action(Video.ACTION_REMOVE_RECENT));
-                }
-                if (busyRecording) {
-                    prompts.add(getString(R.string.menu_stop_recording));
-                    actions.add(new Action(Video.ACTION_QUERY_STOP_RECORDING));
-                }
-
-                // View Description
-                prompts.add(getString(R.string.menu_view_description));
-                actions.add(new Action(Video.ACTION_VIEW_DESCRIPTION));
-                break;
-
-            default:
-                Toast.makeText(getActivity(), action.toString(), Toast.LENGTH_SHORT).show();
-        }
-        if (prompts != null && actions != null) {
-            final ArrayList<Action> finalActions = actions; // needed because used in inner class
-            if (alertTitle == null)
-                alertTitle = mSelectedVideo.title;
-            // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
-                    R.style.Theme_AppCompat_Dialog_Alert);
-            OnActionClickedListener parent = this;
-            builder
-                    .setTitle(alertTitle)
-                    .setItems(prompts.toArray(new String[0]),
-                            new DialogInterface.OnClickListener() {
-                                ArrayList<Action> mActions = finalActions;
-                                OnActionClickedListener mParent = parent;
-
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // The 'which' argument contains the index position
-                                    // of the selected item
-                                    if (which < mActions.size()) {
-                                        mParent.onActionClicked(mActions.get(which));
-                                    }
-                                }
-                            });
-            builder.show();
-        }
+        videoAction.onActionClicked(action);
     }
-
-    private void promptForNewValue(int msgid, int nextId) {
-        mNewValueText = null;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
-                R.style.Theme_AppCompat_Dialog_Alert);
-        builder.setTitle(msgid);
-        EditText input = new EditText(getContext());
-        input.setText(mNewValueText);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            mNewValueText = input.getText().toString();
-            onActionClicked(new Action(nextId));
-        });
-        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
 
     public void onActivityResult (int requestCode,
                                   int resultCode,
                                   Intent intent) {
         if (requestCode == Video.ACTION_PLAY
                 && mSelectedVideo.rectype != RECTYPE_CHANNEL) {
-            AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-            call.setVideo(mSelectedVideo);
-            call.execute(Video.ACTION_REFRESH);
+            videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
         }
     }
 
@@ -786,14 +463,13 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 default: {
                     // Loading video from global search.
                     mSelectedVideo = (Video) mVideoCursorMapper.convert(cursor);
+                    videoAction.setSelectedVideo(mSelectedVideo);
 
                     setupAdapter();
                     setupDetailsOverviewRow();
                     setupMovieListRow();
                     updateBackground(mSelectedVideo.bgImageUrl);
-                    AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-                    call.setVideo(mSelectedVideo);
-                    call.execute(Video.ACTION_REFRESH);
+                    videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
                     // When a Related Video item is clicked.
                     setOnItemViewClickedListener(itemViewClickedListener);
                     setOnItemViewSelectedListener(itemViewSelectedListener);
@@ -915,6 +591,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                     .getString(R.string.play_livetv_1),
                     getResources().getString(R.string.play_livetv_2)));
         }
+        videoAction.setActionsAdapter(mActionsAdapter);
         mDetailsOverviewRow.setActionsAdapter(mActionsAdapter);
         actionInitialSelect = true;
 
@@ -942,23 +619,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
         HeaderItem header = new HeaderItem(0, subcategories[0]);
         mAdapter.add(new ListRow(header, mVideoCursorAdapter));
-    }
-
-    private void setProgressBar(boolean show) {
-        if (mProgressBar == null) {
-            if (!show)
-                return;
-            View mainView = getView();
-            if (mainView == null)
-                return;
-            int height = mainView.getHeight();
-            int padding = height * 5 / 12;
-            mProgressBar = new ProgressBar(getActivity());
-            mProgressBar.setPadding(padding,padding,padding,padding);
-            ViewGroup grp = mainView.findViewById(R.id.details_fragment_root);
-            grp.addView(mProgressBar);
-        }
-        mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
@@ -991,144 +651,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             }
             else
                 scrollSupport.onItemSelected(itemViewHolder,rowViewHolder, getRowsSupportFragment());
-        }
-    }
-
-    @Override
-    public void onPostExecute(AsyncBackendCall taskRunner) {
-        Context context = getContext();
-        if (taskRunner == null)
-            return;
-        int [] tasks = taskRunner.getTasks();
-        XmlNode xml = taskRunner.getXmlResult();
-        switch (tasks[0]) {
-            case Video.ACTION_LIVETV:
-                setProgressBar(false);
-                Video video = taskRunner.getVideo();
-                // video null means recording failed
-                // activity null means user pressed back button
-                if (video == null || context == null) {
-                    if (context != null) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context,
-                                R.style.Theme_AppCompat_Dialog_Alert);
-                        builder.setTitle(R.string.title_alert_livetv);
-                        String msg = context.getString(R.string.alert_livetv_fail_message,taskRunner.getStringParameter());
-                        builder.setMessage(msg);
-                        // add a button
-                        builder.setPositiveButton(android.R.string.ok, null);
-                        builder.show();
-                    }
-                    long recordId = taskRunner.getRecordId();
-                    long recordedId = taskRunner.getRecordedId();
-                    video = new Video.VideoBuilder()
-                            .recGroup("LiveTV")
-                            .recordedid(String.valueOf(recordedId))
-                            .build();
-                    if (recordId >= 0) {
-                        // Terminate Live TV
-                        AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-                        call.setVideo(video);
-                        call.setRecordId(recordId);
-                        call.setRecordedId(Integer.parseInt(video.recordedid));
-                        call.execute(
-                                Video.ACTION_STOP_RECORDING,
-                                Video.ACTION_REMOVE_RECORD_RULE);
-                    }
-                    break;
-                }
-                Intent intent = new Intent(context, PlaybackActivity.class);
-                intent.putExtra(PlaybackActivity.VIDEO, video);
-                intent.putExtra(PlaybackActivity.BOOKMARK, 0L);
-                intent.putExtra(PlaybackActivity.RECORDID, taskRunner.getRecordId());
-                intent.putExtra(PlaybackActivity.ENDTIME, taskRunner.getEndTime().getTime());
-                startActivity(intent);
-                break;
-            case Video.ACTION_ALLOW_RERECORD:
-                if (xml != null && "true".equals(xml.getString())) {
-                    Toast.makeText(getContext(),R.string.msg_allowed_rerecord, Toast.LENGTH_LONG)
-                            .show();
-                }
-                else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context,
-                            R.style.Theme_AppCompat_Dialog_Alert);
-                    builder.setTitle(R.string.msg_error_title);
-                    builder.setMessage(R.string.msg_fail_allowed_rerecord);
-                    builder.show();
-                }
-                break;
-            case Video.ACTION_GETRECGROUPLIST:
-                mRecGroupList = XmlNode.getStringList(xml); // ACTION_GETRECGROUPLIST
-                onActionClicked(new Action(Video.ACTION_QUERY_UPDATE_RECGROUP));
-                break;
-//            case Video.ACTION_DVR_WSDL:
-//                // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
-//                XmlNode  recGroupNode = xml.getNode(new String[]{"types", "schema"}, 1);
-//                if (recGroupNode != null)
-//                    recGroupNode = recGroupNode.getNode
-//                            (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"},0);
-//                if (recGroupNode !=null)
-//                    canUpdateRecGroup = true;
-//                else
-//                    canUpdateRecGroup = false;
-//                break;
-            case Video.ACTION_VIEW_DESCRIPTION:
-                xml = taskRunner.getXmlResult();
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
-                        R.style.Theme_AppCompat);
-                String msg = mSelectedVideo.title + "\n"
-                        + mDetailsDescriptionPresenter.getSubtitle() + "\n"
-                        + mDetailsDescriptionPresenter.getDescription(xml);
-                SpannableStringBuilder span = new SpannableStringBuilder(msg);
-                span.setSpan(new TabStopSpan.Standard(400), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setMessage(span);
-                builder.show();
-                break;
-
-            default:
-                // Assume ACTION_REFRESH was in the list
-                if (context == null)
-                    break;
-                mBookmark = taskRunner.getBookmark();
-                mPosBookmark = taskRunner.getPosBookmark();
-                mLastPlay = taskRunner.getLastPlay();
-                mPosLastPlay = taskRunner.getPosLastPlay();
-                int progflags = Integer.parseInt(mSelectedVideo.progflags);
-                mWatched = ((progflags & Video.FL_WATCHED) != 0);
-                mDetailsDescriptionPresenter.setupDescription();
-                int i = 0;
-                mActionsAdapter.clear();
-                if (mLastPlay > 0 || mPosLastPlay > 0)
-                    mActionsAdapter.set(++i, new Action(Video.ACTION_PLAY_FROM_LASTPOS, getResources()
-                            .getString(R.string.resume_last_1),
-                            getResources().getString(R.string.resume_last_2)));
-                if (mBookmark > 0 || mPosBookmark > 0) {
-                    if (i == 0)
-                        mActionsAdapter.set(++i, new Action(Video.ACTION_PLAY_FROM_BOOKMARK, getResources()
-                                .getString(R.string.resume_bkmrk_1),
-                                getResources().getString(R.string.resume_bkmrk_2)));
-                    else
-                        mActionsAdapter.set(++i, new Action(Video.ACTION_PLAY_FROM_OTHER, getResources()
-                                .getString(R.string.play_other_1),
-                                getResources().getString(R.string.play_other_2)));
-                }
-                if (i <= 1)
-                    mActionsAdapter.set(++i, new Action(Video.ACTION_PLAY, getResources()
-                            .getString(R.string.play_1),
-                            getResources().getString(R.string.play_2)));
-                // These add extra if needed buttons - these are now done with menu instead
-                //        if ("Deleted".equals(mSelectedVideo.recGroup))
-                //            mActionsAdapter.set(++i, new Action(Video.ACTION_UNDELETE, getResources()
-                //                 .getString(R.string.undelete_1),
-                //                  getResources().getString(R.string.undelete_2)));
-                //        else
-                //            mActionsAdapter.set(++i, new Action(Video.ACTION_DELETE, getResources()
-                //                   .getString(R.string.delete_1),
-                //                    getResources().getString(R.string.delete_2)));
-                mActionsAdapter.set(++i, new Action(Video.ACTION_OTHER, getResources()
-                        .getString(R.string.button_other_1),
-                        getResources().getString(R.string.button_other_2)));
-                actionInitialSelect = true;
-                break;
         }
     }
 }

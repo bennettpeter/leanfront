@@ -1247,6 +1247,7 @@ public class AsyncBackendCall implements Runnable {
                     break;
 
                 case Video.ACTION_DUMMY:
+                case Video.ACTION_OTHER:
                     break;
 
                 case Video.ACTION_PAUSE:

@@ -76,7 +76,6 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.media3.common.TrackSelectionOverride;
-import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
@@ -937,8 +936,9 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     private CursorObjectAdapter setupRelatedVideosCursor() {
-        CursorObjectAdapter videoCursorAdapter = new CursorObjectAdapter
-                (new CardPresenter(CardPresenter.TYPE_PLAYBACK));
+        CardPresenter p = new CardPresenter(this);
+        p.setType(CardPresenter.TYPE_PLAYBACK);
+        CursorObjectAdapter videoCursorAdapter = new CursorObjectAdapter(p);
         videoCursorAdapter.setMapper(new VideoCursorMapper());
 
         Bundle args = new Bundle();

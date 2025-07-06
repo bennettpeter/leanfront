@@ -665,7 +665,7 @@ public class MainFragment extends BrowseSupportFragment
             MyHeaderItem header = (MyHeaderItem) rowList.get(0);
             if (mRowName != null && mRowName.equals(header.getName()))
                 selection[0] = rownum;
-            ArrayObjectAdapter rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter());
+            ArrayObjectAdapter rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter(this));
             rowList.remove(0);
             if (rowList.size() > 0)
                 rowObjectAdapter.addAll(0, rowList);
@@ -677,7 +677,7 @@ public class MainFragment extends BrowseSupportFragment
         // Create a row for tools.
         MyHeaderItem gridHeader = new MyHeaderItem(getString(R.string.row_header_tools),
                 TYPE_TOOLS,mBaseName);
-        CardPresenter presenter = new CardPresenter();
+        CardPresenter presenter = new CardPresenter(this);
         ArrayObjectAdapter toolsRowAdapter = new ArrayObjectAdapter(presenter);
         row = new ListRow(gridHeader, toolsRowAdapter);
         mCategoryRowAdapter.add(row);

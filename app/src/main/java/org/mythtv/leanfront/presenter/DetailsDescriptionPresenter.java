@@ -26,6 +26,7 @@ package org.mythtv.leanfront.presenter;
 
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 
+import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
@@ -51,12 +52,12 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
         mViewHolder = viewHolder;
         setupDescription();
     }
-    
+
     @SuppressLint("SimpleDateFormat")
     public void setupDescription() {
         if (mVideo == null)
             return;
-        Context context = mViewHolder.getBody().getContext();
+        Context context = MyApplication.getAppContext();
         if (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
             || mVideo.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
             mViewHolder.getTitle().setText(mVideo.title);
@@ -78,7 +79,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
         if (mVideo == null)
             return null;
         boolean isRecording = (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING);
-        Context context = mViewHolder.getBody().getContext();
+        Context context = MyApplication.getAppContext();
         if (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
                 || mVideo.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
             StringBuilder description = new StringBuilder("\n");

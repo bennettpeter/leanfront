@@ -25,7 +25,6 @@
 package org.mythtv.leanfront.ui;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;

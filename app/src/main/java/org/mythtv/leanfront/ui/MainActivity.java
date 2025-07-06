@@ -39,7 +39,6 @@ import androidx.fragment.app.Fragment;
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
-import org.mythtv.leanfront.ui.playback.PlaybackFragment;
 
 import java.util.Locale;
 

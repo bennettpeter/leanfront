@@ -32,8 +32,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import androidx.fragment.app.Fragment;
+import androidx.leanback.widget.Action;
 import androidx.leanback.widget.BaseCardView;
-import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 import androidx.core.content.ContextCompat;
 
@@ -53,6 +54,7 @@ import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.ui.MainFragment;
+import org.mythtv.leanfront.ui.VideoAction;
 import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -67,12 +69,15 @@ public class CardPresenter extends Presenter {
     private int mDefaultBackgroundColor = -1;
     private int mType = 0;
     public static final int TYPE_PLAYBACK = 1;
+    private VideoAction videoAction;
+    private Fragment fragment;
 
-    public CardPresenter() {
+    public CardPresenter(Fragment fragment) {
+        this.fragment = fragment;
     }
 
-    public CardPresenter(int type) {
-        mType = type;
+    public void setType(int mType) {
+        this.mType = mType;
     }
 
     @Override
@@ -82,7 +87,7 @@ public class CardPresenter extends Presenter {
         mSelectedBackgroundColor =
                 ContextCompat.getColor(parent.getContext(), R.color.selected_background);
 
-        ImageCardView cardView = new ImageCardView(parent.getContext()) {
+        VideoCardView cardView = new VideoCardView(parent.getContext()) {
             @Override
             public void setSelected(boolean selected) {
                 updateCardBackgroundColor(this, selected);
@@ -93,11 +98,26 @@ public class CardPresenter extends Presenter {
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
         cardView.setInfoVisibility(BaseCardView.CARD_REGION_VISIBLE_ALWAYS);
+        videoAction = new VideoAction(fragment,null);
         updateCardBackgroundColor(cardView, false);
         return new MyViewHolder(cardView);
     }
 
-    private void updateCardBackgroundColor(ImageCardView view, boolean selected) {
+    public void showVideoMenu(VideoCardView cardView) {
+        Video video = cardView.getVideo();
+        if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
+            || video.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
+            videoAction.setSelectedVideo(cardView.getVideo());
+            if (mType == TYPE_PLAYBACK)
+                // If we are in playback use a menu thah dow not include
+                // play options.
+                videoAction.onActionClicked(new Action(Video.ACTION_OTHER));
+            else
+                videoAction.onActionClicked(new Action(Video.ACTION_REFRESH_FULL));
+        }
+    }
+
+    private void updateCardBackgroundColor(VideoCardView view, boolean selected) {
         int color = selected ? mSelectedBackgroundColor : mDefaultBackgroundColor;
 
         // Both background colors should be set because the view's
@@ -108,11 +128,13 @@ public class CardPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolderIn, Object item) {
+        View rootView = viewHolderIn.view;
+        rootView.setFocusable(true);
         MyViewHolder viewHolder = (MyViewHolder) viewHolderIn;
-        viewHolder.mVideo = (Video) item;
-        Video video = (Video) viewHolder.mVideo;
-
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
+        Video video = (Video) item;
+        viewHolder.mVideo = video;
+        VideoCardView cardView = (VideoCardView) viewHolder.view;
+        cardView.setVideo(video);
         String imageUrl = null;
         if (video.rectype == VideoContract.VideoEntry.RECTYPE_CHANNEL) {
             cardView.setTitleText(video.channel);
@@ -227,7 +249,7 @@ public class CardPresenter extends Presenter {
     @Override
     public void onUnbindViewHolder(Presenter.ViewHolder viewHolderIn) {
         MyViewHolder viewHolder = (MyViewHolder) viewHolderIn;
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
+        VideoCardView cardView = (VideoCardView) viewHolder.view;
 
         // Remove references to images so that the garbage collector can free up memory.
         cardView.setBadgeImage(null);
@@ -265,12 +287,16 @@ public class CardPresenter extends Presenter {
                     // To avoid clicking menu on an item in the related videos list
                     // and finding it actually operates on the main video.
                     case KeyEvent.KEYCODE_MENU:
-                        if (mType == TYPE_PLAYBACK)
-                            return false;
+                        showVideoMenu((VideoCardView) viewIn);
                         return true;
                 }
                 return false;
             });
+            viewIn.setOnLongClickListener( (v) ->  {
+                showVideoMenu((VideoCardView) viewIn);
+                return true;
+            });
+
         }
         public void onPostExecute(AsyncBackendCall taskRunner) {
             Context context = view.getContext();

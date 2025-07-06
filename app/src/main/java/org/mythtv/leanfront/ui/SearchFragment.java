@@ -80,7 +80,7 @@ public class SearchFragment extends SearchSupportFragment
     private ArrayObjectAdapter mRowsAdapter;
     private String mQuery;
     private final CursorObjectAdapter mVideoCursorAdapter =
-            new CursorObjectAdapter(new CardPresenter());
+            new CursorObjectAdapter(new CardPresenter(this));
 
     private int mSearchLoaderId = 1;
     private boolean mResultsFound = false;
