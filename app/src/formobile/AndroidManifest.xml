@@ -1,18 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-     Copyright (C) 2014 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -31,40 +17,52 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-<!--    <uses-feature-->
-<!--        android:name="android.software.leanback"-->
-<!--        android:required="false" />-->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
 
     <application
-        android:name="org.mythtv.leanfront.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="false"
         android:banner="@drawable/banner_lean"
         android:icon="@drawable/ic_launcher_lean"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Leanback"
-        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode"
-        android:usesCleartextTraffic="true"
         android:largeHeap="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/Theme.Leanback"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode">
+<!--        <activity-->
+<!--            android:name=".ui.MainActivity"-->
+<!--            android:exported="true"-->
+<!--            android:icon="@drawable/ic_launcher_lean"-->
+<!--            android:label="@string/app_name"-->
+<!--            android:screenOrientation="landscape"-->
+<!--            android:theme="@style/Theme.Leanback.Browse">-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LEANBACK_LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+<!--        </activity>-->
         <activity
-            android:name="org.mythtv.leanfront.ui.MainActivity"
-            android:icon="@drawable/ic_launcher_lean"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.Leanback.Browse"
+            android:name=".mobile.MainActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
-        <meta-data android:name="android.app.default_searchable"
+        <meta-data
+            android:name="android.app.default_searchable"
             android:value=".ui.VideoDetailsActivity" />
+
         <activity
-            android:name="org.mythtv.leanfront.ui.VideoDetailsActivity"
-            android:screenOrientation="landscape"
+            android:name=".ui.VideoDetailsActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback.Details">
 
             <!-- Receives the search request. -->
@@ -79,38 +77,40 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="org.mythtv.leanfront.ui.playback.PlaybackActivity"
-            android:screenOrientation="landscape"
+            android:name=".ui.playback.PlaybackActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|keyboard|keyboardHidden"
             android:launchMode="singleTask"
-            android:resizeableActivity="false" />
-        <activity android:name="org.mythtv.leanfront.ui.SearchActivity"
+            android:resizeableActivity="false"
             android:screenOrientation="landscape" />
-        <activity android:name="org.mythtv.leanfront.ui.ManageRecordingsActivity"
+        <activity
+            android:name=".ui.SearchActivity"
             android:screenOrientation="landscape" />
-        <activity android:name="org.mythtv.leanfront.ui.SettingsActivity"
+        <activity
+            android:name=".ui.ManageRecordingsActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.SettingsActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback.GuidedStep"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name="org.mythtv.leanfront.ui.EditScheduleActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name=".ui.EditScheduleActivity"
             android:configChanges="keyboard|keyboardHidden"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback.GuidedStep"
-            android:windowSoftInputMode="adjustPan" />
-
-        <!-- Provides search suggestions for keywords against video metadata. -->
+            android:windowSoftInputMode="adjustPan" /> <!-- Provides search suggestions for keywords against video metadata. -->
         <provider
-            android:name="org.mythtv.leanfront.data.VideoProvider"
+            android:name=".data.VideoProvider"
             android:authorities="${packageName}"
-            android:permission="${applicationId}.ACCESS_VIDEO_DATA"
-            android:exported="true">
+            android:exported="true"
+            android:permission="${applicationId}.ACCESS_VIDEO_DATA">
             <path-permission
                 android:pathPrefix="/search"
                 android:readPermission="android.permission.GLOBAL_SEARCH" />
         </provider>
 
         <service
-            android:name="org.mythtv.leanfront.data.FetchVideoService"
+            android:name=".data.FetchVideoService"
             android:exported="false" />
     </application>
 

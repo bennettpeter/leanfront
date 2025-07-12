@@ -25,6 +25,8 @@
 package org.mythtv.leanfront.ui;
 
 import android.app.ActivityManager;
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -49,12 +51,22 @@ public class MainActivity extends LeanbackActivity {
 
     private static final String TAG = "lfe";
     private static final String CLASS = "MainActivity";
+    public static boolean isLeanback = true;
     long mMultipleKeyTime;
     private MainFragment mainFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+        boolean isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+        if (!isTV && org.mythtv.leanfront.mobile.MainActivity.isMobile) {
+            startActivity(new Intent(this, org.mythtv.leanfront.mobile.MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.main);
         Fragment fragment =
                 getSupportFragmentManager().findFragmentByTag("main");
