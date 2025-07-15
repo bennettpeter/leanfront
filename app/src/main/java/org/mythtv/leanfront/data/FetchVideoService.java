@@ -54,7 +54,7 @@ public class FetchVideoService extends IntentService {
     public static final String RECTYPE = "RecType";
     public static final String RECGROUP = "RecGroup";
     public static final String ISPROGRESSBAR = "IsProgressBar";
-    public ReentrantLock fullRunLock = new ReentrantLock();
+    public static ReentrantLock fullRunLock = new ReentrantLock();
     /**
      * Creates an IntentService with a default name for the worker thread.
      */
