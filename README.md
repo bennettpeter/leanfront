@@ -66,7 +66,8 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 - The main screen shows a horizontally scrolling list for each recording group. One icon is shown per series.
 - Select a group name or All on the left and press enter to see the [Recording Group Screen](#recording-group-screen).
-- Selecting an episode icon opens a [Detail Screen](#detail-screen).
+- Selecting an episode icon and pressing enter opens a [Detail Screen](#detail-screen).
+- You can also long press an episode or press the menu key on the remote to get a menu of actions to immediately take on an episode.
 
 <details><summary>Recently Viewed List</summary>
 
@@ -101,7 +102,9 @@ Now, for example, if you watched and deleted an episode yesterday, the deleted e
 ![](ScreenShots/RecGroup.png)
 
 - This screen shows one row for each series with episodes listed across.
-- Selecting an episode icon opens a [Detail Screen](#detail-screen).
+- Selecting an episode icon and pressing enter opens a [Detail Screen](#detail-screen).
+- You can also long press an episode or press the menu key on the remote to get a menu of actions to immediately take on an episode.
+
 
 <details><summary>Working with a series</summary>
 
@@ -132,7 +135,11 @@ See this by pressing Down on the Detail Screen. A horizontal list of other episo
 ## Videos Screen
 ![](ScreenShots/Videos.png)
 
-Videos from the Videos part of MythTV are shown here, organized by directory. You can drill down to subdirectories or play videos from this screen. 
+Videos from the Videos part of MythTV are shown here, organized by directory. You can drill down to subdirectories or play videos from this screen.
+
+- Selecting a video icon and pressing enter opens a [Detail Screen](#detail-screen).
+- You can also long press a video or press the menu key on the remote to get a menu of actions to immediately take on a video.
+
 
 <details><summary>Operating on a directory</summary>
 
