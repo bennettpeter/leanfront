@@ -234,7 +234,7 @@
   <string name="pberror_button_exit">Uscita</string>
   <string name="sort_exclude_1">IL</string>
   <string name="sort_exclude_2">UN</string>
-  <string name="sort_exclude_3">UN</string>
+  <string name="sort_exclude_3"></string>
   <string name="title_grid_time">Tempo di griglia:</string>
   <string name="note_program_continuation">(continua)</string>
   <string name="title_select_timeslot">Gruppo di canali e ora</string>

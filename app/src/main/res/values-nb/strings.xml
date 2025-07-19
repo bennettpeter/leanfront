@@ -234,7 +234,7 @@
   <string name="pberror_button_exit">Exit</string>
   <string name="sort_exclude_1">DE</string>
   <string name="sort_exclude_2">EN</string>
-  <string name="sort_exclude_3">AN</string>
+  <string name="sort_exclude_3"></string>
   <string name="title_grid_time">Rutenetttid:</string>
   <string name="note_program_continuation">(forts.)</string>
   <string name="title_select_timeslot">Kanalgruppe og tid</string>

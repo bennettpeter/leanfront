@@ -232,9 +232,9 @@
   <string name="pberror_extractor_array">Σφάλμα: OutOfBoundsException στο BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Να συνεχίσει</string>
   <string name="pberror_button_exit">Εξοδος</string>
-  <string name="sort_exclude_1">Ο</string>
+  <string name="sort_exclude_1"></string>
   <string name="sort_exclude_2">ΕΝΑ</string>
-  <string name="sort_exclude_3">ΕΝΑ</string>
+  <string name="sort_exclude_3"></string>
   <string name="title_grid_time">Χρόνος πλέγματος:</string>
   <string name="note_program_continuation">(συνέχεια)</string>
   <string name="title_select_timeslot">Ομάδα καναλιών και ώρα</string>
