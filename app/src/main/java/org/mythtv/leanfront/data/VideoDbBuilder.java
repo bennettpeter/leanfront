@@ -371,6 +371,8 @@ public class VideoDbBuilder {
             }
 
             for (String article : articles) {
+                // Empty entries may be a single space
+                article = article.trim();
                 if (article != null && article.length() > 0) {
                     titlematch = titlematch.replaceFirst("^" + article + " ", "");
                 }

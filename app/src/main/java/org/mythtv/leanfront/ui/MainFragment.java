@@ -629,6 +629,8 @@ public class MainFragment extends BrowseSupportFragment
         titleSort.append("'").append(delim).append("'||UPPER(")
                 .append(columnName).append(")");
         for (String article : articles) {
+            // Empty entries may be a single space
+            article = article.trim();
             if (article != null && article.length() > 0) {
                 titleSort.insert(0, "REPLACE(");
                 titleSort.append(",'").append(delim).append(article)
