@@ -615,7 +615,6 @@ public class MainFragment extends BrowseSupportFragment
         mHandler.postDelayed(mBackgroundTask, BACKGROUND_UPDATE_DELAY);
     }
 
-    static final String[] articles = MyApplication.getAppContext().getResources().getStringArray(R.array.title_sort_articles);
     /**
      * Create the Sql to sort with excluding articles "the" "a" etc at the front
      * or at the front of directory names
@@ -624,7 +623,10 @@ public class MainFragment extends BrowseSupportFragment
      * @return StringBuilder with resulting phrase for "order by"
      */
     public static StringBuilder makeTitleSort(String columnName, char delim) {
+        final String[] articles = MyApplication.getAppContext().getResources()
+                .getStringArray(R.array.title_sort_articles);
         // Sort uppercase title
+        // REPLACE(REPLACE(REPLACE('^'||UPPER(title),'^THE ','^'),'^A ','^'),'^AN ','^')
         StringBuilder titleSort = new StringBuilder();
         titleSort.append("'").append(delim).append("'||UPPER(")
                 .append(columnName).append(")");

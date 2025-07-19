@@ -148,7 +148,6 @@ public class VideoDbBuilder {
         return videoData.getInt("TotalAvailable", 0);
     }
 
-    static final String[] articles = MyApplication.getAppContext().getResources().getStringArray(R.array.title_sort_articles);
     /**
      * Takes the contents of an XML object and populates the database
      *
@@ -158,6 +157,8 @@ public class VideoDbBuilder {
      */
     public void buildMedia(XmlNode xmlFull, int phase, int ixSingle, List<ContentValues> videosToInsert)
             throws IOException, XmlPullParserException {
+        final String[] articles = MyApplication.getAppContext().getResources()
+                .getStringArray(R.array.title_sort_articles);
         String[] tagsProgram = null;
         String tagRecordedId = null;
         if (phase == 0) {  //Recordings
