@@ -233,8 +233,8 @@
   <string name="pberror_button_continue">Kontynuować</string>
   <string name="pberror_button_exit">Wyjście</string>
   <string name="sort_exclude_1">TO</string>
-  <string name="sort_exclude_2"></string>
-  <string name="sort_exclude_3"></string>
+  <string name="sort_exclude_2">A</string>
+  <string name="sort_exclude_3">JAKIŚ</string>
   <string name="title_grid_time">Czas siatki:</string>
   <string name="note_program_continuation">(cd.)</string>
   <string name="title_select_timeslot">Grupa kanałów i czas</string>

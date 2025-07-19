@@ -233,7 +233,7 @@
   <string name="pberror_button_continue">Continuar</string>
   <string name="pberror_button_exit">Salida</string>
   <string name="sort_exclude_1">EL</string>
-  <string name="sort_exclude_2"></string>
+  <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3">UN</string>
   <string name="title_grid_time">Tiempo de cuadrícula:</string>
   <string name="note_program_continuation">(continuación)</string>

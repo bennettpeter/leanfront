@@ -232,9 +232,9 @@
   <string name="pberror_extractor_array">Virhe: Indeksivirhe BundledExtractorsAdapterissa.</string>
   <string name="pberror_button_continue">Jatka</string>
   <string name="pberror_button_exit">Poistu</string>
-  <string name="sort_exclude_1"></string>
-  <string name="sort_exclude_2"></string>
-  <string name="sort_exclude_3"></string>
+  <string name="sort_exclude_1">SE</string>
+  <string name="sort_exclude_2">ERÄS</string>
+  <string name="sort_exclude_3">YKSI</string>
   <string name="title_grid_time">Ruudukkoaika:</string>
   <string name="note_program_continuation">(jatkoa)</string>
   <string name="title_select_timeslot">Kanavaryhmä ja aika</string>

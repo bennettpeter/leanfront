@@ -234,7 +234,7 @@
   <string name="pberror_button_exit">Verlaat</string>
   <string name="sort_exclude_1">DIE</string>
   <string name="sort_exclude_2">\'N</string>
-  <string name="sort_exclude_3"></string>
+  <string name="sort_exclude_3"> </string>
   <string name="title_grid_time">Roostertyd:</string>
   <string name="note_program_continuation">(vervolg)</string>
   <string name="title_select_timeslot">Kanaalgroep en tyd</string>

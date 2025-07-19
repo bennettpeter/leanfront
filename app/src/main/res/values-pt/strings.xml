@@ -232,9 +232,9 @@
   <string name="pberror_extractor_array">Erro: OutOfBoundsException em BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Continuar</string>
   <string name="pberror_button_exit">Saída</string>
-  <string name="sort_exclude_1"></string>
-  <string name="sort_exclude_2"></string>
-  <string name="sort_exclude_3"></string>
+  <string name="sort_exclude_1">O</string>
+  <string name="sort_exclude_2">UM</string>
+  <string name="sort_exclude_3"> </string>
   <string name="title_grid_time">Tempo de grade:</string>
   <string name="note_program_continuation">(cont.)</string>
   <string name="title_select_timeslot">Grupo de canais e horário</string>

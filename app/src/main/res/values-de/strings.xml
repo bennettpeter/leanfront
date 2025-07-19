@@ -233,7 +233,7 @@
   <string name="pberror_button_continue">Weitermachen</string>
   <string name="pberror_button_exit">Ausfahrt</string>
   <string name="sort_exclude_1">DER</string>
-  <string name="sort_exclude_2"></string>
+  <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3">EIN</string>
   <string name="title_grid_time">Startzeit:</string>
   <string name="note_program_continuation">(Fortsetzung)</string>
