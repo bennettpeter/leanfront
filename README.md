@@ -352,7 +352,7 @@ Leanfront is based on the sample [Videos By Google](https://github.com/android/t
 
 ## Release Notes
 
-You can see a list of changes in each version by looking at the commit list in github. See https://github.com/bennettpeter/android-MythTV-Leanfront/commits/master .
+You can see a list of changes in each version by looking at the commit list in github. See https://github.com/bennettpeter/leanfront/commits/master .
 
 ## Playback
 
@@ -665,7 +665,7 @@ After installing [Android Studio][studio], use SDK Manager to install the emulat
 
 ## Building
 
-- Clone from github.com bennettpeter/android-MythTV-Leanfront.git.
+- Clone from github.com bennettpeter/leanfront.git.
 - Run ./update_dependencies.sh. This will download 3 repositories and check out the appropriate branches / tags.
 - Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
 - Note the ndk version is referenced in the app/build.gradle file. You need to either download the version that is specified there or else update there to match the version you downloaded.
@@ -680,7 +680,7 @@ After installing [Android Studio][studio], use SDK Manager to install the emulat
 ## Internationalization
 
 The source code supports multiple languages. 
-There is a python script that translates strings into several languages using Google Translate. The results are likely not optimal, but may be better than nothing. The system does allow for manual fixing of translation errors. If anybody wants to volunteer to correct translations for a language please email me or create an issue in https://github.com/bennettpeter/android-MythTV-Leanfront/issues .  The list of strings is at https://github.com/bennettpeter/android-MythTV-Leanfront/blob/master/app/src/main/res/values/strings.xml . The translations are in various directories under https://github.com/bennettpeter/android-MythTV-Leanfront/tree/master/app/src/main/res , named vales-xx where xx is the language code.
+There is a python script that translates strings into several languages using Google Translate. The results are likely not optimal, but may be better than nothing. The system does allow for manual fixing of translation errors. If anybody wants to volunteer to correct translations for a language please email me or create an issue in https://github.com/bennettpeter/leanfront/issues .  The list of strings is at https://github.com/bennettpeter/leanfront/blob/master/app/src/main/res/values/strings.xml . The translations are in various directories under https://github.com/bennettpeter/leanfront/tree/master/app/src/main/res , named vales-xx where xx is the language code.
 
 ## License
 
