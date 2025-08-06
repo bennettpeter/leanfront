@@ -77,13 +77,16 @@
         szczegółów lub elementów sterujących odtwarzaniem.</string>
   <string name="pref_title_backend_mac">Obudź adres MAC</string>
   <string name="pref_ff_title">Dekodowanie dźwięku</string>
-  <string name="pref_audio_auto">Automatyczny wybór</string>
+  <string name="pref_ff_video_title">Dekodowanie wideo</string>
+  <string name="pref_decode_auto">Auto Select</string>
   <string name="pref_audio_auto_desc">Jeśli to możliwe, użyj Mediacodec, w przeciwnym razie użyj FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediakodek</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Wiele rodzajów dźwięku, odtwarza dźwięk przestrzenny, jeśli jest skonfigurowany
         Ustawienia Androida.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Gra formaty wideo obsługiwane przez Androida.</string>
+  <string name="pref_decode_ffmpeg">FFMPEG</string>
   <string name="pref_audio_ffmpeg_desc">W przypadku większości rodzajów dźwięku dźwięk przestrzenny jest odtwarzany w formacie stereo.</string>
+  <string name="pref_video_ffmpeg_desc">Wiele rodzajów wideo, w tym formaty nie obsługiwane przez Androida.</string>
   <string name="pref_title_idle_timeout">Limit czasu bezczynności odtwarzania w minutach</string>
   <string name="pref_title_framerate_match">Dopasuj oryginalną liczbę klatek na sekundę</string>
   <string name="pref_letterbox_black">Skrzynka na listy w kolorze czarnym matowym</string>

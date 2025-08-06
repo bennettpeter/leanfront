@@ -77,13 +77,16 @@
         details of afspeelknoppen.</string>
   <string name="pref_title_backend_mac">Wake-up MAC-adres</string>
   <string name="pref_ff_title">Audio-decodering</string>
-  <string name="pref_audio_auto">Automatische selectie</string>
+  <string name="pref_ff_video_title">Video -decodeer</string>
+  <string name="pref_decode_auto">Auto selecteren</string>
   <string name="pref_audio_auto_desc">Gebruik Mediacodec waar mogelijk, gebruik anders FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">Mediacodec</string>
   <string name="pref_audio_mediacodec_desc">Veel soorten audio, speelt surround-geluid af indien ingesteld
         Android-instellingen.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Speelt videoformaten ondersteund door Android ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Bij de meeste soorten audio wordt surroundgeluid in stereo afgespeeld.</string>
+  <string name="pref_video_ffmpeg_desc">Veel soorten video\'s, waaronder formaten die niet worden ondersteund door Android.</string>
   <string name="pref_title_idle_timeout">Time-out bij inactiviteit bij afspelen over minuten</string>
   <string name="pref_title_framerate_match">Overeenkomen met de originele framesnelheid</string>
   <string name="pref_letterbox_black">Brievenbus Zwart Mat</string>

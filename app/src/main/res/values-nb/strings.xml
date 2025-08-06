@@ -77,13 +77,16 @@
         detaljer eller avspillingskontroller.</string>
   <string name="pref_title_backend_mac">Wakeup MAC-adresse</string>
   <string name="pref_ff_title">Lyddekoding</string>
-  <string name="pref_audio_auto">Auto valg</string>
+  <string name="pref_ff_video_title">Videodekode</string>
+  <string name="pref_decode_auto">Auto Select</string>
   <string name="pref_audio_auto_desc">Bruk Mediacodec der det er mulig, ellers bruk FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Mange typer lyd spiller av surroundlyd hvis den er satt opp i
         Android-innstillinger.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Spiller videoformater støttet av Android ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">De fleste typer lyd, surroundlyd spilles som stereo.</string>
+  <string name="pref_video_ffmpeg_desc">Mange typer videoer inkludert formater som ikke er støttet av Android.</string>
   <string name="pref_title_idle_timeout">Tidsavbrudd for inaktiv avspilling i minutter</string>
   <string name="pref_title_framerate_match">Match original bildefrekvens</string>
   <string name="pref_letterbox_black">Postkasse Svart Matt</string>

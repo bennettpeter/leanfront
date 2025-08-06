@@ -77,13 +77,16 @@
         besonderhede of afspeelkontroles.</string>
   <string name="pref_title_backend_mac">Wakeup MAC-adres</string>
   <string name="pref_ff_title">Oudio-dekodeer</string>
-  <string name="pref_audio_auto">Outo kies</string>
+  <string name="pref_ff_video_title">Video -dekodeer</string>
+  <string name="pref_decode_auto">Auto Select</string>
   <string name="pref_audio_auto_desc">Gebruik Mediacodec waar moontlik, anders gebruik FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediakodek</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Baie soorte oudio, speel omringklank as dit ingestel is
         Android-instellings.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Speel videoformate wat deur Android ondersteun word.</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Die meeste soorte klank, surround sound speel as stereo.</string>
+  <string name="pref_video_ffmpeg_desc">Baie soorte video\'s insluitend formate wat nie deur Android ondersteun word nie.</string>
   <string name="pref_title_idle_timeout">Afspeel-tydverloop in minute</string>
   <string name="pref_title_framerate_match">Pas oorspronklike raamtempo aan</string>
   <string name="pref_letterbox_black">Briefbus Swart Mat</string>

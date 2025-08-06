@@ -77,13 +77,16 @@
         détails ou commandes de lecture.</string>
   <string name="pref_title_backend_mac">Adresse MAC de réveil</string>
   <string name="pref_ff_title">Décodage audio</string>
-  <string name="pref_audio_auto">Sélection automatique</string>
+  <string name="pref_ff_video_title">Décoder vidéo</string>
+  <string name="pref_decode_auto">SELECT AUTO</string>
   <string name="pref_audio_auto_desc">Utilisez Mediacodec lorsque cela est possible, sinon utilisez FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Médiacodec</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">De nombreux types d\'audio, lit le son surround s\'il est configuré dans
         Paramètres Android.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Place des formats vidéo pris en charge par Android.</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">La plupart des types d\'audio, le son surround est lu en stéréo.</string>
+  <string name="pref_video_ffmpeg_desc">De nombreux types de vidéos, y compris des formats non pris en charge par Android.</string>
   <string name="pref_title_idle_timeout">Délai d\'inactivité de lecture en minutes</string>
   <string name="pref_title_framerate_match">Faire correspondre la fréquence d\'images d\'origine</string>
   <string name="pref_letterbox_black">Boîte aux lettres Noir Mat</string>

@@ -77,13 +77,16 @@
         detalles o controles de reproducción.</string>
   <string name="pref_title_backend_mac">Dirección MAC de activación</string>
   <string name="pref_ff_title">Decodificación de audio</string>
-  <string name="pref_audio_auto">Selección automática</string>
+  <string name="pref_ff_video_title">Video decodificador</string>
+  <string name="pref_decode_auto">Auto Seleccionar</string>
   <string name="pref_audio_auto_desc">Utilice Mediacodec siempre que sea posible; de ​​lo contrario, utilice FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Muchos tipos de audio, reproduce sonido envolvente si se configura en
         Configuración de Android.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Reproduce formatos de video compatibles con Android.</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">En la mayoría de los tipos de audio, el sonido envolvente se reproduce como estéreo.</string>
+  <string name="pref_video_ffmpeg_desc">Muchos tipos de videos, incluidos los formatos no compatibles con Android.</string>
   <string name="pref_title_idle_timeout">Tiempo de inactividad de reproducción en minutos</string>
   <string name="pref_title_framerate_match">Igualar la velocidad de fotogramas original</string>
   <string name="pref_letterbox_black">Buzón Negro Mate</string>

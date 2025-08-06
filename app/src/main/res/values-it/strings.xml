@@ -77,13 +77,16 @@
         dettagli o controlli di riproduzione.</string>
   <string name="pref_title_backend_mac">Indirizzo MAC di riattivazione</string>
   <string name="pref_ff_title">Decodifica audio</string>
-  <string name="pref_audio_auto">Auto selezione</string>
+  <string name="pref_ff_video_title">Decodifica video</string>
+  <string name="pref_decode_auto">Seleziona automatica</string>
   <string name="pref_audio_auto_desc">Usa Mediacodec dove possibile, altrimenti usa FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">Mediacodec</string>
   <string name="pref_audio_mediacodec_desc">Molti tipi di audio, riproduce il suono surround se configurato in
         Impostazioni Android.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Riproduce formati video supportati da Android ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Nella maggior parte dei tipi di audio, il suono surround viene riprodotto in stereo.</string>
+  <string name="pref_video_ffmpeg_desc">Molti tipi di video tra cui formati non supportati da Android.</string>
   <string name="pref_title_idle_timeout">Timeout di inattività della riproduzione in minuti</string>
   <string name="pref_title_framerate_match">Corrisponde al frame rate originale</string>
   <string name="pref_letterbox_black">Cassetta delle lettere nera opaca</string>

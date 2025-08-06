@@ -77,13 +77,16 @@
         detaily nebo ovládání přehrávání.</string>
   <string name="pref_title_backend_mac">MAC adresa probuzení</string>
   <string name="pref_ff_title">Dekódování zvuku</string>
-  <string name="pref_audio_auto">Automatický výběr</string>
+  <string name="pref_ff_video_title">Video dekódování</string>
+  <string name="pref_decode_auto">Automatické vybrat</string>
   <string name="pref_audio_auto_desc">Kde je to možné, použijte Mediacodec, jinak použijte FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Mnoho typů zvuku, přehrává prostorový zvuk, pokud je nastaven
         Nastavení Androidu.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Hraje video formáty podporované společností Android ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Většina typů zvuku, prostorový zvuk hraje jako stereo.</string>
+  <string name="pref_video_ffmpeg_desc">Mnoho typů videa včetně formátů, které Android nepodporoval.</string>
   <string name="pref_title_idle_timeout">Časový limit nečinnosti přehrávání v minutách</string>
   <string name="pref_title_framerate_match">Odpovídají původní snímkové frekvenci</string>
   <string name="pref_letterbox_black">Poštovní schránka černá matná</string>

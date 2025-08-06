@@ -77,13 +77,16 @@
         Details oder Wiedergabesteuerungen.</string>
   <string name="pref_title_backend_mac">Wakeup-MAC-Adresse</string>
   <string name="pref_ff_title">Audio-Dekodierung</string>
-  <string name="pref_audio_auto">Automatische Auswahl</string>
+  <string name="pref_ff_video_title">Video Decode</string>
+  <string name="pref_decode_auto">Automatische Auswahl</string>
   <string name="pref_audio_auto_desc">Verwenden Sie nach Möglichkeit Mediacodec, andernfalls FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediencodec</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Viele Arten von Audio, spielt Surround-Sound ab, wenn es eingerichtet ist
         Android-Einstellungen.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Spielt Videoformate, die von Android unterstützt werden.</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Bei den meisten Audioarten wird Surround-Sound in Stereo wiedergegeben.</string>
+  <string name="pref_video_ffmpeg_desc">Viele Arten von Videos, einschließlich Formaten, die nicht von Android unterstützt werden.</string>
   <string name="pref_title_idle_timeout">Leerlauf-Timeout für die Wiedergabe in Minuten</string>
   <string name="pref_title_framerate_match">Passen Sie die ursprüngliche Bildrate an</string>
   <string name="pref_letterbox_black">Briefkasten Schwarz Matt</string>

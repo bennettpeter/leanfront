@@ -77,13 +77,16 @@
         yksityiskohtia tai toistosäätimiä.</string>
   <string name="pref_title_backend_mac">Herätyksen MAC-osoite</string>
   <string name="pref_ff_title">Äänen dekoodaus</string>
-  <string name="pref_audio_auto">Automaattinen valinta</string>
+  <string name="pref_ff_video_title">Videoiden purku</string>
+  <string name="pref_decode_auto">Auto Select</string>
   <string name="pref_audio_auto_desc">Käytä Mediakoodekkia mahdollisuuksien mukaan, muuten käytä FFmpegia.</string>
-  <string name="pref_audio_mediacodec">Mediakoodekki</string>
+  <string name="pref_decode_mediacodec">MediaCodec</string>
   <string name="pref_audio_mediacodec_desc">Useita äänityyppejä, toistaa tilaäänen, jos se on asennettu
         Android-asetuksissa.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Toistaa videomuodot, joita Android tukee ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Useimmat äänityypit, surround-ääni toistetaan stereona.</string>
+  <string name="pref_video_ffmpeg_desc">Monen tyyppisiä videoita, mukaan lukien muodot, joita Android ei tue.</string>
   <string name="pref_title_idle_timeout">Uniajastin minuuteissa</string>
   <string name="pref_title_framerate_match">Vastaa alkuperäistä kuvanopeutta</string>
   <string name="pref_letterbox_black">Kirjelaatikko musta matta</string>

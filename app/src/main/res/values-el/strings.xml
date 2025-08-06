@@ -77,13 +77,16 @@
         λεπτομέρειες ή στοιχεία ελέγχου αναπαραγωγής.</string>
   <string name="pref_title_backend_mac">Διεύθυνση MAC αφύπνισης</string>
   <string name="pref_ff_title">Αποκωδικοποίηση ήχου</string>
-  <string name="pref_audio_auto">Αυτόματη επιλογή</string>
+  <string name="pref_ff_video_title">Αποκωδικοποίηση βίντεο</string>
+  <string name="pref_decode_auto">Αυτόματη επιλογή</string>
   <string name="pref_audio_auto_desc">Χρησιμοποιήστε το Mediacodec όπου είναι δυνατόν, διαφορετικά χρησιμοποιήστε το FFmpeg.</string>
-  <string name="pref_audio_mediacodec">Mediacodec</string>
+  <string name="pref_decode_mediacodec">Mediacodec</string>
   <string name="pref_audio_mediacodec_desc">Πολλοί τύποι ήχου, αναπαράγει ήχο surround εάν έχει ρυθμιστεί
         Ρυθμίσεις Android.</string>
-  <string name="pref_audio_ffmpeg">FFmpeg</string>
+  <string name="pref_video_mediacodec_desc">Παίζει μορφές βίντεο που υποστηρίζονται από το Android ..</string>
+  <string name="pref_decode_ffmpeg">Ffmpeg</string>
   <string name="pref_audio_ffmpeg_desc">Οι περισσότεροι τύποι ήχου, ήχου surround αναπαράγονται ως στερεοφωνικό.</string>
+  <string name="pref_video_ffmpeg_desc">Πολλοί τύποι βίντεο που περιλαμβάνουν μορφές που δεν υποστηρίζονται από το Android.</string>
   <string name="pref_title_idle_timeout">Λήξη αδράνειας αναπαραγωγής σε λεπτά</string>
   <string name="pref_title_framerate_match">Αντιστοιχίστε τον αρχικό ρυθμό καρέ</string>
   <string name="pref_letterbox_black">Γραμματοκιβώτιο Μαύρο Ματ</string>
