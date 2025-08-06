@@ -85,6 +85,7 @@ dependencies {
     implementation project(':media-lib-ui-leanback')
     implementation project(':media-lib-ui')
     implementation project(':media-lib-decoder-ffmpeg')
+    implementation 'com.google.firebase:firebase-crashlytics-buildtools:3.0.5'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.8'

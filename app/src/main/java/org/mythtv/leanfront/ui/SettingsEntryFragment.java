@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
@@ -120,6 +121,11 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_BACKEND_PASSWD = 65;
     private static final int ID_HTTP_SSL = 66;
     private static final int ID_POSS_EMPTY = 67;
+    private static final int ID_VIDEO = 68;
+    private static final int ID_VIDEO_AUTO = 69;
+    private static final int ID_VIDEO_MEDIACODEC = 70;
+    private static final int ID_VIDEO_FFMPEG = 71;
+
 
     private static final String KEY_EXPAND = "EXPAND";
 
@@ -130,6 +136,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
     private GuidedAction mBackendAction;
     private GuidedAction mAudioAction;
+    private GuidedAction mVideoAction;
     private GuidedAction mCommskipAction;
 
     private String mPriorBackend;
@@ -235,7 +242,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .title(R.string.pref_title_framerate_match)
                     .checked("true".equals(str))
                     .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID);
-            if (android.os.Build.VERSION.SDK_INT < 23)
+            if (Build.VERSION.SDK_INT < 23)
                 tmp.description(R.string.pref_msg_needs_6_0)
                         .enabled(false);
             subActions.add(tmp.build());
@@ -561,25 +568,25 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .build());
 
         subActions = new ArrayList<>();
-        String audio = Settings.getString("pref_audio");
+        str = Settings.getString("pref_audio");
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_AUDIO_AUTO)
-                .title(R.string.pref_audio_auto)
-                .checked("auto".equals(audio))
+                .title(R.string.pref_decode_auto)
+                .checked("auto".equals(str))
                 .description(R.string.pref_audio_auto_desc)
                 .checkSetId(ID_AUDIO)
                 .build());
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_AUDIO_MEDIACODEC)
-                .title(R.string.pref_audio_mediacodec)
-                .checked("mediacodec".equals(audio))
+                .title(R.string.pref_decode_mediacodec)
+                .checked("mediacodec".equals(str))
                 .description(R.string.pref_audio_mediacodec_desc)
                 .checkSetId(ID_AUDIO)
                 .build());
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_AUDIO_FFMPEG)
-                .title(R.string.pref_audio_ffmpeg)
-                .checked("ffmpeg".equals(audio))
+                .title(R.string.pref_decode_ffmpeg)
+                .checked("ffmpeg".equals(str))
                 .description(R.string.pref_audio_ffmpeg_desc)
                 .checkSetId(ID_AUDIO)
                 .build());
@@ -587,6 +594,36 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .id(ID_AUDIO)
                 .title(R.string.pref_ff_title)
                 .description(audiodesc())
+                .subActions(subActions)
+                .build());
+
+        subActions = new ArrayList<>();
+        str = Settings.getString("pref_video");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_VIDEO_AUTO)
+                .title(R.string.pref_decode_auto)
+                .checked("auto".equals(str))
+                .description(R.string.pref_audio_auto_desc)
+                .checkSetId(ID_VIDEO)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_VIDEO_MEDIACODEC)
+                .title(R.string.pref_decode_mediacodec)
+                .checked("mediacodec".equals(str))
+                .description(R.string.pref_video_mediacodec_desc)
+                .checkSetId(ID_VIDEO)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_VIDEO_FFMPEG)
+                .title(R.string.pref_decode_ffmpeg)
+                .checked("ffmpeg".equals(str))
+                .description(R.string.pref_video_ffmpeg_desc)
+                .checkSetId(ID_VIDEO)
+                .build());
+        actions.add(mVideoAction = new GuidedAction.Builder(getActivity())
+                .id(ID_VIDEO)
+                .title(R.string.pref_ff_video_title)
+                .description(videodesc())
                 .subActions(subActions)
                 .build());
 
@@ -679,6 +716,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
     private String audiodesc() {
         return Settings.getString("pref_audio");
+    }
+    private String videodesc() {
+        return Settings.getString("pref_video");
     }
 
     private String commskipdesc() {
@@ -1036,6 +1076,18 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 if (action.isChecked())
                     Settings.putString(editor, "pref_audio", "ffmpeg");
                 break;
+            case ID_VIDEO_AUTO:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_video", "auto");
+                break;
+            case ID_VIDEO_MEDIACODEC:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_video", "mediacodec");
+                break;
+            case ID_VIDEO_FFMPEG:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_video", "ffmpeg");
+                break;
             case ID_ERROR_TOAST:
                 if (action.isChecked())
                     Settings.putString(editor, "pref_error_toast", "true");
@@ -1087,6 +1139,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         notifyActionChanged(findActionPositionById(ID_PLAYBACK));
         mAudioAction.setDescription(audiodesc());
         notifyActionChanged(findActionPositionById(ID_AUDIO));
+        mVideoAction.setDescription(videodesc());
+        notifyActionChanged(findActionPositionById(ID_VIDEO));
         mCommskipAction.setDescription(commskipdesc());
         notifyActionChanged(findActionPositionById(ID_COMMSKIP));
         return false;

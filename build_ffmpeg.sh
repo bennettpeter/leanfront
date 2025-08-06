@@ -38,7 +38,9 @@ cd ../media
 FFMPEG_MODULE_PATH="$(pwd)/libraries/decoder_ffmpeg/src/main"
 NDK_PATH=$HOME/Android/android-ndk
 HOST_PLATFORM="linux-x86_64"
-ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw)
+ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac \
+ alac pcm_mulaw pcm_alaw \
+ mpeg4 h264 hevc vp8 vp9 webm mpegvideo mpeg2video prores vc1)
 cd "${FFMPEG_MODULE_PATH}/jni"
 rm -rf ffmpeg
 ln -fs "$FFMPEG_PATH" ffmpeg

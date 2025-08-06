@@ -110,13 +110,16 @@
         details or playback controls.</string>
     <string name="pref_title_backend_mac">Wakeup MAC Address</string>
     <string name="pref_ff_title">Audio Decode</string>
-    <string name="pref_audio_auto">Auto select</string>
+    <string name="pref_ff_video_title">Video Decode</string>
+    <string name="pref_decode_auto">Auto select</string>
     <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>
-    <string name="pref_audio_mediacodec">Mediacodec</string>
+    <string name="pref_decode_mediacodec">Mediacodec</string>
     <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in
         Android settings.</string>
-    <string name="pref_audio_ffmpeg">FFmpeg</string>
+    <string name="pref_video_mediacodec_desc">Plays video formats supported by Android..</string>
+    <string name="pref_decode_ffmpeg">FFmpeg</string>
     <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>
+    <string name="pref_video_ffmpeg_desc">Many types of video including formats not supported by Android.</string>
     <string name="pref_title_idle_timeout">Playback idle timeout in minutes</string>
     <string name="pref_title_framerate_match">Match original frame rate</string>
     <string name="pref_letterbox_black">Letterbox Black Matte</string>
@@ -465,6 +468,7 @@
     <string name="sdef_seq" translatable="false">rectime</string>
     <string name="sdef_seq_ascdesc" translatable="false">asc</string>
     <string name="sdef_audio" translatable="false">auto</string>
+    <string name="sdef_video" translatable="false">auto</string>
     <string name="sdef_jump" translatable="false">5</string>
     <string name="sdef_livetv_duration" translatable="false">60</string>
     <string name="sdef_framerate_match" translatable="false">false</string>

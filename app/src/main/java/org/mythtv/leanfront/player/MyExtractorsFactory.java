@@ -41,7 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@UnstableApi public class MyExtractorsFactory implements ExtractorsFactory {
+@UnstableApi
+public class MyExtractorsFactory implements ExtractorsFactory {
 
     private DefaultExtractorsFactory defaultFactory;
 

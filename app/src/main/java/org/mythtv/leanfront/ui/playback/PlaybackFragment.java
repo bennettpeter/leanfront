@@ -92,6 +92,7 @@ import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
 import org.mythtv.leanfront.player.MyExtractorsFactory;
+import org.mythtv.leanfront.player.MyRenderersFactory;
 import org.mythtv.leanfront.player.VideoPlayerGlue;
 import org.mythtv.leanfront.presenter.CardPresenter;
 
@@ -173,7 +174,8 @@ public class PlaybackFragment extends VideoSupportFragment
     private int mSkipFwd = 1000 * Settings.getInt("pref_skip_fwd");
     private int mSkipBack = 1000 * Settings.getInt("pref_skip_back");
     private int mJump = 60000 * Settings.getInt("pref_jump");
-    private String mAudio = Settings.getString("pref_audio");
+    private String prefAudio = Settings.getString("pref_audio");
+    private String prefVideo = Settings.getString("pref_video");
     private boolean mFrameMatch = "true".equals(Settings.getString("pref_framerate_match"));
     private int mSubtitleSize =  Settings.getInt("pref_subtitle_size");
     private int mBgColor = Settings.getInt("pref_letterbox_color");
@@ -453,13 +455,19 @@ public class PlaybackFragment extends VideoSupportFragment
     private void initializePlayer(boolean enableControls) {
         Log.i(TAG, CLASS + " Initializing Player for " + mVideo.title + " " + mVideo.videoUrl);
         mTrackSelector = new DefaultTrackSelector(getContext());
-        DefaultRenderersFactory rFactory = new DefaultRenderersFactory(getContext());
+        MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
-        if ("mediacodec".equals(mAudio))
+        if ("mediacodec".equals(prefAudio))
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
-        else if ("ffmpeg".equals(mAudio))
+        else if ("ffmpeg".equals(prefAudio))
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         rFactory.setExtensionRendererMode(extMode);
+        extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
+        if ("mediacodec".equals(prefVideo))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+        else if ("ffmpeg".equals(prefVideo))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+        rFactory.setVideoExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
         ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
         builder.setTrackSelector(mTrackSelector);
@@ -479,8 +487,8 @@ public class PlaybackFragment extends VideoSupportFragment
             mPlaybackActionListener = new PlaybackActionListener(this, mPlaylist);
             int sampleOffsetUs = 1000 * Settings.getInt("pref_audio_sync", mVideo.playGroup);
             mPlaybackActionListener.sampleOffsetUs = sampleOffsetUs;
-            if (sampleOffsetUs != 0)
-                mAudioPause = true;
+//            if (sampleOffsetUs != 0)
+//                mAudioPause = true;
         }
         VideoPlayerGlue oldGlue = mPlayerGlue;
         mPlayerGlue = new VideoPlayerGlue(getActivity(), mPlayerAdapter,
@@ -694,8 +702,8 @@ public class PlaybackFragment extends VideoSupportFragment
         int sampleOffsetUs = 1000 * Settings.getInt("pref_audio_sync",group);
         if (mPlaybackActionListener != null) {
             mPlaybackActionListener.sampleOffsetUs = sampleOffsetUs;
-            if (sampleOffsetUs != 0)
-                mAudioPause = true;
+//            if (sampleOffsetUs != 0)
+//                mAudioPause = true;
         }
         mCaptions = Settings.getInt("pref_captions",group);
         mSpeed = (float)Settings.getInt("pref_speed",group) / 100.0f;
@@ -1405,8 +1413,8 @@ public class PlaybackFragment extends VideoSupportFragment
         long duration = mPlayerGlue.myGetDuration();
         if (duration > 0) {
             // If we cannot change speed, switch to ffmpeg audio.
-            if (!"ffmpeg".equals(mAudio)) {
-                mAudio = "ffmpeg";
+            if (!"ffmpeg".equals(prefAudio)) {
+                prefAudio = "ffmpeg";
                 if (mBookmark == 0)
                     mBookmark = mPlayerGlue.getCurrentPosition();
                 mPlayer.stop();
@@ -1695,7 +1703,8 @@ public class PlaybackFragment extends VideoSupportFragment
         private long mTimeLastError = 0;
 
         @Override
-        public void onPositionDiscontinuity(int reason) {
+        public void onPositionDiscontinuity( Player.PositionInfo oldPosition,
+                  Player.PositionInfo newPosition,int reason) {
             if (reason == Player.DISCONTINUITY_REASON_SEEK) {
                 // disable and enable to fix audio sync
                 audioFix(5000, true);
