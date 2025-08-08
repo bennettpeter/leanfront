@@ -31,3 +31,10 @@ fi
 git -C media fetch
 git -C media checkout 1.8.0-lf 2>&1
 git -C media pull 2>&1
+
+if [[ ! -d libyuv ]] ; then
+    git clone git@github.com:bennettpeter/libyuv.git
+fi
+git -C libyuv fetch
+git -C libyuv checkout main 2>&1
+git -C libyuv pull 2>&1
