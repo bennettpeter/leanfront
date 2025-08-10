@@ -76,6 +76,8 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.media3.common.TrackSelectionOverride;
+import androidx.media3.common.VideoSize;
+import androidx.media3.exoplayer.Renderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
@@ -139,7 +141,7 @@ import java.util.concurrent.TimeUnit;
  */
 @OptIn(markerClass = UnstableApi.class)
 public class PlaybackFragment extends VideoSupportFragment
-        implements AsyncBackendCall.OnBackendCallListener {
+        implements AsyncBackendCall.OnBackendCallListener, LeanbackPlayerAdapter.SizeGetter {
 
     private static final int UPDATE_DELAY = 16;
 
@@ -500,10 +502,30 @@ public class PlaybackFragment extends VideoSupportFragment
             mPlayerGlue.setAutoPlay(oldGlue.getAutoPlay());
         mPlayerGlue.setHost(new VideoSupportFragmentGlueHost(this));
         hideControlsOverlay(false);
+        mPlayerGlue.getPlayerAdapter().setSizeGetter(this);
         play(mVideo);
         ArrayObjectAdapter mRowsAdapter = initializeRelatedVideosRow();
         setAdapter(mRowsAdapter);
         mPlayerGlue.setupSelectedListener();
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    @Override
+    public VideoSize getVideoSize() {
+        VideoSize vs = mPlayer.getVideoSize();
+        int count = mPlayer.getRendererCount();
+        for (int ix = 0; ix < count; ix++ ) {
+            Renderer renderer = mPlayer.getRenderer(ix);
+            if (renderer.getState() != Renderer.STATE_DISABLED) {
+                if ("ExperimentalFfmpegVideoRenderer".equals(renderer.getName())) {
+                    Format format = mPlayer.getVideoFormat();
+                    if (vs.width == format.width && vs.height == format.height
+                            && vs.pixelWidthHeightRatio != format.pixelWidthHeightRatio)
+                        return new VideoSize(vs.width, vs.height, format.pixelWidthHeightRatio);
+                }
+            }
+        }
+        return vs;
     }
 
     private void audioFix(int millis, boolean setTracks) {
