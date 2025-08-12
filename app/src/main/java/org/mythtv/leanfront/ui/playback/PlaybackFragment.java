@@ -928,6 +928,7 @@ public class PlaybackFragment extends VideoSupportFragment
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (mDsFactory,
                         extFactory);
+        pmf.experimentalParseSubtitlesDuringExtraction(false);
         mMediaSource = (ProgressiveMediaSource) pmf.createMediaSource(item);
         mMediaSource.setPossibleEmptyTrack(possibleEmptyTrack);
         if (mBookmark < 0)
