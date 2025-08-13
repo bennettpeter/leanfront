@@ -76,6 +76,9 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     AlertDialog mDialog;
     private DialogDismiss dialogDismiss = new DialogDismiss();
     private boolean yesPress;
+    private long lastSeekFrom;
+    private boolean lastSeekIsFwd;
+    private long lastSeekTime;
 
     private static final String TAG = "lfe";
     private static final String CLASS = "PlaybackActionListener";
@@ -839,6 +842,12 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         if (!commSkipCheck())
             return 0;
         long position = playbackFragment.mPlayerGlue.getCurrentPosition();
+        if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
+            playbackFragment.seekTo(lastSeekFrom);
+            comskipToast(-3,lastSeekFrom - position);
+            lastSeekTime = 0;
+            return lastSeekFrom;
+        }
         long newPosition = 0;
         int mark = 0;
         synchronized (playbackFragment.commBreakTable) {
@@ -858,8 +867,12 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             if (mark == CommBreakTable.MARK_CUT_START)
                 playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
             playbackFragment.seekTo(newPosition);
-            comskipToast(mark);
-        }
+            comskipToast(mark, newPosition - position);
+            lastSeekFrom = position;
+            lastSeekIsFwd = false;
+            lastSeekTime = System.currentTimeMillis();
+        } else
+            comskipToast(-1, 0);
         return newPosition;
     }
 
@@ -867,6 +880,12 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         if (!commSkipCheck())
             return 0;
         long position = playbackFragment.mPlayerGlue.getCurrentPosition();
+        if (! lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
+            playbackFragment.seekTo(lastSeekFrom);
+            comskipToast(-3,lastSeekFrom - position);
+            lastSeekTime = 0;
+            return lastSeekFrom;
+        }
         long newPosition = 0;
         int mark = 0;
         synchronized (playbackFragment.commBreakTable) {
@@ -886,26 +905,34 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             if (mark == CommBreakTable.MARK_CUT_START)
                 playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
             playbackFragment.seekTo(newPosition);
-            comskipToast(mark);
-        }
+            comskipToast(mark,  newPosition - position);
+            lastSeekFrom = position;
+            lastSeekIsFwd = true;
+            lastSeekTime = System.currentTimeMillis();
+        } else
+            comskipToast(-1, 0);
         return newPosition;
     }
 
-    private void comskipToast(int mark) {
+    @SuppressLint("StringFormatInvalid")
+    private void comskipToast(int mark, long range) {
         int msgnum;
         switch (mark) {
             case CommBreakTable.MARK_CUT_START: msgnum = R.string.msg_commskip_start; break;
             case CommBreakTable.MARK_CUT_END:   msgnum = R.string.msg_commskip_end; break;
             case -1:                            msgnum = R.string.msg_commskip_last; break;
             case -2:                            msgnum = R.string.msg_commskip_skipped; break;
+            case -3:                            msgnum = R.string.msg_commskip_back; break;
             default: return;
         }
+        range = range / 1000l;
+        long mins = range/60l;
+        long secs = Math.abs(range%60l);
+
         if (playbackFragment.mToast != null)
             playbackFragment.mToast.cancel();
         Context ctx = playbackFragment.getContext();
-        playbackFragment.mToast = Toast.makeText(ctx,
-                ctx.getString(msgnum),
-                Toast.LENGTH_LONG);
+        playbackFragment.mToast = Toast.makeText(ctx, ctx.getString(msgnum,mins,secs), Toast.LENGTH_LONG);
         playbackFragment.mToast.show();
     }
 
@@ -1019,7 +1046,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     // Comment this To Hide controls while skipping commercials
                     playbackFragment.tickle(false,false);
                     playbackFragment.seekTo(newPosition);
-                    comskipToast(-2);
+                    comskipToast(-2, newPosition - position);
                     break;
                 case PlaybackFragment.COMMBREAK_NOTIFY:
                     dismissDialog();
