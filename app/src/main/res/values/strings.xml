@@ -24,8 +24,8 @@
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">MythTV LeanBack Frontend</string>
-    <string name="browse_title">MythTV LeanBack Frontend</string>
+    <string name="app_name">MythTV Lean Frontend</string>
+    <string name="browse_title">MythTV Lean Frontend</string>
     <string name="related_movies">Related Videos</string>
 
     <string name="popular_header">Popular Videos</string>
