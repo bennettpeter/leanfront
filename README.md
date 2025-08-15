@@ -1,4 +1,4 @@
-# MythTV Leanback Frontend (leanfront): Android TV frontend for MythTV
+# MythTV Lean Frontend (leanfront): Android TV frontend for MythTV
 
 Leanfront is a frontend for MythTV that runs on Android TV and Amazon Fire TV devices.
 Leanfront supports playback of recordings and videos from MythTV. It can also schedule recordings using voice search or a program guide, and search for recordings or videos using voice.
@@ -195,7 +195,7 @@ At the bottom of each list screen is a row named "Tools", that provides applicat
 
 ### MythTV Backend
 
-If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanback needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
+If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanfront needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
 
 ### Playback groups
 
@@ -524,7 +524,7 @@ This is a temporary change, in V34 the port changes back to 6544, with the new f
 
 ### Authentication
 
-In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leranfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
+In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leanfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
 
 If you expose port 6544 to the internet, you can run leanfront remotely. In this case it is recommended to set a user id and password as described in the wiki article.
 
