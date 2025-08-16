@@ -161,7 +161,7 @@
     <string name="pref_rewff_skipcom">Rew/FF Keys: Skip Commercial</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
     <string name="pref_refresh_mins">Number of minutes between backend refreshes</string>
-    <string name="pref_num_cc_chans">Number of CEA closed caption channels</string>
+    <string name="pref_num_cc_chans">Number of CEA closed caption tracks</string>
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
@@ -173,6 +173,7 @@
     <string name="playback_aspect_stretch">Stretch</string>
     <string name="video_minutes">minutes</string>
     <string name="video_filename">File Name</string>
+
     <string name="video_filesize">File Size</string>
     <string name="video_url">Video URL</string>
     <string name="video_props">Video Properties</string>
