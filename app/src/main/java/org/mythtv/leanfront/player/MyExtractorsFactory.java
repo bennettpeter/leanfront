@@ -62,16 +62,13 @@ public class MyExtractorsFactory implements ExtractorsFactory {
         for (int ix = 0; ix < exts.length; ix++) {
             if (exts[ix] instanceof TsExtractor) {
                 List<Format> closedCaptionFormats = new ArrayList<>();
-                closedCaptionFormats.add(
-                        new Format.Builder()
-                                .setAccessibilityChannel(1)
-                                .setSampleMimeType(MimeTypes.APPLICATION_CEA608)
-                                .build());
-                closedCaptionFormats.add(
-                        new Format.Builder()
-                                .setAccessibilityChannel(2)
-                                .setSampleMimeType(MimeTypes.APPLICATION_CEA608)
-                                .build());
+                int num = Settings.getInt("pref_num_cc_chans");
+                for (int ccnum = 1 ; ccnum <= num; ccnum++)
+                    closedCaptionFormats.add(
+                            new Format.Builder()
+                                    .setAccessibilityChannel(ccnum)
+                                    .setSampleMimeType(MimeTypes.APPLICATION_CEA608)
+                                    .build());
                 TsPayloadReader.Factory payloadReaderFactory
                         =  new DefaultTsPayloadReaderFactory(
                         0,

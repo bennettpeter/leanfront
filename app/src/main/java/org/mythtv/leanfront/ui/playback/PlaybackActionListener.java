@@ -228,7 +228,12 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         ArrayList<Integer> actions = new ArrayList<>();
         for (int ix = 0; ix < tracks.trackList.size(); ix++) {
             PlaybackFragment.TrackEntry entry = tracks.trackList.get(ix);
-            prompts.add(entry.description);
+            String name = entry.description;
+            String [] mime = entry.format.sampleMimeType.split("/");
+            if ("x-media3-cues".equals(mime[mime.length - 1]) && entry.format.codecs != null)
+                mime = entry.format.codecs.split("/");
+            name = name + " (" + mime[mime.length - 1] + ")";
+            prompts.add(name);
             actions.add(ix);
         }
         prompts.add(playbackFragment.getString(R.string.msg_subtitle_off));
@@ -260,7 +265,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
         lp.y=0;
-        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 4;
+        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels * 3 / 10;
         lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
         mDialog.getWindow().setAttributes(lp);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(128,128,128,128)));
@@ -861,18 +866,21 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     break;
             }
         }
-        if (newPosition > 0) {
-            playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
-            // If this is a start point, prevent it from immediately skipping
-            if (mark == CommBreakTable.MARK_CUT_START)
-                playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
-            playbackFragment.seekTo(newPosition);
-            comskipToast(mark, newPosition - position);
-            lastSeekFrom = position;
-            lastSeekIsFwd = false;
-            lastSeekTime = System.currentTimeMillis();
-        } else
-            comskipToast(-1, 0);
+//        if (newPosition > 0) {
+        if (newPosition == 0) {
+            newPosition = 100;
+            mark = -4;
+        }
+        playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
+        // If this is a start point, prevent it from immediately skipping
+        if (mark == CommBreakTable.MARK_CUT_START)
+            playbackFragment.priorCommBreak = newPosition
+                    + (long)Settings.getInt("pref_commskip_start") * 1000;
+        playbackFragment.seekTo(newPosition);
+        comskipToast(mark, newPosition - position);
+        lastSeekFrom = position;
+        lastSeekIsFwd = false;
+        lastSeekTime = System.currentTimeMillis();
         return newPosition;
     }
 
@@ -903,7 +911,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
-                playbackFragment.priorCommBreak = newPosition + (long)Settings.getInt("pref_commskip_start") * 1000;
+                playbackFragment.priorCommBreak = newPosition
+                        + (long)Settings.getInt("pref_commskip_start") * 1000;
             playbackFragment.seekTo(newPosition);
             comskipToast(mark,  newPosition - position);
             lastSeekFrom = position;
@@ -923,6 +932,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             case -1:                            msgnum = R.string.msg_commskip_last; break;
             case -2:                            msgnum = R.string.msg_commskip_skipped; break;
             case -3:                            msgnum = R.string.msg_commskip_back; break;
+            case -4:                            msgnum = R.string.msg_commskip_start_show; break;
             default: return;
         }
         range = range / 1000l;

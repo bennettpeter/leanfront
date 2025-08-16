@@ -161,6 +161,7 @@
     <string name="pref_rewff_skipcom">Rew/FF Keys: Skip Commercial</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
     <string name="pref_refresh_mins">Number of minutes between backend refreshes</string>
+    <string name="pref_num_cc_chans">Number of CEA closed caption channels</string>
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
@@ -428,6 +429,7 @@
     <string name="msg_commskip_last">No More Commercial Breaks.</string>
     <string name="msg_commskip_skipped">Skipped %1$ 02d:%2$02d. Commercial Break Skipped.</string>
     <string name="msg_commskip_back">Skipped %1$ 02d:%2$02d. Back to where you were.</string>
+    <string name="msg_commskip_start_show">Skipped %1$ 02d:%2$02d. Start of Show.</string>
 
     <string name="title_comm_playing">Commercial or Cut Playing</string>
     <string name="menu_comm_skip">Skip</string>
@@ -510,6 +512,7 @@
     <string name="sdef_refresh_mins" translatable="false">60</string>
     <string name="sdef_chan_group" translatable="false"></string>
     <string name="sdef_idle_timeout" translatable="false">360</string>
+    <string name="sdef_num_cc_chans" translatable="false">2</string>
 <!--    Program Details-->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>

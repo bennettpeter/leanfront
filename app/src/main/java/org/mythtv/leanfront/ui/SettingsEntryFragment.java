@@ -125,6 +125,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_VIDEO_AUTO = 69;
     private static final int ID_VIDEO_MEDIACODEC = 70;
     private static final int ID_VIDEO_FFMPEG = 71;
+    private static final int ID_NUM_CC_CHANS = 72;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -697,6 +698,13 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .descriptionEditable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_NUM_CC_CHANS)
+                .title(R.string.pref_num_cc_chans)
+                .description(Settings.getString("pref_num_cc_chans"))
+                .descriptionEditable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
+                .build());
     }
 
     @Override
@@ -845,6 +853,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 action.setDescription(newVal);
                 Settings.putString(editor, "pref_refresh_mins", newVal);
                 break;
+            case ID_NUM_CC_CHANS:
+                Settings.putString(editor, "pref_num_cc_chans",
+                        validateNumber(action, 0, 4, 2));
+                break;
             default:
                 return GuidedAction.ACTION_ID_CURRENT;
         }
@@ -939,6 +951,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_REFRESH_MINS:
                 action.setDescription(Settings.getString("pref_refresh_mins"));
+                break;
+            case ID_NUM_CC_CHANS:S:
+                action.setDescription(Settings.getString("pref_num_cc_chans"));
                 break;
         }
     }
