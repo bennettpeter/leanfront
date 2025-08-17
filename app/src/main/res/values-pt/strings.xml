@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Chaves Rew/FF: Pular Comercial</string>
   <string name="pref_max_vids">Máximo de gravações/vídeos para carregar</string>
   <string name="pref_refresh_mins">Número de minutos entre atualizações de back-end</string>
+  <string name="pref_num_cc_chans">Número de faixas de legenda fechada CEA</string>
   <string name="msg_no_connection">Erro: Sem conexão com o back-end do MythTV.</string>
   <string name="msg_no_delayshutdown">Aviso: não é possível evitar o desligamento inativo do back-end.</string>
   <string name="msg_backend_login_req">Erro: o back -end requer nome de usuário e senha válidos.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Fim do intervalo comercial.</string>
   <string name="msg_commskip_last">Não há mais intervalos comerciais.</string>
   <string name="msg_commskip_skipped">Intervalo comercial ignorado.</string>
+  <string name="msg_commskip_back">Saltado %1 $ 02d: %2 $ 02d. De volta para onde você estava.</string>
+  <string name="msg_commskip_start_show">Saltado %1 $ 02d: %2 $ 02d. Início do show.</string>
   <string name="title_comm_playing">Jogo comercial ou cortado</string>
   <string name="menu_comm_skip">Pular</string>
   <string name="menu_comm_notskip">Não pule</string>

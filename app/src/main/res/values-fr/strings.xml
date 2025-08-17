@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Clés Rew/FF : ignorer la publicité</string>
   <string name="pref_max_vids">Nombre maximal d\'enregistrements/vidéos à charger</string>
   <string name="pref_refresh_mins">Nombre de minutes entre les actualisations du backend</string>
+  <string name="pref_num_cc_chans">Nombre de traces de légendes fermées CEA</string>
   <string name="msg_no_connection">Erreur : aucune connexion au backend MythTV.</string>
   <string name="msg_no_delayshutdown">Avertissement : Impossible d\'empêcher l\'arrêt d\'inactivité du backend.</string>
   <string name="msg_backend_login_req">Erreur: le backend nécessite un nom d\'utilisateur et un mot de passe valides.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Fin de la pause publicitaire.</string>
   <string name="msg_commskip_last">Fini les pauses publicitaires.</string>
   <string name="msg_commskip_skipped">Pause publicitaire ignorée.</string>
+  <string name="msg_commskip_back">Sauté% 1 02d:% 2 02d $. Retour à l\'endroit où vous étiez.</string>
+  <string name="msg_commskip_start_show">Sauté% 1 02d:% 2 02d $. Début du spectacle.</string>
   <string name="title_comm_playing">Lecture commerciale ou coupée</string>
   <string name="menu_comm_skip">Sauter</string>
   <string name="menu_comm_notskip">Ne passe pas</string>

@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Taakse/eteen-näppäimet: Ohita mainokset</string>
   <string name="pref_max_vids">Ladattavien tallenteiden/videoiden enimmäismäärä</string>
   <string name="pref_refresh_mins">Minuuttia taustapäivitysten välillä</string>
+  <string name="pref_num_cc_chans">CEA: n suljettujen kuvatekstien lukumäärä</string>
   <string name="msg_no_connection">Virhe: Ei yhteyttä MythTV-taustajärjestelmään.</string>
   <string name="msg_no_delayshutdown">Varoitus: Taustajärjestelmän automaattista sammuttamista ei voida estää.</string>
   <string name="msg_backend_login_req">VIRHE: Taustaohjelma vaatii kelvollisen käyttäjänimen ja salasanan.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Mainostauon loppu.</string>
   <string name="msg_commskip_last">Ei enää mainoksia.</string>
   <string name="msg_commskip_skipped">Mainokset ohitettu.</string>
+  <string name="msg_commskip_back">Ohitettu %1 $ 02d: %2 $ 02d. Takaisin sinne missä olit.</string>
+  <string name="msg_commskip_start_show">Ohitettu %1 $ 02d: %2 $ 02d. Näyttelyn aloitus.</string>
   <string name="title_comm_playing">Kaupallinen tai leikattu soittaminen</string>
   <string name="menu_comm_skip">Ohita</string>
   <string name="menu_comm_notskip">Älä Ohita</string>

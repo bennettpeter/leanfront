@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Rew/FF-Tasten: Werbung überspringen</string>
   <string name="pref_max_vids">Maximal zu ladende Aufnahmen/Videos</string>
   <string name="pref_refresh_mins">Anzahl der Minuten zwischen Backend-Aktualisierungen</string>
+  <string name="pref_num_cc_chans">Anzahl der CEA -Untertitel -Spuren</string>
   <string name="msg_no_connection">Fehler: Keine Verbindung zum MythTV-Backend.</string>
   <string name="msg_no_delayshutdown">Warnung: Das Herunterfahren des Backends im Leerlauf kann nicht verhindert werden.</string>
   <string name="msg_backend_login_req">Fehler: Backend erfordert einen gültigen Benutzernamen und Kennwort.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Ende der Werbepause.</string>
   <string name="msg_commskip_last">Keine Werbeunterbrechungen mehr.</string>
   <string name="msg_commskip_skipped">Werbeunterbrechung übersprungen.</string>
+  <string name="msg_commskip_back">Übersprungen %1 $ 02d: %2 $ 02d. Zurück dorthin, wo du warst.</string>
+  <string name="msg_commskip_start_show">Übersprungen %1 $ 02d: %2 $ 02d. Beginn der Show.</string>
   <string name="title_comm_playing">Kommerzielle oder geschnittene Wiedergabe</string>
   <string name="menu_comm_skip">Überspringen</string>
   <string name="menu_comm_notskip">Nicht überspringen</string>

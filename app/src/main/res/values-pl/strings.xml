@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Klawisze Rew/FF: Pomiń reklamy</string>
   <string name="pref_max_vids">Maksymalna liczba nagrań/filmów do załadowania</string>
   <string name="pref_refresh_mins">Liczba minut między odświeżeniami zaplecza</string>
+  <string name="pref_num_cc_chans">Liczba śladów CEA Zamknięte podpisy</string>
   <string name="msg_no_connection">Błąd: brak połączenia z backendem MythTV.</string>
   <string name="msg_no_delayshutdown">Ostrzeżenie: nie można zapobiec wyłączeniu backendu w stanie bezczynności.</string>
   <string name="msg_backend_login_req">Błąd: Backend wymaga prawidłowej nazwy użytkownika i hasła.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Koniec przerwy reklamowej.</string>
   <string name="msg_commskip_last">Koniec z przerwami reklamowymi.</string>
   <string name="msg_commskip_skipped">Przerwa reklamowa pominięta.</string>
+  <string name="msg_commskip_back">Pomijam %1 02d: %2 02d $. Wracając do miejsca, w którym byłeś.</string>
+  <string name="msg_commskip_start_show">Pomijam %1 02d: %2 02d $. Początek show.</string>
   <string name="title_comm_playing">Odtwarzanie komercyjne lub wycinane</string>
   <string name="menu_comm_skip">Pominąć</string>
   <string name="menu_comm_notskip">Nie pomijaj</string>

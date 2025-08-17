@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Rew/FF Keys: Hopp over kommersiell</string>
   <string name="pref_max_vids">Maksimalt antall opptak/videoer å laste</string>
   <string name="pref_refresh_mins">Antall minutter mellom backend-oppdateringer</string>
+  <string name="pref_num_cc_chans">Antall CEA -lukkede billedtekstspor</string>
   <string name="msg_no_connection">Feil: Ingen tilkobling til MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Advarsel: Kan ikke forhindre avslutning av backend-tomgang.</string>
   <string name="msg_backend_login_req">Feil: Backend krever gyldig brukernavn og passord.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Slutt på kommersiell pause.</string>
   <string name="msg_commskip_last">Ingen flere kommersielle pauser.</string>
   <string name="msg_commskip_skipped">Kommersiell pause hoppet over.</string>
+  <string name="msg_commskip_back">Hoppet over %1 $ 02d: %2 $ 02d. Tilbake dit du var.</string>
+  <string name="msg_commskip_start_show">Hoppet over %1 $ 02d: %2 $ 02d. Start av showet.</string>
   <string name="title_comm_playing">Kommersielt eller Cut Playing</string>
   <string name="menu_comm_skip">Hopp over</string>
   <string name="menu_comm_notskip">Ikke hopp over</string>

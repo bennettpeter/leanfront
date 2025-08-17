@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Rew/FF-nycklar: Hoppa över reklam</string>
   <string name="pref_max_vids">Maximalt antal inspelningar/videor att ladda</string>
   <string name="pref_refresh_mins">Antal minuter mellan backend-uppdateringar</string>
+  <string name="pref_num_cc_chans">Antal CEA -stängda bildtexter</string>
   <string name="msg_no_connection">Fel: Ingen anslutning till MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varning: Det går inte att förhindra inaktiv avstängning av backend.</string>
   <string name="msg_backend_login_req">Fel: Backend kräver giltigt användarnamn och lösenord.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Slut på reklampaus.</string>
   <string name="msg_commskip_last">Inga fler kommersiella pauser.</string>
   <string name="msg_commskip_skipped">Reklampaus hoppade över.</string>
+  <string name="msg_commskip_back">Hoppade över %1 $ 02d: %2 $ 02d. Tillbaka till där du var.</string>
+  <string name="msg_commskip_start_show">Hoppade över %1 $ 02d: %2 $ 02d. Start av showen.</string>
   <string name="title_comm_playing">Kommersiellt eller Cut-spelande</string>
   <string name="menu_comm_skip">Hoppa</string>
   <string name="menu_comm_notskip">Hoppa inte över</string>

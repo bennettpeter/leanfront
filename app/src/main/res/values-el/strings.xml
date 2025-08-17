@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Πλήκτρα Rew/FF: Skip Commercial</string>
   <string name="pref_max_vids">Μέγιστες εγγραφές/βίντεο προς φόρτωση</string>
   <string name="pref_refresh_mins">Αριθμός λεπτών μεταξύ των ανανεώσεων του backend</string>
+  <string name="pref_num_cc_chans">Αριθμός κομματιών κλειστών λεζάνων CEA</string>
   <string name="msg_no_connection">Σφάλμα: Δεν υπάρχει σύνδεση στο MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Προειδοποίηση: Δεν είναι δυνατή η αποτροπή του τερματισμού αδράνειας του backend.</string>
   <string name="msg_backend_login_req">Σφάλμα: Το Backend απαιτεί έγκυρο όνομα χρήστη και κωδικό πρόσβασης.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Λήξη Εμπορικού Διαλείμματος.</string>
   <string name="msg_commskip_last">Όχι άλλα εμπορικά διαλείμματα.</string>
   <string name="msg_commskip_skipped">Παραβλέφθηκε το εμπορικό διάλειμμα.</string>
+  <string name="msg_commskip_back">Παραλείπονται %1 $ 02D: %2 $ 02D. Επιστροφή στο σημείο που ήσασταν.</string>
+  <string name="msg_commskip_start_show">Παραλείπονται %1 $ 02D: %2 $ 02D. Έναρξη της επίδειξης.</string>
   <string name="title_comm_playing">Εμπορική ή κομμένη αναπαραγωγή</string>
   <string name="menu_comm_skip">Παραλείπω</string>
   <string name="menu_comm_notskip">Μην παραλείψετε</string>

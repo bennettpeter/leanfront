@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Rew/FF Keys: Slaan Kommersieel oor</string>
   <string name="pref_max_vids">Maksimum opnames/video\'s om te laai</string>
   <string name="pref_refresh_mins">Aantal minute tussen backend-verversings</string>
+  <string name="pref_num_cc_chans">Aantal CEA geslote onderskrifspore</string>
   <string name="msg_no_connection">Fout: Geen verbinding met MythTV Backend nie.</string>
   <string name="msg_no_delayshutdown">Waarskuwing: Kan nie die afskakeling van die agterkant nie verhoed nie.</string>
   <string name="msg_backend_login_req">Fout: Backend benodig geldige gebruikersnaam en wagwoord.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Einde van kommersiële pouse.</string>
   <string name="msg_commskip_last">Geen meer kommersiële pouses nie.</string>
   <string name="msg_commskip_skipped">Kommersiële breek oorgeslaan.</string>
+  <string name="msg_commskip_back">Oorgeslaan %1 $ 02d: %2 $ 02d. Terug na waar jy was.</string>
+  <string name="msg_commskip_start_show">Oorgeslaan %1 $ 02d: %2 $ 02d. Begin van die vertoning.</string>
   <string name="title_comm_playing">Kommersieel of Cut Speel</string>
   <string name="menu_comm_skip">Huppel</string>
   <string name="menu_comm_notskip">Moenie oorslaan nie</string>

@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Rew/FF-toetsen: reclame overslaan</string>
   <string name="pref_max_vids">Maximaal aantal opnamen/video\'s om te laden</string>
   <string name="pref_refresh_mins">Aantal minuten tussen vernieuwingen van de backend</string>
+  <string name="pref_num_cc_chans">Aantal CEA gesloten bijschriftsporen</string>
   <string name="msg_no_connection">Fout: geen verbinding met MythTV-backend.</string>
   <string name="msg_no_delayshutdown">Waarschuwing: kan het afsluiten van de backend bij inactiviteit niet voorkomen.</string>
   <string name="msg_backend_login_req">Fout: backend vereist een geldige gebruikersnaam en wachtwoord.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Einde commerciële pauze.</string>
   <string name="msg_commskip_last">Geen commerciële pauzes meer.</string>
   <string name="msg_commskip_skipped">Commerciële pauze overgeslagen.</string>
+  <string name="msg_commskip_back">SKIPT %1 $ 02D: %2 $ 02D. Terug naar waar je was.</string>
+  <string name="msg_commskip_start_show">SKIPT %1 $ 02D: %2 $ 02D. START VAN SHOW.</string>
   <string name="title_comm_playing">Commercieel of cut-playing</string>
   <string name="menu_comm_skip">Overslaan</string>
   <string name="menu_comm_notskip">Niet overslaan</string>

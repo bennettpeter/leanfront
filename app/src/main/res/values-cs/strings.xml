@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Klávesy Rew/FF: Přeskočit reklamu</string>
   <string name="pref_max_vids">Maximální počet nahrávek/videí k načtení</string>
   <string name="pref_refresh_mins">Počet minut mezi aktualizacemi backendu</string>
+  <string name="pref_num_cc_chans">Počet uzavřených titulků CEA</string>
   <string name="msg_no_connection">Chyba: Žádné připojení k MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varování: Nelze zabránit nečinnosti backendu.</string>
   <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné uživatelské jméno a heslo.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Konec komerční přestávky.</string>
   <string name="msg_commskip_last">Žádné další komerční přestávky.</string>
   <string name="msg_commskip_skipped">Komerční přestávka přeskočena.</string>
+  <string name="msg_commskip_back">Přeskočené %1 $ 02d: %2 $ 02d. Zpět tam, kde jsi byl.</string>
+  <string name="msg_commskip_start_show">Přeskočené %1 $ 02d: %2 $ 02d. Začátek show.</string>
   <string name="title_comm_playing">Komerční nebo vystřižené hraní</string>
   <string name="menu_comm_skip">Přeskočit</string>
   <string name="menu_comm_notskip">Nepřeskočit</string>

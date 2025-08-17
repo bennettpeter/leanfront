@@ -126,6 +126,7 @@
   <string name="pref_rewff_skipcom">Teclas Rew/FF: Saltar comercial</string>
   <string name="pref_max_vids">Máximo de grabaciones/vídeos para cargar</string>
   <string name="pref_refresh_mins">Número de minutos entre actualizaciones de backend</string>
+  <string name="pref_num_cc_chans">Número de pistas de subtítulos de CEA</string>
   <string name="msg_no_connection">Error: No hay conexión con el backend de MythTV.</string>
   <string name="msg_no_delayshutdown">Advertencia: No se puede evitar el apagado inactivo del backend.</string>
   <string name="msg_backend_login_req">Error: el backend requiere un nombre de usuario y contraseña válidos.</string>
@@ -371,6 +372,8 @@
   <string name="msg_commskip_end">Fin de la pausa comercial.</string>
   <string name="msg_commskip_last">No más pausas comerciales.</string>
   <string name="msg_commskip_skipped">Pausa comercial omitida.</string>
+  <string name="msg_commskip_back">Omitió %1 $ 02D: %2 $ 02D. De vuelta a donde estabas.</string>
+  <string name="msg_commskip_start_show">Omitió %1 $ 02D: %2 $ 02D. Comienzo del espectáculo.</string>
   <string name="title_comm_playing">Reproducción comercial o cortada</string>
   <string name="menu_comm_skip">Saltar</string>
   <string name="menu_comm_notskip">No omitas</string>
