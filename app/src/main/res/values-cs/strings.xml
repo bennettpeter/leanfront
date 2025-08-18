@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Frontend MythTV LeanBack</string>
+  <string name="app_name">MYTHTV LEAN frontend</string>
   <string name="browse_title">Frontend MythTV LeanBack</string>
   <string name="related_movies">Související videa</string>
   <string name="popular_header">Populární videa</string>

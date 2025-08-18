@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">MythTV LeanBack käyttöliittymä</string>
+  <string name="app_name">Mythtv Lean Frontend</string>
   <string name="browse_title">MythTV LeanBack käyttöliittymä</string>
   <string name="related_movies">Liittyvät videot</string>
   <string name="popular_header">Suositut videot</string>
