@@ -205,6 +205,12 @@ If you have playback groups defined in mythfrontend, the Playback section is rep
 
 There is a setting called "Ignore Extra Track" in the playback group. This can be used if you have tracks that are malformed, especially second audio tracks that have no data (for example UK Freeview). These can cause playback to hang at the start especially when resuming from a prior position. Enabling this will improve performance with these tracks but may cause the wrong audio track to play with recordings that have a **VALID** second audio track.
 
+### Audio Decode and Video Decode
+
+By default leanfront will use mediacodec hardware decoding for audio and video. If there is no hardware decoder it will switch to software decoding with ffmpeg. You can force it to only use mediacodec or to prefer software decoding.
+
+Software decoding of Video can show bad performance on most low-cost android TV devices. It works well on NVidia Shield. 
+
 ### Advanced
 
 The advanced section of settings includes a value that may need to be changed to suit unusual circumstances. Be careful when changing it as you may cause bad things to happen if you use inappropriate values.
@@ -216,6 +222,8 @@ The advanced section of settings includes a value that may need to be changed to
 - **Number of Minutes Between Backend Refreshes.** The system refreshes the list periodically from the backend to pick up new recordings or changes. This setting must be a multiple of 4. If you need to see recordings in the list as soon as possible, set a low number. If you have a huge number of recordings it may take long to refresh so this setting may not help. In that case adjust the  **Maximum Recordings/Videos to load** setting.
 
 - **Status Port uses SSL (EXPERIMENTAL)** If you have SSL enabled on the backend, and your domain is registered, leanfront can communicate via SSL. This seems an unlikely situation, requiring a lot of work and expense and having no real advantage if you are using leanfront on your local network. It is marked as experimental because there are problems with random 408 errors from the server. That results in some slow responses and missing artwork. If anybody seriously wants to use SSL, I can investigate this and see what fix is possible. Open an issue in github. If using SSL, the SSL port must be specified in backend settings status port (default is 6554).
+
+- **Number of CEA closed caption tracks.** USA closed captions may not shown in the menu unless you specify how many to show. The default is 2. In non-USA broadcast situations this can cause two extra unusable items to show in the caption menu. To remove these you can set this to 0. If you are in the USA and you normally only have one caption track you can set this to 1.
 
 </details>
 
@@ -256,7 +264,7 @@ There are three rows available.
 
 Scroll through the list using up/down arrows and left/right arrows. This can be slow when there is a long list of channels. You can now use the Fast Forward and Rewind buttons of the remote to get though the list more quickly. Fast Forward will scroll down 45 channels at a time (5 pages).
 
-If you don't have Fast Forward and Rewind buttons, Page Down / Page Up, or Play Next / Play Previous can be used. You can connect a bluetooth keyboard and use these combinations. You can also buy a Bluetooth remote that has multimedia buttons including Fast Forward and Rewind.
+If you don't have Fast Forward and Rewind buttons, Page Down / Page Up, or Play Next / Play Previous can be used. You can connect a Bluetooth keyboard and use these combinations. You can also buy a Bluetooth remote that has multimedia buttons including Fast Forward and Rewind.
 
 </details>
 
