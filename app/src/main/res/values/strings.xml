@@ -425,12 +425,12 @@
     <string name="title_commskip">Commercial or Cut Skip</string>
     <string name="msg_commskip_unavail">Commercial or Cut Skip not available on in-progress recordings.</string>
     <string name="msg_commskip_none">There is no Commercial Break or Cut List Data for this Recording.</string>
-    <string name="msg_commskip_start">Skipped %1$ 02d:%2$02d. Start of Commercial Break.</string>
-    <string name="msg_commskip_end">Skipped %1$ 02d:%2$02d. End of Commercial Break.</string>
-    <string name="msg_commskip_last">No More Commercial Breaks.</string>
-    <string name="msg_commskip_skipped">Skipped %1$ 02d:%2$02d. Commercial Break Skipped.</string>
-    <string name="msg_commskip_back">Skipped %1$ 02d:%2$02d. Back to where you were.</string>
-    <string name="msg_commskip_start_show">Skipped %1$ 02d:%2$02d. Start of Show.</string>
+    <string name="msg_commskip_start">Start of Commercial Break</string>
+    <string name="msg_commskip_end">End of Commercial Break</string>
+    <string name="msg_commskip_last">No More Commercial Breaks</string>
+    <string name="msg_commskip_skipped">Commercial Break Skipped</string>
+    <string name="msg_commskip_back">Back to where you were</string>
+    <string name="msg_commskip_start_show">Start of Show</string>
 
     <string name="title_comm_playing">Commercial or Cut Playing</string>
     <string name="menu_comm_skip">Skip</string>

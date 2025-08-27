@@ -1137,12 +1137,12 @@ public class MainFragment extends BrowseSupportFragment
                 boolean loginNeededNow = false;
                 scheduledTaskRunning = true;
                 boolean connection = false;
-                boolean connectionfail = false;
                 String backendIP = Settings.getString("pref_backend");
                 backendIP = XmlNode.fixIpAddress(backendIP);
                 if (backendIP.length() == 0)
                     return;
                 while (!connection) {
+                    boolean connectionfail = false;
                     if (SettingsEntryFragment.isActive) {
                         try {
                             Thread.sleep(2000);

@@ -866,7 +866,6 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     break;
             }
         }
-//        if (newPosition > 0) {
         if (newPosition == 0) {
             newPosition = 100;
             mark = -4;
@@ -942,7 +941,9 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         if (playbackFragment.mToast != null)
             playbackFragment.mToast.cancel();
         Context ctx = playbackFragment.getContext();
-        playbackFragment.mToast = Toast.makeText(ctx, ctx.getString(msgnum,mins,secs), Toast.LENGTH_LONG);
+        String time = String.format(" (%1$ 02d:%2$02d).", mins, secs);
+        String msg = ctx.getString(msgnum) + time;
+        playbackFragment.mToast = Toast.makeText(ctx, msg, Toast.LENGTH_LONG);
         playbackFragment.mToast.show();
     }
 
