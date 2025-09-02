@@ -1,5 +1,7 @@
 # MythTV Lean Frontend (leanfront): Android TV frontend for MythTV
 
+**Leanfront is also now available for phones and tablets. See https://github.com/bennettpeter/leanfront-mobile .**
+
 Leanfront is a frontend for MythTV that runs on Android TV and Amazon Fire TV devices.
 Leanfront supports playback of recordings and videos from MythTV. It can also schedule recordings using voice search or a program guide, and search for recordings or videos using voice.
 
@@ -301,15 +303,15 @@ You need an Android TV device, which can be a [Nvidia Shield](https://www.nvidia
 If you have an Amazon Fire TV, Fire Stick or Fire Cube, you can install from Amazon App store.
 For a new installation, just press the microphone button on your remote and say "MythTV". Alternatively, log on to amazon.com, search for MythTV or leanfront, and request it to be installed to your device.
 
-If you already have leanfront installed by downloading from google, to install from the app store you will have to first uninstall it.
+If you already have leanfront installed by downloading from the download site, to install from the app store you will have to first uninstall it.
 
 ### Non Amazon devices
-Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront), for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from google, you do not need to uninstall, the play store will upgrade it.
+Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront), for TV devices. Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from the download site, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
 Preferably use the play store or app store for installation.
 
-Packages are also available here, in case you want to install on a phone or tablet, or cannot install from the play store: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB
+Packages are also available here, in case you want to install on a phone or tablet, or cannot install from the play store: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB . Make sure to download the TV version.
 
 To install a side load version you can download the apk file from the above link. Put it on your android device using direct download, a USB cable or another method. Open a file manager, select the apk file and tap on it to install. Alternatively you can use adb to install from a computer if you have developer mode enabled on the android device.
 
@@ -354,7 +356,8 @@ Leanfront is based on the sample [Videos By Google](https://github.com/android/t
 - Adjustment of Audio Sync in case a recording has a lip-sync problem.
 - Support for touch screen devices is usable, although it is not perfect.
 - Metadata lookup when scheduling recordings supports the tv db, tvmaze and tmdb.
-- Note that some phones do not support MPEG-2 playback. There may be some android TV devices that do not support MPEG-2. NVidia shield supports MPEG-2 although there is a pixelation bug on some channels. Fire stick models since 2018 support MPEG-2. See https://developer.amazon.com/docs/fire-tv/device-specifications-fire-tv-streaming-media-player.html?v=ftvstick4k and select your model for full details.
+NVidia shield supports MPEG-2 although there is a pixelation bug on some channels. Fire stick models since 2018 support MPEG-2. See https://developer.amazon.com/docs/fire-tv/device-specifications-fire-tv-streaming-media-player.html?v=ftvstick4k and select your model for full details.
+- If MPEG-2 is not supported by teh device, leanfront will use software decoding.
 - Supports playback groups, allowing different values per playback group.
 - Now supports MythTV commercial breaks and cut list.
 
@@ -381,7 +384,7 @@ Bookmarks in a recording or video can be stored in the android device or in the 
 
 Bookmarks must be set explicitly using the bookmark OSD option of playback menu. They can be removed from the video details page menu.
 
-Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the Video deatils page menu.
+Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the Video details page menu.
 
 If local bookmarks are not selected:
 
@@ -395,7 +398,7 @@ There is a Setting on the Settings page, "Commercial or Cut Skip". You can selec
 
 If "Off" is selected, cut lists and commercial breaks flagged are ignored, and everything plays.
  
-If "Notify" is selected, when a Cut or Commercial Break is encountered, a menu is displayed at the bottom left of the screen, with options "Skip" or "Do Not Skip". If you select "Skip", playback immediately skips to the end of the cut or commercial. If you select "Do Not Skip" or leave the meunu without selecting anything, it will continue playing. At any stage of playing in the cut or commercial, you can select "Skip" to go to the end.
+If "Notify" is selected, when a Cut or Commercial Break is encountered, a menu is displayed at the bottom left of the screen, with options "Skip" or "Do Not Skip". If you select "Skip", playback immediately skips to the end of the cut or commercial. If you select "Do Not Skip" or leave the menu without selecting anything, it will continue playing. At any stage of playing in the cut or commercial, you can select "Skip" to go to the end.
 
 If "Automatically Skip" is selected, playback will automatically skip each cut or commercial flagged.
 
@@ -452,7 +455,7 @@ The following controls are available when pressing enter during playback. Select
 | Rewind                | This skips back by the time set in the settings.                                                                                                  |
 | Jump Forward          | This skips forward by the time set in the settings.                                                                                               |
 | Skip Next             | Skip forward to the next commercial break, or to the next episode if there are no more commercials (see [Related Videos](#related-videos)).       |
-| Change Playback Speed | Speeds up or slow down playback by increments to a maximum of 800%. Shows a seek bar where any desired speed can be selected in increments of 10%  |
+| Change Playback Speed | Speeds up or slow down playback by increments to a maximum of 800%. Shows a seek bar where any desired speed can be selected in increments of 10% |
 | Playback Menu         | Shows a menu of playback actions that can be taken.                                                                                               |
 
 **Note:** When using *Change Playback Speed* the program will disable digital audio pass-through if it is in use, by temporarily selecting *FFmpeg* audio decode. This will disable surround sound until you exit playback.
@@ -464,14 +467,14 @@ Below the progress bar is displayed the description of the currently selected ic
 
 ### Bottom Row of controls
 
-| Icon                 | Usage                                                                                                                                                                                                                                                                                                              |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Closed Captions      | Shows a menu of available subtitle tracks plus subtitle disabled. You can select one to change or disable subtitles                                                                                                                                                                                                |
-| Picture Size         | Changes the picture size. Pressing this shows a seekbar. Left and right arrow fine tune the size. Up and down arrow select from several standard zoom amounts.                                                                                                                                                     |
-| Stretch Horizontally | Stretch or squeeze the picture in case it is showing at the wrong aspect ratio.  Pressing this shows a seekbar. Left and right arrow fine tune the stretch. Up and down arrow select from several standard stretch amounts.                                                                                        |
-| Move Picture         | If the picture has been resized, moves the picture up or down, left or right. Use up, down, left, right arrows to move it. For use when you want to cut off part of the picture, after zooming to a bigger size.                                                                                                   |
-| Change Audio Track   | Shows a menu of available audio tracks plus audio disabled. You can select one to change or disable audio track.                                                                                                                                                                                                   |
-| Adjust Audio Sync    | Shows a seekbar where you can change audio sync. Use this if lip sync is wrong. The value selected applies only to this playback, it is not saved after playback is ended.                                                                                                                                         |
+| Icon                 | Usage                                                                                                                                                                                                                                                                                                                                                    |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Closed Captions      | Shows a menu of available subtitle tracks plus subtitle disabled. You can select one to change or disable subtitles                                                                                                                                                                                                                                      |
+| Picture Size         | Changes the picture size. Pressing this shows a seekbar. Left and right arrow fine tune the size. Up and down arrow select from several standard zoom amounts.                                                                                                                                                                                           |
+| Stretch Horizontally | Stretch or squeeze the picture in case it is showing at the wrong aspect ratio.  Pressing this shows a seekbar. Left and right arrow fine tune the stretch. Up and down arrow select from several standard stretch amounts.                                                                                                                              |
+| Move Picture         | If the picture has been resized, moves the picture up or down, left or right. Use up, down, left, right arrows to move it. For use when you want to cut off part of the picture, after zooming to a bigger size.                                                                                                                                         |
+| Change Audio Track   | Shows a menu of available audio tracks plus audio disabled. You can select one to change or disable audio track.                                                                                                                                                                                                                                         |
+| Adjust Audio Sync    | Shows a seekbar where you can change audio sync. Use this if lip sync is wrong. The value selected applies only to this playback, it is not saved after playback is ended.                                                                                                                                                                               |
 | Autoplay             | Toggle automatic playback of all videos in the [Related Videos](#related-videos) list. When activated this displays in green color. At the end of each video or recording it will automatically start the next one. It will play watched or deleted items if you selected them in settings to be included in the [Related Videos](#related-videos) list. |
 
 To see [Related Videos](#related-videos) while watching press down arrow. This shows other videos / recordings in the current group. You can select one of these to play instead of the current playing video.
@@ -637,9 +640,9 @@ adb logcat
 
 ## Android Phones / Tablets with touch screen
 
-You can install leanfront on a phone or tablet if you are running Android 5.0 (Lollipop) or later version. The application is designed for Android TV and using it with a touch screen is not the same as other touch screen applications.
+There is now a phone and tablet version of leanfront. See https://github.com/bennettpeter/leanfront-mobile .
 
-There are some problems. Program lists do not work as expected, see below. Leanfront uses landscape mode, and if you rotate it, the display will remain landscape. See below for more differences when operating a touch screen.
+Instructions below apply to running the TV version on a phone. This is not recommended.
 
 ### Program List
 
@@ -675,13 +678,14 @@ After installing [Android Studio][studio], use SDK Manager to install the emulat
 
 - Clone from github.com bennettpeter/leanfront.git.
 - Run ./update_dependencies.sh. This will download 3 repositories and check out the appropriate branches / tags.
-- Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
-- Note the ndk version is referenced in the app/build.gradle file. You need to either download the version that is specified there or else update there to match the version you downloaded.
-- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/25.1.8937393
+- Download and install [Android Studio][studio].
+- Look in the file app/build.gradle for the line like *ndkVersion '28.2.13676358'*. Install the specified ndk version from the menu Tools/SDKManager in App Studio. ALso install CMake from the SDK Tools.
+- Starting in November 2025 you need to use ndk 28 or higher to satisfy a Google Play Store requirement for 16K pages.
+- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/28.2.13676358
 - Run build_ffmpeg.sh.
 - Open the project in [Android Studio][studio].
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
-- It can also be run with an android emulator, but the emulator that comes with android studio does not support MPEG2 playback, so you need to play an h264 or h265 recording.
+- It can also be run with an android emulator. Sound is poor with an emulator.
 - If you do not want to build this yourself, see [Installing Leanfront](#installing-leanfront).
 - Set up the backend in Settings on the first run. 
 
