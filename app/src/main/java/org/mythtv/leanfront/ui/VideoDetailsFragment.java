@@ -241,7 +241,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .error(mDefaultBackground);
+                .error(mDefaultBackground)
+                .timeout(5000);
 
        RequestBuilder bld =  Glide.with(this)
                 .asBitmap();
@@ -545,6 +546,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 .error(defaultIcon)
                 .fallback(defaultIcon)
                 .dontAnimate();
+        options.timeout(5000);
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
                     @Override

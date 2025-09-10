@@ -581,7 +581,8 @@ public class MainFragment extends BrowseSupportFragment
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .error(mDefaultBgDrawable);
+                .error(mDefaultBgDrawable)
+                .timeout(5000);
 
         RequestBuilder bld =  Glide.with(this)
                 .asBitmap();

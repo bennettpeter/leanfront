@@ -223,7 +223,8 @@ public class CardPresenter extends Presenter {
         image.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         RequestOptions options = new RequestOptions()
-                .error(defaultIcon);
+                .error(defaultIcon)
+                .timeout(5000);
 
         if (imageUrl == null) {
             Glide.with(cardView.getContext())
