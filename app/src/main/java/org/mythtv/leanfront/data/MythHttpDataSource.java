@@ -44,7 +44,6 @@ import java.util.Map;
 public class MythHttpDataSource extends BaseDataSource implements DataSource {
 
     private DataSpec mDataSpec;
-    private PlaybackFragment mPlaybackFragment;
     private HttpDataSource mHttpDataSource;
     private long mTotalLength;
     private long mCurrentPos;
@@ -52,9 +51,8 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     private static final String CLASS = "MythHttpDataSource";
 
 
-    public MythHttpDataSource(String userAgent, PlaybackFragment playbackFragment){
+    public MythHttpDataSource(String userAgent) {
         super(true);
-        mPlaybackFragment = playbackFragment;
         Map<String, String> defaultRequestProperties = new HashMap<>();
         defaultRequestProperties.put("accept-encoding","identity");
         String auth = BackendCache.getInstance().authorization;
@@ -64,7 +62,6 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                 .setUserAgent(userAgent)
                 .setDefaultRequestProperties(defaultRequestProperties)
                 .createDataSource();
-        mPlaybackFragment.setDataSource(this);
     }
 
     @Override
@@ -170,18 +167,16 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     }
 
     public static class Factory implements DataSource.Factory {
-        private PlaybackFragment mPlaybackFragment;
         private String mUserAgent;
 
-        public Factory(String userAgent, PlaybackFragment playbackFragment) {
+        public Factory(String userAgent) {
             mUserAgent = userAgent;
-            mPlaybackFragment = playbackFragment;
         }
 
         @NonNull
         @Override
         public DataSource createDataSource() {
-            return new MythHttpDataSource(mUserAgent, mPlaybackFragment);
+            return new MythHttpDataSource(mUserAgent);
         }
     }
 

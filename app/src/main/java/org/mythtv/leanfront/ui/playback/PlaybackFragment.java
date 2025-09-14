@@ -170,7 +170,6 @@ public class PlaybackFragment extends VideoSupportFragment
     private long mFileLength = -1;
     private MythHttpDataSource.Factory mDsFactory;
     ProgressiveMediaSource mMediaSource;
-    private MythHttpDataSource mDataSource;
     // Settings - These are default values that will be changed if the video
     // uses a different playback group
     private int mSkipFwd = 1000 * Settings.getInt("pref_skip_fwd");
@@ -921,10 +920,9 @@ public class PlaybackFragment extends VideoSupportFragment
         mFileLength = -1;
         getFileLength(false);
         String userAgent = Util.getUserAgent(getActivity(), "VideoPlayerGlue");
-        mDsFactory = new MythHttpDataSource.Factory(userAgent, this);
+        mDsFactory = new MythHttpDataSource.Factory(userAgent);
         MediaItem item = MediaItem.fromUri(mediaSourceUri);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
-//        ProgressiveMediaSource.Factory pmf = new ProgressiveMediaSource.Factory
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (mDsFactory,
                         extFactory);
@@ -1390,11 +1388,6 @@ public class PlaybackFragment extends VideoSupportFragment
             manager.show();
         else
             manager.hide();
-    }
-
-
-    public void setDataSource(MythHttpDataSource mDataSource) {
-        this.mDataSource = mDataSource;
     }
 
     public void tickle(boolean autohide, boolean showActions) {
