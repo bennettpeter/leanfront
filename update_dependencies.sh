@@ -18,13 +18,6 @@ git -C ffmpeg fetch
 git -C ffmpeg checkout release/6.0 2>&1
 git -C ffmpeg pull 2>&1
 
-if [[ ! -d glide ]] ; then
-    git clone git@github.com:bennettpeter/glide.git
-fi
-git -C glide fetch
-git -C glide checkout leanfront 2>&1
-git -C glide pull 2>&1
-
 if [[ ! -d media ]] ; then
     git clone git@github.com:bennettpeter/media.git
 fi
