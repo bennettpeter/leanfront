@@ -346,8 +346,9 @@ public class MainFragment extends BrowseSupportFragment
     // Currently no messages are displayed but an array of strings can be provided
     // in sNotes in the parens, e.g. {R.string.notes_audio}
     void showNotes() {
-        final int[] sNotes = {R.string.notes_paging};
-        int deletedNotes = 0;
+        // deleted: R.string.notes_paging
+        final int[] sNotes = {};
+        int deletedNotes = 1;
         int notesVersion = Settings.getInt("pref_notes_version");
         if (notesVersion < deletedNotes)
             notesVersion = deletedNotes;
