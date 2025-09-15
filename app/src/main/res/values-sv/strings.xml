@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Det går inte att utföra åtgärden eftersom databasen är upptagen.</string>
   <string name="notes_title">Vad är nytt?</string>
   <string name="notes_seen">Visa inte igen</string>
-  <string name="notes_paging">Du kan använda de snabba framåt- och spolningsknapparna för att snabbt sida upp och ner i den vänstra rutan och för att bläddra videosikoner i den högra fönstret.</string>
   <string name="details_category">Kategori</string>
   <string name="details_starttime">Starttid</string>
   <string name="details_endtime">Sluttid</string>

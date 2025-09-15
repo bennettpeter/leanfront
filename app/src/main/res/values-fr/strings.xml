@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Impossible d\'effectuer l\'action car la base de données est occupée.</string>
   <string name="notes_title">Quoi de neuf?</string>
   <string name="notes_seen">Ne pas montrer de nouveau</string>
-  <string name="notes_paging">Vous pouvez utiliser les boutons en avant et en rembobinage rapides pour rapprocher rapidement le volet gauche et faire défiler les icônes vidéo dans le volet droit.</string>
   <string name="details_category">Catégorie</string>
   <string name="details_starttime">Heure de début</string>
   <string name="details_endtime">Heure de fin</string>

@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Toimintoa ei voi suorittaa, koska tietokanta on varattu.</string>
   <string name="notes_title">Mikä on uutta?</string>
   <string name="notes_seen">Älä näytä uudelleen</string>
-  <string name="notes_paging">Voit käyttää nopeaa eteenpäin ja kelata takaisin painikkeita nopeasti ylös ja alas vasemmassa ruudussa ja vierittää videokuvakkeita oikeassa ruudussa.</string>
   <string name="details_category">Kategoria</string>
   <string name="details_starttime">Aloitusaika</string>
   <string name="details_endtime">Loppu aika</string>

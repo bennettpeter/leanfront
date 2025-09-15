@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Kan nie die handeling uitvoer nie, want die databasis is besig.</string>
   <string name="notes_title">Wat\'s nuut?</string>
   <string name="notes_seen">Moet nie weer wys nie</string>
-  <string name="notes_paging">U kan die Fast Forward and Rewind -knoppies gebruik om vinnig op en af ​​in die linkerruit te blaai en om video -ikone in die regterpaneel te blaai.</string>
   <string name="details_category">Kategorie</string>
   <string name="details_starttime">Begin Tyd</string>
   <string name="details_endtime">Eind tyd</string>

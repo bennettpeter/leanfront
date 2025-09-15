@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Δεν είναι δυνατή η εκτέλεση της ενέργειας επειδή η βάση δεδομένων είναι κατειλημμένη.</string>
   <string name="notes_title">Τι νέα;</string>
   <string name="notes_seen">Να μην εμφανιστεί ξανά</string>
-  <string name="notes_paging">Μπορείτε να χρησιμοποιήσετε τα κουμπιά Fast Forward και Rewind για να σελιστείτε γρήγορα προς τα πάνω και προς τα κάτω στο αριστερό παράθυρο και να μετακινηθείτε εικονίδια βίντεο στο δεξιό παράθυρο.</string>
   <string name="details_category">Κατηγορία</string>
   <string name="details_starttime">Ωρα έναρξης</string>
   <string name="details_endtime">Τέλος χρόνου</string>

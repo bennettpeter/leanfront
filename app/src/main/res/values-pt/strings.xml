@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Não é possível executar a ação porque o banco de dados está ocupado.</string>
   <string name="notes_title">O que há de novo?</string>
   <string name="notes_seen">Não mostre novamente</string>
-  <string name="notes_paging">Você pode usar os botões rapidamente para a frente e rebobinar para pagar rapidamente para cima e para baixo no painel esquerdo e rolar os ícones de vídeo no painel direito.</string>
   <string name="details_category">Categoria</string>
   <string name="details_starttime">Hora de início</string>
   <string name="details_endtime">Fim do tempo</string>

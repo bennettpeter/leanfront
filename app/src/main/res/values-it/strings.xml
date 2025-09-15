@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Impossibile eseguire l\'azione perché il database è occupato.</string>
   <string name="notes_title">Cosa c\'è di nuovo?</string>
   <string name="notes_seen">Non mostrare più</string>
-  <string name="notes_paging">È possibile utilizzare i pulsanti rapidi in avanti e riavvolgimento per pagina su e giù rapidamente nel riquadro sinistro e per scorrere le icone video nel riquadro destro.</string>
   <string name="details_category">Categoria</string>
   <string name="details_starttime">Ora di inizio</string>
   <string name="details_endtime">Tempo scaduto</string>

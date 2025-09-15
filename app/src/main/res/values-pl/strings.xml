@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Nie można wykonać akcji, ponieważ baza danych jest zajęta.</string>
   <string name="notes_title">Co nowego?</string>
   <string name="notes_seen">Nie pokazuj ponownie</string>
-  <string name="notes_paging">Możesz użyć przycisków Fast Forward i Rewind, aby szybko umieszczać w górę iw dół w lewym okienku oraz przewijać ikony wideo w prawym okienku.</string>
   <string name="details_category">Kategoria</string>
   <string name="details_starttime">Czas rozpoczęcia</string>
   <string name="details_endtime">Koniec czasu</string>

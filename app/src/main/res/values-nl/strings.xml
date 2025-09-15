@@ -391,7 +391,6 @@
   <string name="msg_db_busy">Kan de actie niet uitvoeren omdat de database bezet is.</string>
   <string name="notes_title">Wat is er nieuw?</string>
   <string name="notes_seen">Niet meer tonen</string>
-  <string name="notes_paging">U kunt de knoppen Fast Forward en terugspoelen om snel op en neer in het linkervenster te pagina\'s en om videopictogrammen in het rechtervenster te scrollen.</string>
   <string name="details_category">Categorie</string>
   <string name="details_starttime">Starttijd</string>
   <string name="details_endtime">Eindtijd</string>
