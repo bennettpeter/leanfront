@@ -1390,6 +1390,19 @@ public class AsyncBackendCall implements Runnable {
                         commBreakTable.offSetType = CommBreakTable.OFFSET_FRAME;
                     break;
 
+                case Video.ACTION_GET_STREAM_INFO:
+                    try {
+                        urlString = XmlNode.mythApiUrl(mVideo.hostname,
+                                "/Video/GetStreamInfo?StorageGroup="
+                                        + mVideo.storageGroup
+                                        + "&FileName="
+                                        + URLEncoder.encode(mVideo.filename, "UTF-8"));
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
                 default:
                     String method = null;
                     switch (task) {

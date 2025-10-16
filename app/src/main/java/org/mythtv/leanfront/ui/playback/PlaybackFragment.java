@@ -89,6 +89,7 @@ import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.CommBreakTable;
 import org.mythtv.leanfront.data.MythHttpDataSource;
+import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.Playlist;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
@@ -306,7 +307,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23 || mPlayer == null)) {
+        if (Util.SDK_INT <= 23 ) {
             initializePlayer(true);
         }
         hideNavigation();
@@ -455,6 +456,33 @@ public class PlaybackFragment extends VideoSupportFragment
 
     private void initializePlayer(boolean enableControls) {
         Log.i(TAG, CLASS + " Initializing Player for " + mVideo.title + " " + mVideo.videoUrl);
+        if (frameRate <= 0.0f) {
+            AsyncBackendCall call = new AsyncBackendCall(getActivity(), (taskRunner) ->{
+                XmlNode streamInfo = taskRunner.getXmlResult();
+                frameRate = 0.0f;
+                float avgFrameRate = 0.0f;
+                if (streamInfo != null) {
+                    try {
+                        XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
+                        vsi = vsi.getNode("VideoStreamInfo");
+                        while (vsi != null && !"V".equals(vsi.getString("CodecType")))
+                            vsi = vsi.getNextSibling();
+                        frameRate = Float.parseFloat(vsi.getString("FrameRate"));
+                        avgFrameRate = Float.parseFloat(vsi.getString("AvgFrameRate"));
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (frameRate == 0.0)
+                    frameRate = avgFrameRate;
+                if (frameRate == 0.0)
+                    frameRate = 30.0f;
+                initializePlayer(enableControls);
+            });
+            call.setVideo(mVideo);
+            call.execute(Video.ACTION_GET_STREAM_INFO);
+            return;
+        }
         mTrackSelector = new DefaultTrackSelector(getContext());
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
@@ -1732,78 +1760,79 @@ public class PlaybackFragment extends VideoSupportFragment
             if (state == Player.STATE_READY && !playWhenPrepared) {
                 if (commBreakTable.frameratex1000 > 1)
                     frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
-                if (frameRate < 0.0f) {
-                    SampleQueue[] sampleQueues = mMediaSource.getSampleQueues();
-                    for (SampleQueue sampleQueue : sampleQueues) {
-                        if (MimeTypes.isVideo(sampleQueue.getUpstreamFormat().sampleMimeType)) {
-                            long[] timesUs = sampleQueue.getTimesUs();
-                            int leng = sampleQueue.getWriteIndex();
-                            long[] sortedTimes = Arrays.copyOf(timesUs, leng);
-                            Arrays.sort(sortedTimes);
-
-                            // cater for short array
-                            if (sortedTimes.length < 2)
-                                continue;
-
-                            int start = 30;
-                            if (sortedTimes.length < 50)
-                                start = 0;
-
-                            // Another way to get interval ? Maybe better ?
-                            long tottimes = sortedTimes[sortedTimes.length - 1]
-                                    - sortedTimes[start];
-                            long avtime = tottimes / (sortedTimes.length - start - 1);
-                            float calcFrameRate = 1000000.0f / (float) avtime;
-
-                            int[] counters = new int[FPS_INTERVALS.length];
-                            for (int timeix = 1; timeix < sortedTimes.length; timeix++) {
-                                if (sortedTimes[timeix] == 0)
-                                    continue;
-                                for (int ivlix = 0; ivlix < FPS_INTERVALS.length; ivlix++) {
-                                    if (sortedTimes[timeix] - sortedTimes[timeix - 1]
-                                            < FPS_INTERVALS[ivlix]) {
-                                        counters[ivlix]++;
-                                        break;
-                                    }
-                                }
-                            }
-                            int maxix = 0;
-                            int maxcount = 0;
-                            // ignore the first and last which are "unknown".
-                            for (int ivlix = 1; ivlix < FPS_INTERVALS.length - 1; ivlix++) {
-                                if (counters[ivlix] > maxcount) {
-                                    maxcount = counters[ivlix];
-                                    maxix = ivlix;
-                                }
-                            }
-                            // if there is a mixture of 29.97 and 23.976, then select 29.97
-                            if (counters[3] > 5 && counters[5] > 5)
-                                maxix = 3;
-
-                            if (maxcount > 5)
-                                frameRate = FPS_VALUES[maxix];
-                            else
-                                frameRate = 0.0f;
-
-                            // Get estimated framerate for cases where timestamps are messed up
-                            if (frameRate < 1.0f && sortedTimes.length > 0) {
-                                long interval = sortedTimes[sortedTimes.length-1]
-                                        - sortedTimes[0];
-                                int frames = sortedTimes.length - 1;
-                                if (frames > 0 && interval > 0)
-                                    frameRate = (float) frames * 1_000_000.0f / (float)interval;
-                            }
-
-                            Log.i(TAG, CLASS + " Frame rate Calculated:" + calcFrameRate + ", Normalized:"+frameRate);
-                            // Special Case for 60fps recordings
-                            if (calcFrameRate > 59.95 && calcFrameRate < 60.05) {
-                                frameRate = calcFrameRate;
-                                Log.i(TAG, CLASS + " Using Frame Rate:" + frameRate);
-                            }
-                            break;
-                        }
-                    }
-                }
+// This is removed sinec I am using Video.ACTION_GET_STREAM_INFO to get frame rate
+//                if (frameRate < 0.0f) {
+//                    SampleQueue[] sampleQueues = mMediaSource.getSampleQueues();
+//                    for (SampleQueue sampleQueue : sampleQueues) {
+//                        if (MimeTypes.isVideo(sampleQueue.getUpstreamFormat().sampleMimeType)) {
+//                            long[] timesUs = sampleQueue.getTimesUs();
+//                            int leng = sampleQueue.getWriteIndex();
+//                            long[] sortedTimes = Arrays.copyOf(timesUs, leng);
+//                            Arrays.sort(sortedTimes);
+//
+//                            // cater for short array
+//                            if (sortedTimes.length < 2)
+//                                continue;
+//
+//                            int start = 30;
+//                            if (sortedTimes.length < 50)
+//                                start = 0;
+//
+//                            // Another way to get interval ? Maybe better ?
+//                            long tottimes = sortedTimes[sortedTimes.length - 1]
+//                                    - sortedTimes[start];
+//                            long avtime = tottimes / (sortedTimes.length - start - 1);
+//                            float calcFrameRate = 1000000.0f / (float) avtime;
+//
+//                            int[] counters = new int[FPS_INTERVALS.length];
+//                            for (int timeix = 1; timeix < sortedTimes.length; timeix++) {
+//                                if (sortedTimes[timeix] == 0)
+//                                    continue;
+//                                for (int ivlix = 0; ivlix < FPS_INTERVALS.length; ivlix++) {
+//                                    if (sortedTimes[timeix] - sortedTimes[timeix - 1]
+//                                            < FPS_INTERVALS[ivlix]) {
+//                                        counters[ivlix]++;
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//                            int maxix = 0;
+//                            int maxcount = 0;
+//                            // ignore the first and last which are "unknown".
+//                            for (int ivlix = 1; ivlix < FPS_INTERVALS.length - 1; ivlix++) {
+//                                if (counters[ivlix] > maxcount) {
+//                                    maxcount = counters[ivlix];
+//                                    maxix = ivlix;
+//                                }
+//                            }
+//                            // if there is a mixture of 29.97 and 23.976, then select 29.97
+//                            if (counters[3] > 5 && counters[5] > 5)
+//                                maxix = 3;
+//
+//                            if (maxcount > 5)
+//                                frameRate = FPS_VALUES[maxix];
+//                            else
+//                                frameRate = 0.0f;
+//
+//                            // Get estimated framerate for cases where timestamps are messed up
+//                            if (frameRate < 1.0f && sortedTimes.length > 0) {
+//                                long interval = sortedTimes[sortedTimes.length-1]
+//                                        - sortedTimes[0];
+//                                int frames = sortedTimes.length - 1;
+//                                if (frames > 0 && interval > 0)
+//                                    frameRate = (float) frames * 1_000_000.0f / (float)interval;
+//                            }
+//
+//                            Log.i(TAG, CLASS + " Frame rate Calculated:" + calcFrameRate + ", Normalized:"+frameRate);
+//                            // Special Case for 60fps recordings
+//                            if (calcFrameRate > 59.95 && calcFrameRate < 60.05) {
+//                                frameRate = calcFrameRate;
+//                                Log.i(TAG, CLASS + " Using Frame Rate:" + frameRate);
+//                            }
+//                            break;
+//                        }
+//                    }
+//                }
                 commBreakTable.frameratex1000 = (long)(frameRate * 1000.0f);
                 if (mBookmark <= 0 && posBookmark >= 0 && frameRate > 0.0f) {
                     mBookmark = posBookmark * 100000 / (long) (frameRate * 100.0f);

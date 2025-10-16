@@ -152,6 +152,9 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_SEARCHGUIDE_KEYWORD    = 66;
     public static final int ACTION_REFRESH_FULL           = 67;
     public static final int ACTION_FULL_MENU              = 68;
+    public static final int ACTION_FETCH_VIDEOS           = 69;
+    public static final int ACTION_GET_BOOKMARK           = 70;
+    public static final int ACTION_GET_STREAM_INFO        = 71;
 
 
     private Video(
