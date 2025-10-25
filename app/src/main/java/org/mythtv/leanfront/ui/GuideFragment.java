@@ -503,6 +503,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
 
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
+        if (getContext() == null)
+            return;
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
             case Video.ACTION_CHAN_GROUPS:

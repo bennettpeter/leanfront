@@ -27,6 +27,7 @@ package org.mythtv.leanfront.ui;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
 
 import org.mythtv.leanfront.data.AsyncBackendCall;
@@ -82,6 +83,9 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
 
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm == null || fm.isDestroyed())
+            return;
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
             case Video.ACTION_GETPROGRAMDETAILS:

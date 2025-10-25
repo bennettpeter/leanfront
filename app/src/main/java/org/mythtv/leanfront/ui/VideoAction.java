@@ -414,6 +414,8 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
     public void onPostExecute(AsyncBackendCall taskRunner) {
         if (taskRunner == null)
             return;
+        if (fragment == null || fragment.getContext() == null)
+            return;
         int [] tasks = taskRunner.getTasks();
         XmlNode xml = taskRunner.getXmlResult();
         switch (tasks[0]) {
