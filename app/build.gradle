@@ -12,7 +12,7 @@ task gitinfo {
         ext.dirty = '-' + split[3]
     else
         ext.dirty = ''
-    ext.version = ext.version + ext.version2
+    ext.version = (ext.version + ext.version2) * 2
     ext.versionName = 'lft-' + ext.version + '-' + split[2] + ext.dirty
     println "Version Name: " + ext.versionName + ", Version Code: " + ext.version
 }
