@@ -709,16 +709,18 @@ public class PlaybackFragment extends VideoSupportFragment
     private void startStatusMonitor() {
         if (monitorSched == null || monitorSched.isDone() || monitorSched.isCancelled()) {
             ScheduledExecutorService executor = MainFragment.getExecutor();
-            monitorSched = executor.schedule(() -> {
-                getFileLength(false);
-                if (isSpeededUp()) {
-                    Activity activity = getActivity();
-                    activity.runOnUiThread(() -> {
-                        if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - 10000)
-                            resetSpeed();
-                    });
-                }
-            }, STATUS_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+            if (executor != null) {
+                monitorSched = executor.schedule(() -> {
+                    getFileLength(false);
+                    if (isSpeededUp()) {
+                        Activity activity = getActivity();
+                        activity.runOnUiThread(() -> {
+                            if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - 10000)
+                                resetSpeed();
+                        });
+                    }
+                }, STATUS_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
