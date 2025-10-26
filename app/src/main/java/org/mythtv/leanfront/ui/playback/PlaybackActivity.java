@@ -311,6 +311,9 @@ public class PlaybackActivity extends LeanbackActivity {
         // Note: KeyEvent.KEYCODE_MEDIA_NEXT and KeyEvent.KEYCODE_MEDIA_PREVIOUS
         // are sent to methods next() and previous() of VideoPlayerGlue by the
         // framework.
+        if (mPlaybackFragment == null
+                || mPlaybackFragment.getPlaybackActionListener() == null)
+            return false;
         switch(keyCode) {
             case KeyEvent.KEYCODE_BUTTON_L1:
                 mPlaybackFragment.skipToPrevious();

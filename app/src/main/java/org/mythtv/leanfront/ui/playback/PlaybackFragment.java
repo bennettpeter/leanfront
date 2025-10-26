@@ -1141,8 +1141,6 @@ public class PlaybackFragment extends VideoSupportFragment
         if (doChange) {
             if (trackSelection == -2)
                 trackSelection = -1;
-            if (tracks.trackList.size() == 0)
-                trackSelection = -1;
             else if (++trackSelection >= tracks.trackList.size()) {
                 if (disable)
                     trackSelection = -1;
@@ -1150,6 +1148,8 @@ public class PlaybackFragment extends VideoSupportFragment
                     trackSelection = 0;
             }
         }
+        if (tracks.trackList.size() == 0)
+            trackSelection = -2;
         if (trackSelection >= 0) {
             TrackEntry entry = tracks.trackList.get(trackSelection);
 //            if (trackType != C.TRACK_TYPE_TEXT || "application/x-media3-cues".equals(entry.format.sampleMimeType)

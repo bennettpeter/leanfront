@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
 
 import org.mythtv.leanfront.data.AsyncBackendCall;
@@ -66,6 +67,9 @@ public class SettingsActivity extends FragmentActivity
     }
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm == null || fm.isDestroyed())
+            return;
         mPlayGroupList = XmlNode.getStringList(taskRunner.getXmlResult()); // ACTION_GETPLAYGROUPLIST
         GuidedStepSupportFragment.addAsRoot(this,
                 fragment = new SettingsEntryFragment(), android.R.id.content);

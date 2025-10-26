@@ -782,7 +782,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         boolean found = false;
         SampleQueue[] sampleQueues = playbackFragment.mMediaSource.getSampleQueues();
         for (SampleQueue sampleQueue : sampleQueues) {
-            if (MimeTypes.isAudio(sampleQueue.getUpstreamFormat().sampleMimeType)) {
+            if (sampleQueue != null && sampleQueue.getUpstreamFormat() != null
+                    && MimeTypes.isAudio(sampleQueue.getUpstreamFormat().sampleMimeType)) {
                 sampleQueue.setSampleOffsetUs(sampleOffsetUs);
                 found = true;
             }
