@@ -87,6 +87,9 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.14.1'
 
     implementation "android.arch.lifecycle:extensions:1.1.1"
+    // To fix ClassNotFoundException: Didn't find class "java.util.function.Supplier"
+    // On old android versions.
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:<latest-version>'
 }
 
 apply plugin: 'idea'
