@@ -52,14 +52,10 @@ android {
         buildConfig = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-//    externalNativeBuild {
-//        cmake {
-//            path file('src/main/jni/CMakeLists.txt')
-//        }
-//    }
     ndkVersion '28.2.13676358'
     namespace 'org.mythtv.leanfront'
 }
@@ -89,7 +85,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
     // To fix ClassNotFoundException: Didn't find class "java.util.function.Supplier"
     // On old android versions.
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:<latest-version>'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
 apply plugin: 'idea'
