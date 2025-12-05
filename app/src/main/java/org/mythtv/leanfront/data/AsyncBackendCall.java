@@ -1081,7 +1081,7 @@ public class AsyncBackendCall implements Runnable {
                                 "/Guide/GetChannelGroupList?IncludeEmpty=false");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
-                        Log.e(TAG, CLASS + " Exception Getting Guide.", e);
+                        Log.e(TAG, CLASS + " Exception Getting Channel Groups.", e);
                     }
                     break;
 
