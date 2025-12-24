@@ -29,8 +29,6 @@ if [[ ! -d leanfront-mobile ]] ; then
     git clone git@github.com:bennettpeter/leanfront-mobile.git
 fi
 git -C leanfront-mobile fetch
-git -C leanfront-mobile checkout main 2>&1
-git -C leanfront-mobile pull 2>&1
 
 if [[ ! -d libyuv ]] ; then
     git clone git@github.com:bennettpeter/libyuv.git

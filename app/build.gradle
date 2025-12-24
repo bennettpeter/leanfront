@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 task gitinfo {
 //    println 'bash update_dependencies.sh'.execute().text
     ext.describe = 'git describe --dirty'.execute().text.trim()
-    ext.describe2 = 'git -C ../leanfront-mobile describe --dirty'.execute().text.trim()
+    ext.describe2 = 'git -C ../leanfront-mobile describe origin/main'.execute().text.trim()
     def split = ext.describe.split("-")
     def split2 = ext.describe2.split("-")
     ext.version = Integer.parseInt(split[1])
