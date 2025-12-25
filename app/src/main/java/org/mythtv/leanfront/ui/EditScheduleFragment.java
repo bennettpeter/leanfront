@@ -239,9 +239,8 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
             }
         }
         if (mProgDetails != null) {
-            if ("None".equals(mRecordRule.searchType))
-                mRecordRule.mergeProgram(mProgDetails);
-            else if ("Manual Search".equals(mRecordRule.searchType)) {
+            mRecordRule.mergeProgram(mProgDetails);
+            if ("Manual Search".equals(mRecordRule.searchType)) {
                 // startTime is correct for this showing but endTime
                 // is the original end time from the rule. Convert
                 // end time to the same date as start time.
