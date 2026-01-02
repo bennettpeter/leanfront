@@ -20,6 +20,7 @@
   <string name="undelete_1">Ångra radering</string>
   <string name="undelete_2">Inspelning</string>
   <string name="search_results">Sökresultat för \'%1$s\'</string>
+  <string name="new_title_search">Nya titlar</string>
   <string name="no_search_results">Inga sökresultat hittades för \'%1$s\'</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Sök efter videor och inspelningar</string>

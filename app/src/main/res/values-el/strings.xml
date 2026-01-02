@@ -20,6 +20,7 @@
   <string name="undelete_1">Κατάργηση Διαγραφής</string>
   <string name="undelete_2">Εγγραφή</string>
   <string name="search_results">Αποτελέσματα αναζήτησης για \'%1$s\'</string>
+  <string name="new_title_search">Νέοι Τίτλοι</string>
   <string name="no_search_results">Δεν βρέθηκαν αποτελέσματα αναζήτησης για "%1$s"</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Αναζήτηση βίντεο και ηχογραφήσεων</string>

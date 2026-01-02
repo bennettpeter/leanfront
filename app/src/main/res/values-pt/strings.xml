@@ -20,6 +20,7 @@
   <string name="undelete_1">Cancelar exclusão</string>
   <string name="undelete_2">Gravação</string>
   <string name="search_results">Resultados da pesquisa para \'%1$s\'</string>
+  <string name="new_title_search">Novos títulos</string>
   <string name="no_search_results">Nenhum resultado de pesquisa encontrado para \'%1$s\'</string>
   <string name="search_label">MitoTV</string>
   <string name="search_hint">Pesquise vídeos e gravações</string>

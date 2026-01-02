@@ -20,6 +20,7 @@
   <string name="undelete_1">Fortryd sletning</string>
   <string name="undelete_2">Indspilning</string>
   <string name="search_results">Søgeresultater for \'%1$s\'</string>
+  <string name="new_title_search">Nye titler</string>
   <string name="no_search_results">Ingen søgeresultater fundet for \'%1$s\'</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Søg efter videoer og optagelser</string>

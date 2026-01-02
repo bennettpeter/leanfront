@@ -20,6 +20,7 @@
   <string name="undelete_1">Annuler la suppression</string>
   <string name="undelete_2">Enregistrement</string>
   <string name="search_results">Résultats de recherche pour \'%1$s\'</string>
+  <string name="new_title_search">Nouveaux titres</string>
   <string name="no_search_results">Aucun résultat de recherche trouvé pour \'%1$s\'</string>
   <string name="search_label">MytheTV</string>
   <string name="search_hint">Rechercher des vidéos et des enregistrements</string>

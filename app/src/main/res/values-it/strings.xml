@@ -20,6 +20,7 @@
   <string name="undelete_1">Annulla eliminazione</string>
   <string name="undelete_2">Registrazione</string>
   <string name="search_results">Risultati della ricerca per \'%1$s\'</string>
+  <string name="new_title_search">Nuovi titoli</string>
   <string name="no_search_results">Nessun risultato di ricerca trovato per \'%1$s\'</string>
   <string name="search_label">MitoTV</string>
   <string name="search_hint">Cerca video e registrazioni</string>

@@ -20,6 +20,7 @@
   <string name="undelete_1">Angre sletting</string>
   <string name="undelete_2">Innspilling</string>
   <string name="search_results">Søkeresultater for «%1$s»</string>
+  <string name="new_title_search">Nye titler</string>
   <string name="no_search_results">Ingen søkeresultater funnet for \'%1$s\'</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Søk etter videoer og opptak</string>

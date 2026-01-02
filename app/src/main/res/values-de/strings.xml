@@ -20,6 +20,7 @@
   <string name="undelete_1">Löschen rückgängig machen</string>
   <string name="undelete_2">Aufzeichnung</string>
   <string name="search_results">Suchergebnisse für „%1$s“</string>
+  <string name="new_title_search">Neue Titel</string>
   <string name="no_search_results">Für „%1$s“ wurden keine Suchergebnisse gefunden</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Suchen Sie nach Videos und Aufzeichnungen</string>

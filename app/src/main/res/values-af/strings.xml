@@ -20,6 +20,7 @@
   <string name="undelete_1">Ontvee</string>
   <string name="undelete_2">Opname</string>
   <string name="search_results">Soekresultate vir \'%1$s\'</string>
+  <string name="new_title_search">Nuwe titels</string>
   <string name="no_search_results">Geen soekresultate vir \'%1$s\' gevind nie</string>
   <string name="search_label">MiteTV</string>
   <string name="search_hint">Soek vir video\'s en opnames</string>

@@ -20,6 +20,7 @@
   <string name="undelete_1">Cofnij usunięcie</string>
   <string name="undelete_2">Nagranie</string>
   <string name="search_results">Wyniki wyszukiwania dla „%1$s”</string>
+  <string name="new_title_search">Nowe tytuły</string>
   <string name="no_search_results">Nie znaleziono wyników wyszukiwania dla „%1$s”</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Szukaj filmów i nagrań</string>

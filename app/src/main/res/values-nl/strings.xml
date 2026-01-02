@@ -20,6 +20,7 @@
   <string name="undelete_1">Verwijderen ongedaan maken</string>
   <string name="undelete_2">Opname</string>
   <string name="search_results">Zoekresultaten voor \'%1$s\'</string>
+  <string name="new_title_search">Nieuwe titels</string>
   <string name="no_search_results">Geen zoekresultaten gevonden voor \'%1$s\'</string>
   <string name="search_label">MytheTV</string>
   <string name="search_hint">Zoeken naar video\'s en opnames</string>

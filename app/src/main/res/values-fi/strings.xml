@@ -20,6 +20,7 @@
   <string name="undelete_1">Palauta</string>
   <string name="undelete_2">Tallenne</string>
   <string name="search_results">Hakutulokset haulle \'%1$s\'</string>
+  <string name="new_title_search">Uudet otsikot</string>
   <string name="no_search_results">Ei hakutuloksia haulle \'%1$s\'</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Etsi videoita ja tallenteita</string>

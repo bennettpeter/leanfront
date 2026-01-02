@@ -20,6 +20,7 @@
   <string name="undelete_1">Zrušit smazání</string>
   <string name="undelete_2">Záznam</string>
   <string name="search_results">Výsledky vyhledávání pro „%1$s“</string>
+  <string name="new_title_search">Nové tituly</string>
   <string name="no_search_results">Pro „%1$s“ nebyly nalezeny žádné výsledky vyhledávání</string>
   <string name="search_label">MythTV</string>
   <string name="search_hint">Vyhledávejte videa a nahrávky</string>
