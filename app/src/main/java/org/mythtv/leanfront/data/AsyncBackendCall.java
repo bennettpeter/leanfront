@@ -1208,6 +1208,16 @@ public class AsyncBackendCall implements Runnable {
                     }
                     break;
 
+                case Video.ACTION_SEARCHGUIDE_NEWTITLES:
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetProgramList?Sort=starttime&count=500&Details=true&GroupBy=None&OnlyNew=true");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Guide.", e);
+                    }
+                    break;
+
                 case Video.ACTION_DELETERECRULE:
                     try {
                         if (mRecordRule.recordId > 0) {

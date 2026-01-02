@@ -23,6 +23,7 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     private static final int HEADER_ID_GUIDE = 1;
     private static final int HEADER_ID_RECRULES = 2;
     private static final int HEADER_ID_UPCOMING = 3;
+    private static final int HEADER_ID_NEWTITLES = 4;
 
     private ArrayObjectAdapter mRowsAdapter;
     private BackgroundManager mBackgroundManager;
@@ -90,6 +91,11 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
         mRowsAdapter.add(pageRow1);
         if (isGuide)
             setHeadersState(HEADERS_HIDDEN);
+        if (!isGuide) {
+            MyHeaderItem headerItem4 = new MyHeaderItem(HEADER_ID_NEWTITLES, "New Titles");
+            PageRow pageRow4 = new PageRow(headerItem4);
+            mRowsAdapter.add(pageRow4);
+        }
     }
 
     public void pageDown(int direction) {
@@ -127,6 +133,10 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
                     break;
                 case HEADER_ID_UPCOMING:
                     frag = new UpcomingFragment();
+                    break;
+                case HEADER_ID_NEWTITLES:
+                    frag = new SearchFragment();
+                    ((SearchFragment)frag).type = SearchFragment.TYPE_NEWTITLES;
                     break;
                 default:
                     return null;

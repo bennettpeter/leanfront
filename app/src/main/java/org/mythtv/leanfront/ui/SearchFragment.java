@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
+import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.app.SearchSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.CursorObjectAdapter;
@@ -48,6 +49,7 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import org.mythtv.leanfront.BuildConfig;
@@ -71,7 +73,8 @@ import java.util.ArrayList;
  */
 public class SearchFragment extends SearchSupportFragment
         implements SearchSupportFragment.SearchResultProvider,
-        LoaderManager.LoaderCallbacks<Cursor>, AsyncBackendCall.OnBackendCallListener {
+        LoaderManager.LoaderCallbacks<Cursor>, AsyncBackendCall.OnBackendCallListener,
+        BrowseSupportFragment.MainFragmentAdapterProvider{
     private static final String TAG = "lfe";
     private static final String CLASS = "SearchFragment";
     private static final boolean DEBUG = BuildConfig.DEBUG;
@@ -85,6 +88,12 @@ public class SearchFragment extends SearchSupportFragment
     private int mSearchLoaderId = 1;
     private boolean mResultsFound = false;
     private boolean mGuideInProgress = false;
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
+            new BrowseSupportFragment.MainFragmentAdapter(this);
+    public int type;
+    public static final int TYPE_SEARCH = 1;
+    public static final int TYPE_NEWTITLES = 2;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +104,8 @@ public class SearchFragment extends SearchSupportFragment
 
         setSearchResultProvider(this);
         setOnItemViewClickedListener(new ItemViewClickedListener());
+        if (type == TYPE_NEWTITLES)
+            setSearchQuery(getText(R.string.new_title_search).toString(), true);
     }
 
     @Override
@@ -106,6 +117,19 @@ public class SearchFragment extends SearchSupportFragment
     @Override
     public ObjectAdapter getResultsAdapter() {
         return mRowsAdapter;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (type == TYPE_NEWTITLES) {
+            View view = getView().findViewById(R.id.lb_search_bar_items);
+            if (view != null)
+                view.setVisibility(View.GONE);
+            view = getView().findViewById(R.id.lb_search_bar_speech_orb);
+            if (view != null)
+                view.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -138,7 +162,8 @@ public class SearchFragment extends SearchSupportFragment
             mRowsAdapter.clear();
             mQuery = query;
             mResultsFound = false;
-            getLoaderManager().initLoader(mSearchLoaderId++, null, this);
+            if (type == TYPE_SEARCH)
+                getLoaderManager().initLoader(mSearchLoaderId++, null, this);
             searchGuide();
         }
     }
@@ -147,8 +172,12 @@ public class SearchFragment extends SearchSupportFragment
         // Search Program Guide
         if (!mGuideInProgress) {
             AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
-            call.setStringParameter(mQuery);
-            call.execute(Video.ACTION_SEARCHGUIDE_TITLE, Video.ACTION_SEARCHGUIDE_KEYWORD);
+            if (type == TYPE_NEWTITLES) {
+                call.execute(Video.ACTION_SEARCHGUIDE_NEWTITLES);
+            } else {
+                call.setStringParameter(mQuery);
+                call.execute(Video.ACTION_SEARCHGUIDE_TITLE, Video.ACTION_SEARCHGUIDE_KEYWORD);
+            }
             mGuideInProgress = true;
         }
     }
@@ -202,6 +231,7 @@ public class SearchFragment extends SearchSupportFragment
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
             case Video.ACTION_SEARCHGUIDE_TITLE:
+            case Video.ACTION_SEARCHGUIDE_NEWTITLES:
                 mGuideInProgress = false;
                 loadGuideData(taskRunner.getXmlResults());
                 break;
@@ -250,6 +280,11 @@ public class SearchFragment extends SearchSupportFragment
             Row row = new ListRow(header, guideAdapter);
             mRowsAdapter.add(row);
         }
+    }
+
+    @Override
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
+        return mMainFragmentAdapter;
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {

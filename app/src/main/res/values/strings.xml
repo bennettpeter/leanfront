@@ -46,6 +46,7 @@
     <string name="undelete_2">Recording</string>
 
     <string name="search_results">Search results for \'%1$s\'</string>
+    <string name="new_title_search">New Titles</string>
     <string name="no_search_results">No search results found for \'%1$s\'</string>
     <string name="search_label">MythTV</string>
     <string name="search_hint">Search for videos and recordings</string>
