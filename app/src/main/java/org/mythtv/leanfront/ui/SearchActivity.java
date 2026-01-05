@@ -35,6 +35,7 @@ import org.mythtv.leanfront.R;
  */
 public class SearchActivity extends LeanbackActivity {
     private SearchFragment mFragment;
+    long mMultipleKeyTime;
 
     /**
      * Called when the activity is first created.
@@ -63,6 +64,30 @@ public class SearchActivity extends LeanbackActivity {
         // If there are no results found, press the left key to reselect the microphone
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && !mFragment.hasResults()) {
             mFragment.focusOnSearch();
+        }
+        int direction = 1;
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                long newKeyTime=System.currentTimeMillis();
+                long diff = newKeyTime - mMultipleKeyTime;
+                // Restrict key interval to 50ms to prevent crash
+                if (diff < 50)
+                    return true;
+                mMultipleKeyTime=newKeyTime;
+                break;
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+            case KeyEvent.KEYCODE_PAGE_UP:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                direction = -1;
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            case KeyEvent.KEYCODE_PAGE_DOWN:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                if (mFragment != null) {
+                    mFragment.pageDown(direction);
+                    return true;
+                }
+                break;
         }
         return super.onKeyDown(keyCode, event);
     }

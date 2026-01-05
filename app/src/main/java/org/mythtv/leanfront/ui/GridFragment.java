@@ -49,7 +49,8 @@ import org.mythtv.leanfront.R;
 
 import java.util.Date;
 
-public class GridFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
+public class GridFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider,
+        ManageRecordingsFragment.Paging {
     private static final String TAG = "GridFragment";
 
     private ObjectAdapter mAdapter;
@@ -264,7 +265,7 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
         }
     }
 
-    void pageDown(int direction) {
+    public void pageDown(int direction) {
         int selectedCellNum = getSelectedPosition();
         int rowStart = selectedCellNum / numberColumns * numberColumns;
         int newPos = rowStart + pagingRows * numberColumns * direction;

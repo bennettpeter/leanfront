@@ -107,7 +107,7 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
         if (isShowingHeaders())
             return;
         MyHeaderItem header = (MyHeaderItem) ((PageRow)mRowsAdapter.get(selectedRowNum)).getHeaderItem();
-        GridFragment gfrag = (GridFragment)header.getFragment();
+        Paging gfrag = (Paging)header.getFragment();
         gfrag.pageDown(direction);
     }
 
@@ -146,4 +146,7 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
         }
     }
 
+    interface Paging {
+        void pageDown(int direction);
+    }
 }

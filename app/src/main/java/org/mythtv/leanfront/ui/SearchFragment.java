@@ -31,6 +31,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.leanback.app.BrowseSupportFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.app.SearchSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.CursorObjectAdapter;
@@ -47,6 +48,8 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -74,7 +77,8 @@ import java.util.ArrayList;
 public class SearchFragment extends SearchSupportFragment
         implements SearchSupportFragment.SearchResultProvider,
         LoaderManager.LoaderCallbacks<Cursor>, AsyncBackendCall.OnBackendCallListener,
-        BrowseSupportFragment.MainFragmentAdapterProvider{
+        BrowseSupportFragment.MainFragmentAdapterProvider,
+        ManageRecordingsFragment.Paging {
     private static final String TAG = "lfe";
     private static final String CLASS = "SearchFragment";
     private static final boolean DEBUG = BuildConfig.DEBUG;
@@ -93,12 +97,20 @@ public class SearchFragment extends SearchSupportFragment
     public int type;
     public static final int TYPE_SEARCH = 1;
     public static final int TYPE_NEWTITLES = 2;
+    private int[] mSavedSelection = null;
+    private String savedQuery;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (savedInstanceState == null)
+            mSavedSelection = null;
+        else {
+            mSavedSelection = savedInstanceState.getIntArray("selection");
+            type = savedInstanceState.getInt("type");
+            savedQuery = savedInstanceState.getString("query");
+        }
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         mVideoCursorAdapter.setMapper(new VideoCursorMapper());
 
@@ -106,12 +118,25 @@ public class SearchFragment extends SearchSupportFragment
         setOnItemViewClickedListener(new ItemViewClickedListener());
         if (type == TYPE_NEWTITLES)
             setSearchQuery(getText(R.string.new_title_search).toString(), true);
+        if (savedQuery != null && savedQuery.length() >= 3)
+            onQueryTextSubmit(savedQuery);
     }
 
     @Override
     public void onPause() {
+        mSavedSelection  = getSelection();
         mHandler.removeCallbacksAndMessages(null);
         super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        mSavedSelection = getSelection();
+        savedInstanceState.putIntArray("selection",mSavedSelection);
+        savedInstanceState.putInt("type",type);
+        savedInstanceState.putString("query",savedQuery);
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -147,8 +172,10 @@ public class SearchFragment extends SearchSupportFragment
     @Override
     public boolean onQueryTextSubmit(String query) {
         if (DEBUG) Log.i(TAG, CLASS + String.format(" Search text submitted: %s", query));
-        if (query.length() >= 3)
+        if (query.length() >= 3) {
             loadQuery(query);
+            savedQuery = query;
+        }
         return true;
     }
 
@@ -159,12 +186,12 @@ public class SearchFragment extends SearchSupportFragment
 
     private void loadQuery(String query) {
         if (!TextUtils.isEmpty(query) && !"nil".equals(query)) {
-            mRowsAdapter.clear();
             mQuery = query;
             mResultsFound = false;
             if (type == TYPE_SEARCH)
-                getLoaderManager().initLoader(mSearchLoaderId++, null, this);
-            searchGuide();
+                LoaderManager.getInstance(this).initLoader(mSearchLoaderId++, null, this);
+            else
+                searchGuide();
         }
     }
 
@@ -197,15 +224,16 @@ public class SearchFragment extends SearchSupportFragment
                 VideoContract.VideoEntry.COLUMN_TITLE + " LIKE ? OR " +
                         VideoContract.VideoEntry.COLUMN_SUBTITLE + " LIKE ?",
                 new String[]{"%" + query + "%", "%" + query + "%"},
-                null // Default sort order
+                VideoContract.VideoEntry.COLUMN_TITLE + ", "
+                        + VideoContract.VideoEntry.COLUMN_AIRDATE + ", "
+                        + VideoContract.VideoEntry.COLUMN_SEASON + ", "
+                        + VideoContract.VideoEntry.COLUMN_EPISODE + ", "
+                        + VideoContract.VideoEntry.COLUMN_SUBTITLE
         );
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        // Do not refresh on a reload
-        if (mRowsAdapter.size() > 0)
-            return;
         int titleRes;
         if (cursor == null || cursor.isClosed())
             return;
@@ -218,7 +246,17 @@ public class SearchFragment extends SearchSupportFragment
         mVideoCursorAdapter.changeCursor(cursor);
         HeaderItem header = new HeaderItem(getContext().getString(titleRes,mQuery));
         ListRow row = new ListRow(header, mVideoCursorAdapter);
-        mRowsAdapter.add(row);
+        if (mRowsAdapter.size() > 0)
+            mRowsAdapter.replace(0, row);
+        else
+            mRowsAdapter.add(row);
+
+        if (mSavedSelection != null) {
+            SelectionSetter setter = new SelectionSetter(mSavedSelection[0], mSavedSelection[1]);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(setter, 100);
+        }
+        searchGuide();
     }
 
     @Override
@@ -278,7 +316,10 @@ public class SearchFragment extends SearchSupportFragment
                 titleRes = RESULTNOPROGS[ix];
             HeaderItem header = new HeaderItem(getContext().getString(titleRes, mQuery));
             Row row = new ListRow(header, guideAdapter);
-            mRowsAdapter.add(row);
+            if (mRowsAdapter.size() > ix+1)
+                mRowsAdapter.replace(ix+1, row);
+            else
+                mRowsAdapter.add(row);
         }
     }
 
@@ -287,11 +328,42 @@ public class SearchFragment extends SearchSupportFragment
         return mMainFragmentAdapter;
     }
 
+    int [] getSelection() {
+        int selectedRowNum = getRowsSupportFragment().getSelectedPosition();
+        int selectedItemNum = -1;
+        if (selectedRowNum >= 0) {
+            ListRowPresenter.ViewHolder selectedViewHolder
+                    = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
+                    .getRowViewHolder(selectedRowNum);
+            if (selectedViewHolder != null)
+                selectedItemNum = selectedViewHolder.getSelectedPosition();
+        }
+        return new int[]{selectedRowNum, selectedItemNum};
+    }
+
+    public void pageDown(int direction) {
+        RowsSupportFragment frag = getRowsSupportFragment();
+        int selectedRowNum = frag.getSelectedPosition();
+        ListRowPresenter.ViewHolder selectedViewHolder
+                = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
+                .getRowViewHolder(selectedRowNum);
+        if (selectedViewHolder == null)
+            return;
+        int selectedItemNum = selectedViewHolder.getSelectedPosition();
+        int newPos = selectedItemNum + 5 * direction; // 5 = 1 page
+        if (newPos < 0)
+            newPos = 0;
+        ListRowPresenter.SelectItemViewHolderTask task
+                = new ListRowPresenter.SelectItemViewHolderTask(newPos);
+        task.setSmoothScroll(false);
+        frag.setSelectedPosition(selectedRowNum, false, task);
+    }
+
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                 RowPresenter.ViewHolder rowViewHolder, Row row) {
-
+            mSavedSelection = getSelection();
             if (item instanceof Video) {
                 Video video = (Video) item;
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
@@ -310,6 +382,29 @@ public class SearchFragment extends SearchSupportFragment
                 startActivity(intent);
             } else {
                 Toast.makeText(getActivity(), "Click", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class SelectionSetter implements Runnable {
+
+        private int selectedRowNum;
+        private int selectedItemNum;
+
+        public SelectionSetter(int selectedRowNum, int selectedItemNum) {
+            this.selectedRowNum = selectedRowNum;
+            this.selectedItemNum = selectedItemNum;
+        }
+        public void run() {
+            RowsSupportFragment frag = getRowsSupportFragment();
+            if (frag != null && selectedRowNum >= 0 && selectedItemNum >= 0) {
+                // Note we do not need to check selectedRowNum or
+                // selectedItemNum, if either is more than the maximum
+                // there is no exception - it just selects the last item.
+                ListRowPresenter.SelectItemViewHolderTask task
+                        = new ListRowPresenter.SelectItemViewHolderTask(selectedItemNum);
+                task.setSmoothScroll(false);
+                frag.setSelectedPosition(selectedRowNum, false, task);
             }
         }
     }
