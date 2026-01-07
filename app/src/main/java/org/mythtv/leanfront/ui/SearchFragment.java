@@ -62,6 +62,7 @@ import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.model.GuideSlot;
 import org.mythtv.leanfront.model.Program;
+import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
 import org.mythtv.leanfront.presenter.CardPresenter;
@@ -171,6 +172,7 @@ public class SearchFragment extends SearchSupportFragment
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        mSavedSelection = null;
         if (DEBUG) Log.i(TAG, CLASS + String.format(" Search text submitted: %s", query));
         if (query.length() >= 3) {
             loadQuery(query);
@@ -216,19 +218,38 @@ public class SearchFragment extends SearchSupportFragment
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String seq = Settings.getString("pref_seq");
+        String ascdesc = Settings.getString("pref_seq_ascdesc");
         String query = mQuery;
+        StringBuilder orderby = new StringBuilder();
+        orderby.append(VideoContract.VideoEntry.COLUMN_TITLEMATCH).append(", ");
+        if ("airdate".equals(seq)) {
+            // +0 is used to convert the value to a number
+            orderby.append(VideoContract.VideoEntry.COLUMN_SEASON).append("+0 ")
+                    .append(ascdesc).append(", ");
+            orderby.append(VideoContract.VideoEntry.COLUMN_EPISODE).append("+0 ")
+                    .append(ascdesc).append(", ");
+            orderby.append(VideoContract.VideoEntry.COLUMN_AIRDATE).append(" ")
+                    .append(ascdesc).append(", ");
+            orderby.append(VideoContract.VideoEntry.COLUMN_STARTTIME).append(" ")
+                    .append(ascdesc);
+        } else {
+            orderby.append(VideoContract.VideoEntry.COLUMN_STARTTIME).append(" ")
+                    .append(ascdesc).append(", ");
+            orderby.append(VideoContract.VideoEntry.COLUMN_AIRDATE).append(" ")
+                    .append(ascdesc);
+        }
+        // Add recordedid to sort for in case of duplicates or split recordings
+        orderby.append(", ").append(VideoContract.VideoEntry.COLUMN_RECORDEDID).append(" ")
+                .append(ascdesc);
         return new CursorLoader(
                 getActivity(),
                 VideoContract.VideoEntry.CONTENT_URI,
                 null, // Return all fields.
                 VideoContract.VideoEntry.COLUMN_TITLE + " LIKE ? OR " +
-                        VideoContract.VideoEntry.COLUMN_SUBTITLE + " LIKE ?",
+                VideoContract.VideoEntry.COLUMN_SUBTITLE + " LIKE ?",
                 new String[]{"%" + query + "%", "%" + query + "%"},
-                VideoContract.VideoEntry.COLUMN_TITLE + ", "
-                        + VideoContract.VideoEntry.COLUMN_AIRDATE + ", "
-                        + VideoContract.VideoEntry.COLUMN_SEASON + ", "
-                        + VideoContract.VideoEntry.COLUMN_EPISODE + ", "
-                        + VideoContract.VideoEntry.COLUMN_SUBTITLE
+               orderby.toString()
         );
     }
 
