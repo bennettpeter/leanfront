@@ -1132,9 +1132,10 @@ public class AsyncBackendCall implements Runnable {
                                 .append("&Subtitle=").append(URLEncoder.encode(nvl(mRecordRule.subtitle), "UTF-8"))
                                 .append("&Description=").append(URLEncoder.encode(nvl(mRecordRule.description), "UTF-8"))
                                 .append("&Category=").append(URLEncoder.encode(nvl(mRecordRule.category), "UTF-8"))
-                                .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"))
-                                .append("&EndTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.endTime), "UTF-8"))
-                                .append("&SeriesId=").append(nvl(mRecordRule.seriesId))
+                                .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"));
+                        if (mRecordRule.endTime != null)
+                            urlBuilder.append("&EndTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.endTime), "UTF-8"));
+                        urlBuilder.append("&SeriesId=").append(nvl(mRecordRule.seriesId))
                                 .append("&ProgramId=").append(nvl(mRecordRule.programId))
                                 .append("&ChanId=").append(mRecordRule.chanId)
                                 .append("&Station=").append(URLEncoder.encode(nvl(mRecordRule.station), "UTF-8"))

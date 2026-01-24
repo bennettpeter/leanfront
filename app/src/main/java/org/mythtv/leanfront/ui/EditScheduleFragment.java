@@ -391,7 +391,8 @@ public class EditScheduleFragment extends GuidedStepSupportFragment
         ArrayList<String> typeOptions = new ArrayList<>();
 
         if ("Recording Template".equalsIgnoreCase(mRecordRule.type)) {
-            if (! "Default".equalsIgnoreCase(mRecordRule.category)) {
+            if (! "Default".equalsIgnoreCase(mRecordRule.category)
+                    && mRecordRule.recordId > 0) {
                 typePrompts.add(R.string.sched_type_del_template);
                 typeOptions.add("Not Recording");
             }
