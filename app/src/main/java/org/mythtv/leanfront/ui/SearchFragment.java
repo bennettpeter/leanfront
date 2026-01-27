@@ -24,6 +24,7 @@
 
 package org.mythtv.leanfront.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -258,6 +259,9 @@ public class SearchFragment extends SearchSupportFragment
         int titleRes;
         if (cursor == null || cursor.isClosed())
             return;
+        Context context = getContext();
+        if (context == null)
+            return;
         if (cursor.moveToFirst()) {
             mResultsFound = true;
             titleRes = R.string.search_result_videos;
@@ -265,7 +269,7 @@ public class SearchFragment extends SearchSupportFragment
             titleRes = R.string.search_result_no_videos;
         }
         mVideoCursorAdapter.changeCursor(cursor);
-        HeaderItem header = new HeaderItem(getContext().getString(titleRes,mQuery));
+        HeaderItem header = new HeaderItem(context.getString(titleRes,mQuery));
         ListRow row = new ListRow(header, mVideoCursorAdapter);
         if (mRowsAdapter.size() > 0)
             mRowsAdapter.replace(0, row);
@@ -303,6 +307,9 @@ public class SearchFragment extends SearchSupportFragment
     void loadGuideData(ArrayList <XmlNode> results) {
         if (results == null)
             return;
+        Context context = getContext();
+        if (context == null)
+            return;
         for (int ix = 0; ix < results.size() ; ix++) {
             ArrayObjectAdapter guideAdapter = new ArrayObjectAdapter(new GuideCardPresenter(GuideCardView.TYPE_LARGE));
             XmlNode result = results.get(ix);
@@ -335,7 +342,7 @@ public class SearchFragment extends SearchSupportFragment
                     titleRes = RESULTPROGS[ix];
             } else
                 titleRes = RESULTNOPROGS[ix];
-            HeaderItem header = new HeaderItem(getContext().getString(titleRes, mQuery));
+            HeaderItem header = new HeaderItem(context.getString(titleRes, mQuery));
             Row row = new ListRow(header, guideAdapter);
             if (mRowsAdapter.size() > ix+1)
                 mRowsAdapter.replace(ix+1, row);
