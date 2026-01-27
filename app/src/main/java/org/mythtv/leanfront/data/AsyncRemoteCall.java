@@ -58,7 +58,7 @@ public class AsyncRemoteCall implements Runnable {
     public static final int ACTION_LOOKUP_MOVIE = 3;
     public static final int ACTION_LOOKUP_TVDB = 4;
     private static final String TAG = "lfe";
-    private static final String CLASS = "AsyncBackendCall";
+    private static final String CLASS = "AsyncRemoteCall";
     private final static ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Activity activity;
 
