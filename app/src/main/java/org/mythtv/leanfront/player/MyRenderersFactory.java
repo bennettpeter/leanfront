@@ -16,8 +16,6 @@ import androidx.media3.exoplayer.text.TextOutput;
 import androidx.media3.exoplayer.text.TextRenderer;
 import androidx.media3.exoplayer.video.VideoRendererEventListener;
 
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.errorprone.annotations.CanIgnoreReturnValue;
-
 import java.util.ArrayList;
 
 @UnstableApi
@@ -44,7 +42,6 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
      * @param videoExtensionRendererMode The extension renderer mode.
      * @return This factory, for convenience.
      */
-    @CanIgnoreReturnValue
     public final MyRenderersFactory setVideoExtensionRendererMode(
             @ExtensionRendererMode int videoExtensionRendererMode) {
         this.videoExtensionRendererMode = videoExtensionRendererMode;
