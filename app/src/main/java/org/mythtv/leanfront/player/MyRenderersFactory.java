@@ -70,7 +70,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
                 renderersList);
         @Nullable
         AudioSink audioSink =
-                buildAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams);
+                buildAudioSink(context, enableFloatOutput, enableAudioOutputPlaybackParameters);
         if (audioSink != null) {
             buildAudioRenderers(
                     context,

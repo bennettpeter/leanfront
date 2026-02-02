@@ -22,7 +22,7 @@ if [[ ! -d media ]] ; then
     git clone git@github.com:bennettpeter/media.git
 fi
 git -C media fetch
-git -C media checkout 1.8.0-lf 2>&1
+git -C media checkout 1.9.1-lf 2>&1
 git -C media pull 2>&1
 
 if [[ ! -d leanfront-mobile ]] ; then
