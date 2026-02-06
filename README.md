@@ -66,7 +66,7 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 Leanfront will only run on Fire Sticks that run "Fire OS", which is a version of Android. It will not run on the "Fire TV 4K Select". That runs Amazon's "Vega OS", and will not run Android Applications. You can verify the Operating system of a particular device at https://developer.amazon.com/docs/device-specs/device-specifications-fire-tv-streaming-media-player.html . Select the device from the drop-down list and check the OS version.
 
-Starting in the leanfront release of February 2026, versions above lft-1380, ExoPlayer has been upgraded to 1.9.1, and the minimum API level for this version is 23. This means that the leatest release of leanfront no longer supports the below devices, which are all at level 22. Note that it does support all 4k versions.
+Starting in the leanfront release of February 2026, versions above lft-1386, ExoPlayer has been upgraded to 1.9.1, and the minimum API level for this version is 23. This means that the leatest release of leanfront no longer supports the below devices, which are all at level 22. Note that it does support all 4k versions.
 
 - Fire TV - 1st Gen (2014)
 - Fire TV - 2nd Gen (2015)
@@ -74,7 +74,7 @@ Starting in the leanfront release of February 2026, versions above lft-1380, Exo
 - Fire TV Stick - Basic Edition (2017)
 - Fire TV Stick - 2nd Gen (2016-2019)
 
-If you have one of these you can still install versions up to 20260109-leanfront-release-lft-1380-g709f7d1. The fire store should automatically find the supported version for your device, or you can side load it.
+If you have one of these you can still install versions up to 20260129-leanfront-release-lft-1386-g3ff1a53.
 
 ## Main Screen
 
