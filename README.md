@@ -72,9 +72,12 @@ Starting in the leanfront release of February 2026, versions above lft-1386, Exo
 - Fire TV - 2nd Gen (2015)
 - Fire TV Stick - 1st Gen (2014)
 - Fire TV Stick - Basic Edition (2017)
+- Amazon Fire TV Edition - Element 4K (2017) (This refers to smart TVs.)
 - Fire TV Stick - 2nd Gen (2016-2019)
 
-If you have one of these you can still install versions up to 20260129-leanfront-release-lft-1386-g3ff1a53.
+There are also some older Android TVs that are no longer supported.
+
+If you have one of these you can still install version 20260129-leanfront-release-lft-1386-g3ff1a53, but you will have to [Side Load](#side-load) it.
 
 ## Main Screen
 
