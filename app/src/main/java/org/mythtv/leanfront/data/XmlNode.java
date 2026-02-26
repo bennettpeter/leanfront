@@ -114,7 +114,7 @@ public class XmlNode {
             if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
                 ipAddress = "[" + ipAddress + "]";
             if ("demo".equalsIgnoreCase(ipAddress))
-                ipAddress = "73.4.156.8";
+                ipAddress = "73.17.82.146";
         }
         return ipAddress;
     }
