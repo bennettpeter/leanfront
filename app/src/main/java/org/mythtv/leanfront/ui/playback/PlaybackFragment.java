@@ -498,8 +498,10 @@ public class PlaybackFragment extends VideoSupportFragment
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         rFactory.setVideoExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
-        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
-        builder.setTrackSelector(mTrackSelector);
+        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory)
+                .setTrackSelector(mTrackSelector)
+                // 12 hours to cater for playback of recordings in progress
+                .setStuckPlayingNotEndingTimeoutMs(12*60*60*1000);
         mPlayer = builder.build();
 
         mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
