@@ -621,6 +621,10 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
         HeaderItem header = new HeaderItem(0, subcategories[0]);
         mAdapter.add(new ListRow(header, mVideoCursorAdapter));
+        // ⬆ Extra rows so you can scroll down to see the picture
+        mAdapter.add(new ListRow(new HeaderItem(0, "\u2B06"), new ArrayObjectAdapter()));
+        mAdapter.add(new ListRow(new HeaderItem(0, ""), new ArrayObjectAdapter()));
+        mAdapter.add(new ListRow(new HeaderItem(0, ""), new ArrayObjectAdapter()));
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
