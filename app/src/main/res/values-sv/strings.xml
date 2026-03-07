@@ -233,7 +233,7 @@
         Avkoda, välj FFmpeg.</string>
   <string name="pberror_recommend_audio">Ljud som inte stöds: I leanfront-inställningar -&gt; Ljudavkodning,
         välj Auto eller FFmpeg eller ändra dina Android-ljudinställningar.</string>
-  <string name="pberror_recommend_ignoreextra">Malformad fil: I Leanfront -inställningar -&gt; Playback Group -&gt; Ställ in ignorera extra spår.</string>
+  <string name="pberror_malformed">Felaktig fil: Reparera den här filen med ffmpeg, mkvmerge eller andra verktyg.</string>
   <string name="pberror_extractor_array">Fel: OutOfBoundsException i BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Fortsätta</string>
   <string name="pberror_button_exit">Utgång</string>

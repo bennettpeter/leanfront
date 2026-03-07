@@ -233,7 +233,7 @@
         Décodez, sélectionnez FFmpeg.</string>
   <string name="pberror_recommend_audio">Audio non pris en charge : dans Paramètres Leanfront -&gt; Décodage audio,
         sélectionnez Auto ou FFmpeg ou bien modifiez vos paramètres audio Android.</string>
-  <string name="pberror_recommend_ignoreextra">Fichier malformé: dans les paramètres Leanfront -&gt; Group de lecture -&gt; Set Ignore Extra Track.</string>
+  <string name="pberror_malformed">Fichier mal formé : réparez ce fichier à l\'aide de ffmpeg, mkvmerge ou d\'autres outils.</string>
   <string name="pberror_extractor_array">Erreur : OutOfBoundsException dans BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Continuer</string>
   <string name="pberror_button_exit">Sortie</string>

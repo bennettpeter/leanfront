@@ -233,7 +233,7 @@
         Αποκωδικοποιήστε, επιλέξτε FFmpeg.</string>
   <string name="pberror_recommend_audio">Μη υποστηριζόμενος ήχος: Σε leanfront Settings -&gt; Audio Decode,
         επιλέξτε Auto ή FFmpeg ή αλλιώς αλλάξτε τις ρυθμίσεις ήχου Android.</string>
-  <string name="pberror_recommend_ignoreextra">Μικρολογημένο αρχείο: Στις ρυθμίσεις LeAnfront -&gt; Ομάδα αναπαραγωγής -&gt; Set Ignore Extra Track.</string>
+  <string name="pberror_malformed">Αρχείο με λανθασμένη μορφή: Επιδιορθώστε αυτό το αρχείο χρησιμοποιώντας ffmpeg, mkvmerge ή άλλα εργαλεία.</string>
   <string name="pberror_extractor_array">Σφάλμα: OutOfBoundsException στο BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Να συνεχίσει</string>
   <string name="pberror_button_exit">Εξοδος</string>

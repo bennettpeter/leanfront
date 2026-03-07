@@ -233,7 +233,7 @@
         Dekódovat, vyberte FFmpeg.</string>
   <string name="pberror_recommend_audio">Nepodporovaný zvuk: V nastavení leanfront -&gt; Audio Decode,
         vyberte Auto nebo FFmpeg nebo změňte nastavení zvuku Android.</string>
-  <string name="pberror_recommend_ignoreextra">Malformovaný soubor: V nastavení LeanFront -&gt; Skupina přehrávání -&gt; Nastavit další stopu.</string>
+  <string name="pberror_malformed">Poškozený soubor: Opravte tento soubor pomocí ffmpeg, mkvmerge nebo jiných nástrojů.</string>
   <string name="pberror_extractor_array">Chyba: OutOfBoundsException v BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Pokračovat</string>
   <string name="pberror_button_exit">Výstup</string>

@@ -233,7 +233,7 @@
         Dekoduj, wybierz FFmpeg.</string>
   <string name="pberror_recommend_audio">Nieobsługiwany dźwięk: w ustawieniach Leanfront -&gt; Dekodowanie audio,
         wybierz Auto lub FFmpeg lub zmień ustawienia audio Androida.</string>
-  <string name="pberror_recommend_ignoreextra">Zadowolony plik: W ustawieniach leanfront -&gt; Grupa odtwarzania -&gt; Ustaw ignoruj ​​dodatkowy utwór.</string>
+  <string name="pberror_malformed">Zniekształcony plik: napraw ten plik za pomocą ffmpeg, mkvmerge lub innych narzędzi.</string>
   <string name="pberror_extractor_array">Błąd: wyjątek OutOfBoundsException w BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Kontynuować</string>
   <string name="pberror_button_exit">Wyjście</string>
