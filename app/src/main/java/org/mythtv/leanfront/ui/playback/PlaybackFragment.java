@@ -125,10 +125,8 @@ import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
-import androidx.media3.exoplayer.source.SampleQueue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -1989,7 +1987,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                 if (mToast != null)
                                     mToast.cancel();
                                 mToast = Toast.makeText(getActivity(),
-                                        getActivity().getString(R.string.pberror_recommend_ignoreextra),
+                                        getActivity().getString(R.string.pberror_malformed),
                                         Toast.LENGTH_LONG);
                                 mToast.show();
                                 mPlayer.stop();
