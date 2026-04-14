@@ -407,6 +407,10 @@ If local bookmarks are not selected:
 
 - Upon playback, if there is a local bookmark, it will be used. This can happen if you changed your local bookmarks setting after having already stored some local bookmarks. When exiting playback the bookmark will be stored on MythTV and the local bookmark erased. This can also happen if you upgrade your mythbackend to a version from v32-Pre-658-g48557d32c2 or from v31.0-73-g7bf1284867, the local video bookmarks will be used but will be cleared and set in MythTV from then on.
 
+### Subtitles
+
+A list of available subtitles or closed captions is shown on selecting the CC icon. External subtitles are supported. To use external subtitles, a file with one of the following extensions and a matching file name must be in the same directory as the video or recording file: "srt", "ssa", "ass", "vtt", "ttml".
+
 ### Commercial Break and Cut List
 
 If you run mythcommflag or comskip to detect commercials in a recording, or you use Edit mode in mythfrontend to add a cut list, leanfront now supports skipping over cuts or commercial breaks.
