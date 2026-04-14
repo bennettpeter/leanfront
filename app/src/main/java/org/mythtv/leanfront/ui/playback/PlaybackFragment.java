@@ -115,6 +115,9 @@ import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.exoplayer.SeekParameters;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.MergingMediaSource;
+import androidx.media3.exoplayer.source.SingleSampleMediaSource;
 import androidx.media3.ui.SubtitleView;
 import org.mythtv.leanfront.ui.MainFragment;
 import org.mythtv.leanfront.ui.VideoDetailsActivity;
@@ -227,6 +230,10 @@ public class PlaybackFragment extends VideoSupportFragment
     private static final int STATUS_MONITOR_INTERVAL = 5000;
     private static final int TABLES_MONITOR_INTERVAL = 180000;
     private boolean tablesFilled = false;
+    private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
+    private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
+            MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
+    private boolean [] subtFound = new boolean[subtExtens.length];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -480,6 +487,19 @@ public class PlaybackFragment extends VideoSupportFragment
             call.setVideo(mVideo);
             call.execute(Video.ACTION_GET_STREAM_INFO);
             return;
+        }
+        // Check for external subtitles
+        for (int ix = 0 ; ix < subtExtens.length ; ix++) {
+            AsyncBackendCall call = new AsyncBackendCall(getActivity(), (taskRunner) ->{
+                if (taskRunner.getXmlRespCode() == 200) {
+                    subtFound[taskRunner.getId()] = true;
+                    Log.i(TAG, CLASS + " External subtitle found: " + subtExtens[taskRunner.getId()]);
+                }
+            });
+            call.setId(ix);
+            int dot = mVideo.videoUrl.lastIndexOf('.');
+            call.setStringParameter(mVideo.videoUrl.substring(0, dot+1) + subtExtens[ix]);
+            call.execute(Video.ACTION_TESTURL);
         }
         mTrackSelector = new DefaultTrackSelector(getContext());
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
@@ -959,9 +979,38 @@ public class PlaybackFragment extends VideoSupportFragment
         pmf.experimentalParseSubtitlesDuringExtraction(false);
         mMediaSource = (ProgressiveMediaSource) pmf.createMediaSource(item);
         mMediaSource.setPossibleEmptyTrack(possibleEmptyTrack);
+        // see DefaultMediaSourceFactory for non-deprecated code. Must be done
+        // in conjunction with abve call to experimentalParseSubtitlesDuringExtraction
+        SingleSampleMediaSource.Factory singleSampleMediaSourceFactory =
+                new SingleSampleMediaSource.Factory(mDsFactory);
+        ArrayList<MediaSource> msList = new ArrayList<>();
+        msList.add(mMediaSource);
+        for (int ix = 0 ; ix < subtExtens.length; ix++) {
+            if (subtFound[ix]) {
+                int dot = mediaSourceUri.toString().lastIndexOf('.');
+                Uri subtitleUri = Uri.parse(mediaSourceUri.toString().substring(0, dot+1) + subtExtens[ix]);
+                MediaItem.SubtitleConfiguration subtitle =
+                        new MediaItem.SubtitleConfiguration.Builder(subtitleUri)
+                                .setMimeType(subtMimes[ix]) // The correct MIME type (required).
+//                        .setLanguage(language) // The subtitle language (optional).
+//                        .setSelectionFlags(selectionFlags) // Selection flags for the track (optional).
+                                .build();
+                MediaSource subtmediaSource =
+                        singleSampleMediaSourceFactory.createMediaSource(
+                                subtitle, /* durationUs= */ C.TIME_UNSET);
+                msList.add(subtmediaSource);
+            }
+        }
         if (mBookmark < 0)
             mBookmark = 0;
-        mPlayer.setMediaSource(mMediaSource, mBookmark);
+        if (msList.size() > 1) {
+            MediaSource [] mediaSources = new MediaSource[msList.size()];
+            mediaSources = msList.toArray(mediaSources);
+            MergingMediaSource mmSource = new MergingMediaSource(mediaSources);
+            mPlayer.setMediaSource(mmSource, mBookmark);
+        }
+        else
+            mPlayer.setMediaSource(mMediaSource, mBookmark);
         mPlayer.prepare();
         // Get file length again to see if it is increasing
         getFileLength(true);

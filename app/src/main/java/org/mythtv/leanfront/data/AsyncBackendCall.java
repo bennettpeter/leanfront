@@ -93,6 +93,7 @@ public class AsyncBackendCall implements Runnable {
     private String callSign;
     private boolean neverRecord;
     private boolean allStatusValues;
+    private int xmlRespCode;
 
     // Parsing results of GetRecorded
     private static final String[] XMLTAGS_RECGROUP = {"Recording","RecGroup"};
@@ -204,6 +205,10 @@ public class AsyncBackendCall implements Runnable {
         this.mId = id;
     }
 
+    public int getId() {
+        return mId;
+    }
+
     public void setName(String name) {
         this.mName = name;
     }
@@ -259,6 +264,10 @@ public class AsyncBackendCall implements Runnable {
 
     public void setNeverRecord(boolean neverRecord) {
         this.neverRecord = neverRecord;
+    }
+
+    public int getXmlRespCode() {
+        return xmlRespCode;
     }
 
     public void setAllStatusValues(boolean allStatusValues) {
@@ -633,16 +642,23 @@ public class AsyncBackendCall implements Runnable {
                     xmlResult.setString("true");
                     break;
                 }
+                case Video.ACTION_TESTURL:
+                    urlString = mStringParameter;
+                    mValue = 0;
+                    // ** Fall through to next case **
                 case Video.ACTION_FILELENGTH:
                     // mValue is prior file length to be checked against
                     // Try 10 times until file length increases.
-                    urlString = mVideo.videoUrl;
+                    if (task == Video.ACTION_FILELENGTH)
+                        urlString = mVideo.videoUrl;
                     mFileLength = -1;
                     for (int counter = 0 ; counter < 5 ; counter++) {
-                        try {
-                            // pause 1 second between attempts
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {
+                        if (task == Video.ACTION_FILELENGTH) {
+                            try {
+                                // pause 1 second between attempts
+                                Thread.sleep(1000);
+                            } catch (InterruptedException ignored) {
+                            }
                         }
                         try {
                             URL url = new URL(urlString);
@@ -658,6 +674,7 @@ public class AsyncBackendCall implements Runnable {
                             Log.i(TAG, CLASS + " URL: " + urlString);
                             urlConnection.connect();
                             try {
+                                xmlRespCode = urlConnection.getResponseCode();
                                 Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
                                         + " " + urlConnection.getResponseMessage());
                             } catch(Exception ignored) {
@@ -670,13 +687,15 @@ public class AsyncBackendCall implements Runnable {
                             if (mFileLength > mValue)
                                 break;
                         } catch (Exception e) {
-                            try {
-                                Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                        + " " + urlConnection.getResponseMessage());
-                            } catch (IOException ioException) {
-                                ioException.printStackTrace();
+                            if (task == Video.ACTION_FILELENGTH) {
+                                try {
+                                    Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
+                                            + " " + urlConnection.getResponseMessage());
+                                } catch (IOException ioException) {
+                                    ioException.printStackTrace();
+                                }
+                                Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
-                            Log.e(TAG, CLASS + " Exception getting file length.",e);
                         } finally {
                             if (urlConnection != null)
                                 urlConnection.disconnect();
