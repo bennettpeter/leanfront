@@ -49,6 +49,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -234,6 +236,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
             MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
     private boolean [] subtFound = new boolean[subtExtens.length];
+    private int subtChecked = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -489,17 +492,28 @@ public class PlaybackFragment extends VideoSupportFragment
             return;
         }
         // Check for external subtitles
-        for (int ix = 0 ; ix < subtExtens.length ; ix++) {
-            AsyncBackendCall call = new AsyncBackendCall(getActivity(), (taskRunner) ->{
-                if (taskRunner.getXmlRespCode() == 200) {
-                    subtFound[taskRunner.getId()] = true;
-                    Log.i(TAG, CLASS + " External subtitle found: " + subtExtens[taskRunner.getId()]);
-                }
-            });
-            call.setId(ix);
-            int dot = mVideo.videoUrl.lastIndexOf('.');
-            call.setStringParameter(mVideo.videoUrl.substring(0, dot+1) + subtExtens[ix]);
-            call.execute(Video.ACTION_TESTURL);
+        if (subtChecked == -1) {
+            subtChecked = 0;
+            for (int ix = 0; ix < subtExtens.length; ix++) {
+                AsyncBackendCall call = new AsyncBackendCall(getActivity(), (taskRunner) -> {
+                    if (taskRunner.getXmlRespCode() == 200) {
+                        subtFound[taskRunner.getId()] = true;
+                        Log.i(TAG, CLASS + " External subtitle found: " + subtExtens[taskRunner.getId()]);
+                    }
+                    subtChecked++;
+                });
+                call.setId(ix);
+                int dot = mVideo.videoUrl.lastIndexOf('.');
+                call.setStringParameter(mVideo.videoUrl.substring(0, dot + 1) + subtExtens[ix]);
+                call.execute(Video.ACTION_TESTURL);
+            }
+        }
+        if (subtChecked < subtExtens.length) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed( () -> {
+                initializePlayer(enableControls);
+            }, 100);
+            return;
         }
         mTrackSelector = new DefaultTrackSelector(getContext());
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());

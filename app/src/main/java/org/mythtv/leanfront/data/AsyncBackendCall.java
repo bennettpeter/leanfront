@@ -648,7 +648,7 @@ public class AsyncBackendCall implements Runnable {
                     // ** Fall through to next case **
                 case Video.ACTION_FILELENGTH:
                     // mValue is prior file length to be checked against
-                    // Try 10 times until file length increases.
+                    // Try 5 times until file length increases.
                     if (task == Video.ACTION_FILELENGTH)
                         urlString = mVideo.videoUrl;
                     mFileLength = -1;
