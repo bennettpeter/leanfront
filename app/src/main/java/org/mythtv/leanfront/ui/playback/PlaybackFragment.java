@@ -1006,6 +1006,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 MediaItem.SubtitleConfiguration subtitle =
                         new MediaItem.SubtitleConfiguration.Builder(subtitleUri)
                                 .setMimeType(subtMimes[ix]) // The correct MIME type (required).
+                                .setLabel("External")
 //                        .setLanguage(language) // The subtitle language (optional).
 //                        .setSelectionFlags(selectionFlags) // Selection flags for the track (optional).
                                 .build();
@@ -1583,7 +1584,8 @@ public class PlaybackFragment extends VideoSupportFragment
                                     }
                                     Log.i(TAG, CLASS + " Track "+ixTrack+": "+description
                                             +" mimetype: "+format.sampleMimeType+" codecs: "+format.codecs);
-
+                                    if (format.label != null)
+                                        description += " " + format.label;
                                     trackList.add (new TrackEntry
                                         (ixRenderer,ixTrackGroup,tg, ixTrack,format,description));
                                 }
