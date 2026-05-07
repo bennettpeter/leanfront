@@ -456,22 +456,26 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     @Override
     protected void onUpdateProgress() {
         long currPos = super.getCurrentPosition();
-        if (currPos >= endCommBreakMs) {
-            synchronized (this) {
-                endCommBreakMs = Long.MAX_VALUE;
+        // No checking for commercial at the very start.
+        // Skip fails at the very beginning
+        if (currPos > 100) {
+            if (currPos >= endCommBreakMs) {
+                synchronized (this) {
+                    endCommBreakMs = Long.MAX_VALUE;
+                }
+                mActionListener.onEndCommBreak();
             }
-            mActionListener.onEndCommBreak();
-        }
-        if (currPos >= nextCommBreakMs) {
-            long next = nextCommBreakMs;
-            synchronized (this) {
-                nextCommBreakMs = Long.MAX_VALUE;
+            if (currPos >= nextCommBreakMs) {
+                long next = nextCommBreakMs;
+                synchronized (this) {
+                    nextCommBreakMs = Long.MAX_VALUE;
+                }
+                mActionListener.onCommBreak(next, currPos);
             }
-            mActionListener.onCommBreak(next, currPos);
-        }
-        if (idleTimeoutMillis > 0
-                && System.currentTimeMillis() - activity.getTouchTime() > idleTimeoutMillis)
-            mActionListener.onIdleTimeout();
+            if (idleTimeoutMillis > 0
+                    && System.currentTimeMillis() - activity.getTouchTime() > idleTimeoutMillis)
+                mActionListener.onIdleTimeout();
+            }
         super.onUpdateProgress();
         onUpdateDuration();
     }
