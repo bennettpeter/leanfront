@@ -43,8 +43,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,6 +53,10 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AsyncBackendCall implements Runnable {
 
@@ -315,7 +317,6 @@ public class AsyncBackendCall implements Runnable {
         BackendCache bCache = BackendCache.getInstance();
         mTasks = new int[inTasks.length];
         Context context = MyApplication.getAppContext();
-        HttpURLConnection urlConnection = null;
         int videoIndex = 0;
         int taskIndex = -1;
         for(;;) {
@@ -660,45 +661,44 @@ public class AsyncBackendCall implements Runnable {
                             } catch (InterruptedException ignored) {
                             }
                         }
+                        Response response = null;
                         try {
-                            URL url = new URL(urlString);
-                            urlConnection = (HttpURLConnection) url.openConnection();
-                            urlConnection.addRequestProperty("Cache-Control", "no-cache");
-                            urlConnection.addRequestProperty("Accept-Encoding", "identity");
+                            Request.Builder builder = new Request.Builder()
+                                    .url(urlString);
+                            builder.header("Cache-Control", "no-cache");
+                            builder.header("Accept-Encoding", "identity");
                             String auth = BackendCache.getInstance().authorization;
                             if (auth != null && auth.length() > 0 )
-                                urlConnection.addRequestProperty("Authorization", auth);
-                            urlConnection.setConnectTimeout(1000);
-                            urlConnection.setReadTimeout(1000);
-                            urlConnection.setRequestMethod("HEAD");
+                                builder.header("Authorization", auth);
+                            builder.head();
                             Log.i(TAG, CLASS + " URL: " + urlString);
-                            urlConnection.connect();
+                            Request request = builder.build();
+                            response = null;
                             try {
-                                xmlRespCode = urlConnection.getResponseCode();
-                                Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                        + " " + urlConnection.getResponseMessage());
+                                Call call = MyApplication.fileLengthHttpClient.newCall(request);
+                                response = call.execute();
+                                xmlRespCode = response.code();
+                                Log.d(TAG, CLASS + " Response: " + xmlRespCode
+                                        + " " + response.message());
                             } catch(Exception ignored) {
                                 // Sometimes there is a ProtocolException in the urlConnection.getResponseCode
                                 // Ignore the error so that we can continue
                             }
-                            String strContentLeng = urlConnection.getHeaderField("Content-Length");
+                            if (response == null || xmlRespCode < 200 || xmlRespCode > 299)
+                                throw new IOException("Http error:" + xmlRespCode);
+                            mFileLength = 0;
+                            String strContentLeng = response.header("Content-Length");
                             if (strContentLeng != null)
                                 mFileLength = Long.parseLong(strContentLeng);
                             if (mFileLength > mValue)
                                 break;
                         } catch (Exception e) {
                             if (task == Video.ACTION_FILELENGTH) {
-                                try {
-                                    Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                            + " " + urlConnection.getResponseMessage());
-                                } catch (IOException ioException) {
-                                    ioException.printStackTrace();
-                                }
                                 Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
                         } finally {
-                            if (urlConnection != null)
-                                urlConnection.disconnect();
+                            if (response != null)
+                                response.close();
                         }
                     }
                     break;
@@ -1028,21 +1028,26 @@ public class AsyncBackendCall implements Runnable {
                     InputStream is = null;
                     urlString = null;
                     mStringResult = null;
+                    Response response = null;
                     try {
                         urlString = XmlNode.mythApiUrl(null,
                                 "/Status/GetStatusHTML");
-                        URL url = new URL(urlString);
-                        urlConnection = (HttpURLConnection) url.openConnection();
-                        urlConnection.addRequestProperty("Cache-Control", "no-cache");
+                        Request.Builder builder = new Request.Builder()
+                                .url(urlString);
+                        builder.header("Cache-Control", "no-cache");
                         String auth = BackendCache.getInstance().authorization;
                         if (auth != null && auth.length() > 0 )
-                            urlConnection.addRequestProperty("Authorization", auth);
-                        urlConnection.setConnectTimeout(5000);
-                        urlConnection.setReadTimeout(30000);
+                            builder.header("Authorization", auth);
                         Log.i(TAG, CLASS + " URL: " + urlString);
-                        is = urlConnection.getInputStream();
-                        Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                + " " + urlConnection.getResponseMessage());
+                        Request request = builder.build();
+                        Call call = MyApplication.apiHttpClient.newCall(request);
+                        response = call.execute();
+                        int respCode =  response.code();
+                        Log.i(TAG, CLASS + " Response: " + respCode
+                                + " " + response.message());
+                        if (respCode < 200 || respCode > 299)
+                            throw new IOException("Http error:" + respCode);
+                        is = response.body().byteStream();
                         InputStreamReader reader = new InputStreamReader(is);
                         char[] buffer = new char[1024];
                         StringBuilder output = new StringBuilder();
@@ -1057,16 +1062,10 @@ public class AsyncBackendCall implements Runnable {
                         mStringResult = output.toString();
 
                     } catch (Exception e) {
-                        try {
-                            Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                    + " " + urlConnection.getResponseMessage());
-                        } catch (IOException ioException) {
-                            ioException.printStackTrace();
-                        }
                         Log.e(TAG, CLASS + " Exception getting backend status. " + urlString, e);
                     } finally {
-                        if (urlConnection != null)
-                            urlConnection.disconnect();
+                        if (response != null)
+                            response.close();
                         if (is != null) {
                             try {
                                 is.close();

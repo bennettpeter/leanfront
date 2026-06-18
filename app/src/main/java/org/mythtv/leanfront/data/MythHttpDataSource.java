@@ -31,10 +31,10 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.BaseDataSource;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DataSpec;
-import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.okhttp.OkHttpDataSource;
 import androidx.media3.datasource.HttpDataSource;
 
-import org.mythtv.leanfront.ui.playback.PlaybackFragment;
+import org.mythtv.leanfront.MyApplication;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         if (auth != null && auth.length() > 0)
             defaultRequestProperties.put("Authorization",auth);
         defaultRequestProperties.put("Connection","close");
-        mHttpDataSource = new DefaultHttpDataSource.Factory()
+        mHttpDataSource = new OkHttpDataSource.Factory(MyApplication.httpClient)
                 .setUserAgent(userAgent)
                 .setDefaultRequestProperties(defaultRequestProperties)
                 .createDataSource();

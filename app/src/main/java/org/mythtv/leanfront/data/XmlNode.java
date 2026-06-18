@@ -23,24 +23,24 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 import android.util.Xml;
 
+import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.ui.MainFragment;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.AccessDeniedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
+import okhttp3.Call;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class XmlNode {
     private static final String TAG = "lfe";
@@ -178,48 +178,55 @@ public class XmlNode {
             throws XmlPullParserException, IOException {
         BackendCache bCache = BackendCache.getInstance();
         XmlNode ret = null;
-        URL url = null;
-        HttpURLConnection urlConnection = null;
+        Response response = null;
         InputStream is = null;
         try {
-            url = new URL(urlString);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.addRequestProperty("Cache-Control", "no-cache");
+            Request.Builder builder = new Request.Builder()
+                    .url(urlString);
+            builder.header("Cache-Control", "no-cache");
             String auth = BackendCache.getInstance().authorization;
             if (auth != null && auth.length() > 0 )
-                urlConnection.addRequestProperty("Authorization", auth);
-            urlConnection.setConnectTimeout(5000);
-            // 5 minutes - should never be this long.
-            urlConnection.setReadTimeout(300000);
-            if (requestMethod != null)
-                urlConnection.setRequestMethod(requestMethod);
+                builder.header("Authorization", auth);
+            if (requestMethod != null) {
+                switch(requestMethod) {
+                    case "GET":
+                        builder.get();
+                        break;
+                    case "POST":
+                        FormBody body = new FormBody.Builder().build();
+                        builder.post(body);
+                        break;
+                }
+            }
             Log.i(TAG, CLASS + " URL: " + urlString);
-            is = urlConnection.getInputStream();
-            Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                    + " " + urlConnection.getResponseMessage());
-            ret = XmlNode.parseStream(is);
-            bCache.isConnected = true;
-        } catch(FileNotFoundException e) {
-            int respCode =  urlConnection.getResponseCode();
+            Request request = builder.build();
+            Call call = MyApplication.apiHttpClient.newCall(request);
+            response = call.execute();
+            int respCode =  response.code();
             Log.i(TAG, CLASS + " Response: " + respCode
-                    + " " + urlConnection.getResponseMessage());
+                    + " " + response.message());
             if (respCode == 401) {
                 // MythTask will process login
                 if (!urlString.endsWith("/Myth/DelayShutdown"))
                     MainFragment.restartMythTask();
-                throw new IOException("Unauthorized: 401", e);
+                throw new IOException("Unauthorized: 401");
             }
-            throw e;
+            if (respCode < 200 || respCode > 299)
+                throw new IOException("Http error:" + respCode);
+            is = response.body().byteStream();
+            ret = XmlNode.parseStream(is);
+            bCache.isConnected = true;
         } catch(IOException e) {
             bCache.isConnected = false;
-            Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                    + " " + urlConnection.getResponseMessage());
+            Log.e(TAG, CLASS + " Exception calling backend " + urlString, e);
+            //~ Log.i(TAG, CLASS + " Response: " + response.code()
+                    //~ + " " + response.message());
             if (!urlString.endsWith("/Myth/DelayShutdown"))
                 MainFragment.restartMythTask();
             throw e;
         } finally {
-            if (urlConnection != null)
-                urlConnection.disconnect();
+            if (response != null)
+                response.close();
             if (is != null) {
                 try {
                     is.close();

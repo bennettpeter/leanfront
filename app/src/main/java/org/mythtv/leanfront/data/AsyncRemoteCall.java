@@ -37,14 +37,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AsyncRemoteCall implements Runnable {
 
@@ -138,43 +143,45 @@ public class AsyncRemoteCall implements Runnable {
         public ArrayList<TvEntry> entries = new ArrayList<>();
         public abstract void parseStream(InputStream in);
         public abstract String getUrlString();
-        protected void setupConnection(HttpURLConnection con) { }
-
+        protected void setupReqBuilder(Request.Builder builder) { }
         public int fetch(String requestMethod) {
             int ret = 0;
-            URL url = null;
-            HttpURLConnection urlConnection = null;
+            Response response = null;
             String urlString = getUrlString();
             InputStream is = null;
             try {
-                url = new URL(urlString);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestProperty("Cache-Control", "no-cache");
-                urlConnection.setConnectTimeout(5000);
-                // 5 minutes - should never be this long.
-                urlConnection.setReadTimeout(300000);
-                if (requestMethod != null)
-                    urlConnection.setRequestMethod(requestMethod);
-                setupConnection(urlConnection);
-                Log.d(TAG, CLASS + " URL: " + urlString);
-                is = urlConnection.getInputStream();
+                Request.Builder builder = new Request.Builder()
+                        .url(urlString);
+                builder.header("Cache-Control", "no-cache");
+                if (requestMethod != null) {
+                    switch(requestMethod) {
+                        case "GET":
+                            builder.get();
+                            break;
+                        case "POST":
+                            FormBody body = new FormBody.Builder().build();
+                            builder.post(body);
+                            break;
+                    }
+                }
+                setupReqBuilder(builder);
+                Log.i(TAG, CLASS + " URL: " + urlString);
+                Request request = builder.build();
+                Call call = MyApplication.apiHttpClient.newCall(request);
+                response = call.execute();
+                int respCode =  response.code();
+                Log.i(TAG, CLASS + " Response: " + respCode
+                        + " " + response.message());
+                if (respCode < 200 || respCode > 299)
+                    throw new IOException("Http error:" + respCode);
+                is = response.body().byteStream();
                 parseStream(is);
-            } catch(FileNotFoundException e) {
-                Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
-                ret = 404;
             } catch(IOException e) {
                 Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
                 ret = 500;
             } finally {
-                if (urlConnection != null) {
-                    try {
-                        Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                + " " + urlConnection.getResponseMessage());
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception getting response code: " + urlString, e);
-                    }
-                    urlConnection.disconnect();
-                }
+                if (response != null)
+                    response.close();
                 if (is != null) {
                     try {
                         is.close();
@@ -345,38 +352,41 @@ public class AsyncRemoteCall implements Runnable {
         }
 
         @Override
-        public void setupConnection(HttpURLConnection con) {
+        public void setupReqBuilder(Request.Builder blc) {
             if (bearerToken == null)
                 getBearerToken();
-            con.setRequestProperty("Accept", "application/json");
-            con.setRequestProperty("" +
-                    "Authorization", "Bearer " + bearerToken);
+            blc.header("Accept", "application/json");
+            blc.header("Authorization", "Bearer " + bearerToken);
         }
 
         int getBearerToken() {
             int ret = 0;
-            HttpURLConnection urlConnection = null;
+            Response response = null;
             InputStream is = null;
             OutputStream os = null;
             String urlString = BASEURL + "login";
             bearerToken = null;
             try {
-                URL url = new URL(urlString);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestProperty("Cache-Control", "no-cache");
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("Accept", "application/json");
-                urlConnection.setConnectTimeout(5000);
-                urlConnection.setReadTimeout(5000);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true);
+                Request.Builder builder = new Request.Builder()
+                        .url(urlString);
+                builder.header("Cache-Control", "no-cache");
+                builder.header("Content-Type", "application/json");
+                builder.header("Accept", "application/json");
                 Log.d(TAG, CLASS + " URL: " + urlString);
-                os = urlConnection.getOutputStream();
                 final String jsonInputString = "{ \"apikey\": \"" + APIKEY + "\" }";
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-                os.close();
-                is = urlConnection.getInputStream();
+                MediaType type = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(type,input);
+                builder.post(body);
+                Request request = builder.build();
+                Call call = MyApplication.apiHttpClient.newCall(request);
+                response = call.execute();
+                int respCode =  response.code();
+                Log.i(TAG, CLASS + " Response: " + respCode
+                        + " " + response.message());
+                if (respCode < 200 || respCode > 299)
+                    throw new IOException("Http error:" + respCode);
+                is = response.body().byteStream();
                 parseLogin(is);
             } catch(FileNotFoundException e) {
                 Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
@@ -385,15 +395,8 @@ public class AsyncRemoteCall implements Runnable {
                 Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
                 ret = 500;
             } finally {
-                if (urlConnection != null) {
-                    try {
-                        Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                + " " + urlConnection.getResponseMessage());
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception getting response code: " + urlString, e);
-                    }
-                    urlConnection.disconnect();
-                }
+                if (response != null)
+                    response.close();
                 if (is != null) {
                     try {
                         is.close();
