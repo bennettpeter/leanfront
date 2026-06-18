@@ -26,6 +26,7 @@ package org.mythtv.leanfront.ui;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
@@ -45,6 +46,7 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
     private int mRecordId;
     private int searchType;
     private boolean isOverride;
+    private OnBackPressedCallback bpCallback;
 
     public static final String CHANID = "CHANID";
     public static final String STARTTIME = "STARTTIME";
@@ -55,6 +57,16 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                if (canClose()) {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, bpCallback);
         int chanId = getIntent().getIntExtra(CHANID, 0);
         Date startTime = (Date) getIntent().getSerializableExtra(STARTTIME);
         mRecordId = getIntent().getIntExtra(RECORDID,0);
@@ -79,6 +91,13 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
                 Video.ACTION_GETRECSTORAGEGROUPLIST,
                 Video.ACTION_GETINPUTLIST,
                 Video.ACTION_GETRECRULEFILTERLIST);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bpCallback != null)
+            bpCallback.setEnabled(true);
     }
 
     @Override
@@ -108,10 +127,8 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mEditFragment == null || mEditFragment.canEnd())
-            super.onBackPressed();
+    public boolean canClose() {
+        return (mEditFragment == null || mEditFragment.canEnd());
     }
 
 }

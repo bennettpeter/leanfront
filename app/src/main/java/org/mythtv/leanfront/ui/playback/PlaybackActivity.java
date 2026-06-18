@@ -27,6 +27,7 @@ package org.mythtv.leanfront.ui.playback;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.SeekBar;
@@ -65,11 +66,22 @@ public class PlaybackActivity extends LeanbackActivity {
     private GestureDetector detector;
     private boolean isLongKeyPress;
     private long touchTime;
+    private OnBackPressedCallback bpCallback;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mPlaybackFragment.canEnd()) {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, bpCallback);
         updateTouchTime();
         setContentView(R.layout.activity_playback);
         Fragment fragment =
@@ -84,15 +96,16 @@ public class PlaybackActivity extends LeanbackActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
+    protected void onResume() {
+        super.onResume();
+        if (bpCallback != null)
+            bpCallback.setEnabled(true);
     }
 
     @Override
-    public void onBackPressed() {
-        if (mPlaybackFragment.canEnd())
-            super.onBackPressed();
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 
     @Override
