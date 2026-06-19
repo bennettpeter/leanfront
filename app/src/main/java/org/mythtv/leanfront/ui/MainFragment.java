@@ -939,15 +939,16 @@ public class MainFragment extends BrowseSupportFragment
                 if (type == MainFragment.TYPE_SERIES) {
                     alertTitle = getContext().getString(R.string.title_menu_series,
                             headerItem.getName(),headerItem.getBaseName());
-                    if ("Deleted".equals(headerItem.getBaseName())) {
-                        prompts.add(getString(R.string.menu_undelete));
-                        actions.add(new Action(Video.ACTION_UNDELETE));
-                    }
-                    else {
-                        prompts.add(getString(R.string.menu_delete));
-                        actions.add(new Action(Video.ACTION_DELETE));
-                        prompts.add(getString(R.string.menu_delete_rerecord));
-                        actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
+                    if (!"LiveTV".equals(headerItem.getBaseName())) {
+                        if ("Deleted".equals(headerItem.getBaseName())) {
+                            prompts.add(getString(R.string.menu_undelete));
+                            actions.add(new Action(Video.ACTION_UNDELETE));
+                        } else {
+                            prompts.add(getString(R.string.menu_delete));
+                            actions.add(new Action(Video.ACTION_DELETE));
+                            prompts.add(getString(R.string.menu_delete_rerecord));
+                            actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
+                        }
                     }
                     prompts.add(getString(R.string.menu_rerecord));
                     actions.add(new Action(Video.ACTION_ALLOW_RERECORD));

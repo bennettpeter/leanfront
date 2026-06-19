@@ -174,6 +174,7 @@ public class XmlNode {
      * @throws XmlPullParserException
      * @throws IOException
      */
+    static final FormBody defaultBody = new FormBody.Builder().build();
     public static XmlNode fetch(String urlString, String requestMethod)
             throws XmlPullParserException, IOException {
         BackendCache bCache = BackendCache.getInstance();
@@ -193,8 +194,7 @@ public class XmlNode {
                         builder.get();
                         break;
                     case "POST":
-                        FormBody body = new FormBody.Builder().build();
-                        builder.post(body);
+                        builder.post(defaultBody);
                         break;
                 }
             }

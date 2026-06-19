@@ -335,14 +335,16 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                     Log.e(TAG, CLASS + " Exception parsing endtime.", e);
                 }
                 if (mSelectedVideo.rectype == RECTYPE_RECORDING && !busyRecording) {
-                    if ("Deleted".equals(mSelectedVideo.recGroup)) {
-                        prompts.add(fragment.getString(R.string.menu_undelete));
-                        actions.add(new Action(Video.ACTION_UNDELETE));
-                    } else {
-                        prompts.add(fragment.getString(R.string.menu_delete));
-                        actions.add(new Action(Video.ACTION_DELETE));
-                        prompts.add(fragment.getString(R.string.menu_delete_rerecord));
-                        actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
+                    if (! "LiveTV".equals(mSelectedVideo.recGroup)) {
+                        if ("Deleted".equals(mSelectedVideo.recGroup)) {
+                            prompts.add(fragment.getString(R.string.menu_undelete));
+                            actions.add(new Action(Video.ACTION_UNDELETE));
+                        } else {
+                            prompts.add(fragment.getString(R.string.menu_delete));
+                            actions.add(new Action(Video.ACTION_DELETE));
+                            prompts.add(fragment.getString(R.string.menu_delete_rerecord));
+                            actions.add(new Action(Video.ACTION_DELETE_AND_RERECORD));
+                        }
                     }
                     prompts.add(fragment.getString(R.string.menu_rerecord));
                     actions.add(new Action(Video.ACTION_ALLOW_RERECORD));
