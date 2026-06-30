@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.leanback.app.GuidedStepSupportFragment;
@@ -146,9 +147,25 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private String mPriorParental;
     private ArrayList<String> mPlayGroupList;
     public static boolean isActive = false;
+    private OnBackPressedCallback bpCallback;
+    private boolean canClose = true;
+
 
     @Override
     public GuidanceStylist onCreateGuidanceStylist() {
+        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                if (canClose) {
+                    setEnabled(false);
+                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                }
+                else
+                    canClose = true;
+            }
+        };
+        getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
+
         return new GuidanceStylist() {
             // This is commented because save to external directories is no longer
             // permitted
@@ -741,6 +758,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
+        canClose = false;
         super.onGuidedActionClicked(action);
     }
 
