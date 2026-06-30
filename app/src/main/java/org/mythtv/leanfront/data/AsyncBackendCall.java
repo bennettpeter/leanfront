@@ -460,7 +460,7 @@ public class AsyncBackendCall implements Runnable {
                 case Video.ACTION_DELETE:
                     // Delete recording
                     // If already deleted do not delete again.
-                    if (!isRecording || "Deleted".equals(mVideo.recGroup))
+                    if (!isRecording || "Deleted".equals(mVideo.recGroup) || "LiveTV".equals(mVideo.recGroup))
                         break;
                     try {
                         urlString = XmlNode.mythApiUrl(mVideo.hostname,

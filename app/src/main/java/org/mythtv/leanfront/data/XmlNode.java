@@ -219,8 +219,6 @@ public class XmlNode {
         } catch(IOException e) {
             bCache.isConnected = false;
             Log.e(TAG, CLASS + " Exception calling backend " + urlString, e);
-            //~ Log.i(TAG, CLASS + " Response: " + response.code()
-                    //~ + " " + response.message());
             if (!urlString.endsWith("/Myth/DelayShutdown"))
                 MainFragment.restartMythTask();
             throw e;

@@ -388,12 +388,9 @@ public class AsyncRemoteCall implements Runnable {
                     throw new IOException("Http error:" + respCode);
                 is = response.body().byteStream();
                 parseLogin(is);
-            } catch(FileNotFoundException e) {
-                Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
-                ret = 404;
             } catch(IOException e) {
                 Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
-                ret = 500;
+                ret = response.code();
             } finally {
                 if (response != null)
                     response.close();
