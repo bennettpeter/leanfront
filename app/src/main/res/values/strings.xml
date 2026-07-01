@@ -163,6 +163,12 @@
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
     <string name="pref_refresh_mins">Number of minutes between backend refreshes</string>
     <string name="pref_num_cc_chans">Number of CEA closed caption tracks</string>
+    <string name="pref_filter_recgrp">Filter by Recording Group</string>
+    <string name="pref_filter_recgrp_desc">Show one row on main screen for each Recording Group</string>
+    <string name="pref_filter_category">Filter by Category</string>
+    <string name="pref_filter_category_desc">Show one row on main screen for each Category</string>
+    <string name="pref_filter_none">No Filter</string>
+    <string name="pref_filter_none_desc">Show program list directly on main screen</string>
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
@@ -515,6 +521,7 @@
     <string name="sdef_chan_group" translatable="false"></string>
     <string name="sdef_idle_timeout" translatable="false">360</string>
     <string name="sdef_num_cc_chans" translatable="false">2</string>
+    <string name="sdef_filter" translatable="false">recgrp</string>
 <!--    Program Details-->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>

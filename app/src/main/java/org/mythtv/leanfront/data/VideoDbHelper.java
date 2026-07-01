@@ -43,7 +43,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
     private static VideoDbHelper mInstance = null;
 
     // Change this when you change the database schema.
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
     // The name of our database.
     private static final String DATABASE_NAME = "leanback.db";
 
@@ -160,7 +160,8 @@ public class VideoDbHelper extends SQLiteOpenHelper {
                     VideoEntry.COLUMN_VIDEOPROPNAMES + " TEXT," +
                     VideoEntry.COLUMN_CHANID   + " TEXT," +
                     VideoEntry.COLUMN_CHANNUM  + " TEXT," +
-                    VideoEntry.COLUMN_CALLSIGN + " TEXT" +
+                    VideoEntry.COLUMN_CALLSIGN + " TEXT," +
+                    VideoEntry.COLUMN_CATEGORY + " TEXT" +
                     " );";
 
             // Do the creating of the table.
@@ -267,6 +268,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
                         VideoEntry.COLUMN_CHANID + " ," +
                         VideoEntry.COLUMN_CHANNUM + " ," +
                         VideoEntry.COLUMN_CALLSIGN + " , " +
+                        VideoEntry.COLUMN_CATEGORY + " , " +
                         StatusEntry.COLUMN_LAST_USED + " , " +
                         StatusEntry.COLUMN_SHOW_RECENT + " ) ");
             }
@@ -303,6 +305,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
                     VideoEntry.COLUMN_CHANID + " ," +
                     VideoEntry.COLUMN_CHANNUM + " ," +
                     VideoEntry.COLUMN_CALLSIGN + " , " +
+                    VideoEntry.COLUMN_CATEGORY + " , " +
                     StatusEntry.COLUMN_LAST_USED + " , " +
                     StatusEntry.COLUMN_SHOW_RECENT + " FROM " +
                     VideoEntry.TABLE_NAME + " LEFT OUTER JOIN " +

@@ -66,6 +66,7 @@ public final class VideoCursorMapper extends CursorMapper {
     private static int chanidIndex;
     private static int channumIndex;
     private static int callsignIndex;
+    private static int categoryIndex;
     private static int storageGroupIndex;
     private static int lastUsedIndex;
     private static int showRecentIndex;
@@ -102,6 +103,7 @@ public final class VideoCursorMapper extends CursorMapper {
         chanidIndex = cursor.getColumnIndex(VideoContract.VideoEntry.COLUMN_CHANID);
         channumIndex = cursor.getColumnIndex(VideoContract.VideoEntry.COLUMN_CHANNUM);
         callsignIndex = cursor.getColumnIndex(VideoContract.VideoEntry.COLUMN_CALLSIGN);
+        categoryIndex = cursor.getColumnIndex(VideoContract.VideoEntry.COLUMN_CATEGORY);
         storageGroupIndex = cursor.getColumnIndex(VideoContract.VideoEntry.COLUMN_STORAGEGROUP);
         lastUsedIndex = cursor.getColumnIndex(VideoContract.StatusEntry.COLUMN_LAST_USED);
         showRecentIndex = cursor.getColumnIndex(VideoContract.StatusEntry.COLUMN_SHOW_RECENT);
@@ -146,6 +148,7 @@ public final class VideoCursorMapper extends CursorMapper {
         String chanid = cursor.getString(chanidIndex);
         String channum = cursor.getString(channumIndex);
         String callsign = cursor.getString(callsignIndex);
+        String category = cursor.getString(categoryIndex);
         String storageGroup = cursor.getString(storageGroupIndex);
         long lastUsed = 0;
         if (lastUsedIndex >= 0 && !cursor.isNull(lastUsedIndex))
@@ -185,6 +188,7 @@ public final class VideoCursorMapper extends CursorMapper {
                 .chanid(chanid)
                 .channum(channum)
                 .callsign(callsign)
+                .category(category)
                 .storageGroup(storageGroup)
                 .lastUsed(lastUsed)
                 .showRecent(showRecent)

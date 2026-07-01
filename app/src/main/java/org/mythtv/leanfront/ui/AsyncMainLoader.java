@@ -25,6 +25,7 @@
 package org.mythtv.leanfront.ui;
 
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_AIRDATE;
+import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_CATEGORY;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_CHANNUM;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_EPISODE;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_FILENAME;
@@ -39,6 +40,9 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_CHANNEL
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_RECORDING;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.VIEW_NAME;
+import static org.mythtv.leanfront.ui.MainFragment.FILTER_CATEGORY;
+import static org.mythtv.leanfront.ui.MainFragment.FILTER_NONE;
+import static org.mythtv.leanfront.ui.MainFragment.FILTER_RECGRP;
 import static org.mythtv.leanfront.ui.MainFragment.TYPE_CHANNEL;
 import static org.mythtv.leanfront.ui.MainFragment.TYPE_CHANNEL_ALL;
 import static org.mythtv.leanfront.ui.MainFragment.TYPE_EPISODE;
@@ -97,12 +101,14 @@ public class AsyncMainLoader implements Runnable {
     // Each row arraylist has
     //   [0] is a MyHeaderItem
     //   [1] onwards are each a Video
-    ArrayList<ArrayList<ListItem>> categoryList;
+    ArrayList<ArrayList<ListItem>> filterList;
     boolean isProgressBar;
 
     private static final String TAG = "lfe";
     private static final String CLASS = "AsyncMainLoader";
     public static ReentrantLock lock = new ReentrantLock();
+    private int filterType;
+    private String filterColumn;
 
     public AsyncMainLoader(@NonNull Activity activity, boolean isProgressBar) {
         this.isProgressBar = isProgressBar;
@@ -123,17 +129,18 @@ public class AsyncMainLoader implements Runnable {
                 Log.e(TAG, CLASS + " AsyncMainLoader.run exception", e);
             } finally {
                 lock.unlock();
-                activity.runOnUiThread(() -> mainFragment.onAsyncLoadFinished(this, categoryList));
+                activity.runOnUiThread(() -> mainFragment.onAsyncLoadFinished(this, filterList));
             }
         }
         else
-            activity.runOnUiThread(() -> mainFragment.onAsyncLoadFinished(this, categoryList));
+            activity.runOnUiThread(() -> mainFragment.onAsyncLoadFinished(this, filterList));
     }
 
     protected void runTasks() {
         try {
             mType = mainFragment.mType;
             mBaseName = mainFragment.mBaseName;
+            filterType = mainFragment.filterType;
             Context context = MyApplication.getAppContext();
             VideoDbHelper dbh = VideoDbHelper.getInstance(context);
             SQLiteDatabase db = dbh.getReadableDatabase();
@@ -142,7 +149,7 @@ public class AsyncMainLoader implements Runnable {
             Cursor csr = queryDb(db);
             if (csr == null)
                 return;
-            // This fills categoryList
+            // This fills filterList
             buildRows(csr);
             csr.close();
             VideoDbHelper.releaseDatabase();
@@ -183,8 +190,19 @@ public class AsyncMainLoader implements Runnable {
             titlematch, -- (WAS REPLACE(REPLACE(REPLACE('^'||UPPER(suggest_text_1),'^THE ','^'),'^A ','^'),'^AN ','^'),)
             starttime asc, airdate asc
          */
+        switch (filterType) {
+            case FILTER_CATEGORY:
+                filterColumn = COLUMN_CATEGORY;
+                break;
+            case FILTER_RECGRP:
+                filterColumn = COLUMN_RECGROUP;
+                break;
+            default:
+                filterColumn = null;
+        }
 
-        if (mType == TYPE_TOPLEVEL || mType == TYPE_VIDEODIR) {
+        if (mType == TYPE_TOPLEVEL
+                || mType == TYPE_VIDEODIR) {
             // This case will sort channels together with videos
             orderby.append("CASE WHEN ");
             orderby.append(COLUMN_RECTYPE).append(" = ");
@@ -197,24 +215,25 @@ public class AsyncMainLoader implements Runnable {
             StringBuilder fnSort = makeTitleSort(COLUMN_FILENAME, '/');
             orderby.append(fnSort);
             orderby.append(" ELSE NULL END, ");
-            orderby.append(COLUMN_RECGROUP).append(", ");
+            if (filterType != FILTER_NONE)
+                orderby.append(filterColumn).append(", ");
         }
         // for Recording Group page, limit selection to those recordings.
         if (mType == TYPE_RECGROUP) {
             // Only the "All" recgroup basename ends with \t
-            if (mBaseName.endsWith("\t")) {
+            if (filterType == FILTER_NONE || mBaseName.endsWith("\t")) {
                 //  select * from videoview where recgroup not in ('LiveTV','Deleted')
                 //  OR recgroup is null AND titlematch in
                 //    (select distinct titlematch from videoview where recgroup not in ('LiveTV','Deleted'))
                 //  order by titlematch
                 makeRecGroupSelection(selection," NOT IN ('LiveTV','Deleted') ", mergevideos);
             }
-            else if (mBaseName.equals("LiveTV")) {
+            else if (filterType == FILTER_CATEGORY && mBaseName.equals("LiveTV")) {
                 selection.append(COLUMN_RECGROUP).append(" = 'LiveTV' ");
                 orderby.append("CAST (").append(COLUMN_CHANNUM).append(" as real), ");
                 orderby.append(COLUMN_CHANNUM).append(", ");
             }
-            else if (mBaseName.equals("Deleted")) {
+            else if (filterType == FILTER_CATEGORY && mBaseName.equals("Deleted")) {
                 selection.append(COLUMN_RECGROUP).append(" = 'Deleted' ");
             }
             // All other Recgroups
@@ -233,6 +252,11 @@ public class AsyncMainLoader implements Runnable {
                     selectionArgs[0] = mBaseName;
                 }
             }
+        }
+        // for top level no filter page, do not include channels
+        if (mType == TYPE_TOPLEVEL && filterType == FILTER_NONE) {
+            selection.append(COLUMN_RECTYPE).append(" != ");
+            selection.append(RECTYPE_CHANNEL);
         }
         // for Video Directory page, limit selection to videos
         if (mType == TYPE_VIDEODIR) {
@@ -276,19 +300,19 @@ public class AsyncMainLoader implements Runnable {
         return cursor;
     }
 
-    static void makeRecGroupSelection(StringBuilder selection, String recgroups, boolean mergevideos) {
+    void makeRecGroupSelection(StringBuilder selection, String recgroups, boolean mergevideos) {
         //  select * from videoview where  recgroup not in ('LiveTV','Deleted')
         //  OR recgroup is null AND titlematch in
         //    (select distinct titlematch from videoview where recgroup not in ('LiveTV','Deleted'))
         //  order by titlematch
-        selection.append(COLUMN_RECGROUP).append(recgroups);
+        selection.append(filterColumn).append(recgroups);
         if (mergevideos) {
             selection.append(" OR ").append(COLUMN_RECGROUP).append(" IS NULL ")
                     .append(" AND ")
                     .append(COLUMN_TITLEMATCH).append(" IN (")
                     .append(" SELECT DISTINCT ").append(COLUMN_TITLEMATCH)
                     .append(" FROM ").append(VIEW_NAME).append(" WHERE ")
-                    .append(COLUMN_RECGROUP).append(recgroups).append(")");
+                    .append(filterColumn).append(recgroups).append(")");
         }
     }
 
@@ -297,7 +321,7 @@ public class AsyncMainLoader implements Runnable {
     private void buildRows(Cursor data) {
         Context context = MyApplication.getAppContext();
         VideoCursorMapper mapper = new VideoCursorMapper();
-        categoryList = new ArrayList<>();
+        filterList = new ArrayList<>();
         String seq = Settings.getString("pref_seq");
         String ascdesc = Settings.getString("pref_seq_ascdesc");
         boolean showRecents = "true".equals(Settings.getString("pref_show_recents"));
@@ -326,6 +350,7 @@ public class AsyncMainLoader implements Runnable {
         int airdateIndex = data.getColumnIndex(COLUMN_AIRDATE);
         int starttimeIndex = data.getColumnIndex(COLUMN_STARTTIME);
         int filenameIndex = data.getColumnIndex(COLUMN_FILENAME);
+        int categoryIndex = data.getColumnIndex(COLUMN_CATEGORY);
         SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dbTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         int sortkey;
@@ -339,8 +364,8 @@ public class AsyncMainLoader implements Runnable {
         }
         boolean cursorHasData = data.moveToFirst();
 
-        // Every time we have to re-get the category loader, we must re-create the sidebar.
-        categoryList.clear();
+        // Every time we have to re-get the filter loader, we must re-create the sidebar.
+        filterList.clear();
         ArrayList<ListItem> rowList = null;
         SparseArray<ListItem> allSparse = null;
         ArrayList<ListItem> allList = null;
@@ -367,9 +392,9 @@ public class AsyncMainLoader implements Runnable {
             header = new MyHeaderItem(title, TYPE_RECENTS, mBaseName);
             recentsSparse = new SparseArray<>();
             recentsList = new ArrayList<>();
-            categoryList.add(recentsList);
+            filterList.add(recentsList);
             recentsList.add(header);
-            recentsRowNum = categoryList.size() - 1;
+            recentsRowNum = filterList.size() - 1;
         }
 
         // Create "All" row (but not for videos)
@@ -379,8 +404,8 @@ public class AsyncMainLoader implements Runnable {
             allSparse = new SparseArray<>();
             allList = new ArrayList<>();
             allList.add(header);
-            categoryList.add(allList);
-            allRowNum = categoryList.size() - 1;
+            filterList.add(allList);
+            allRowNum = filterList.size() - 1;
         }
 
         // Create "Root" row
@@ -390,11 +415,11 @@ public class AsyncMainLoader implements Runnable {
                     TYPE_VIDEODIR, mBaseName);
             rootList = new ArrayList<>();
             rootList.add(header);
-            categoryList.add(rootList);
-            rootRowNum = categoryList.size() - 1;
+            filterList.add(rootList);
+            rootRowNum = filterList.size() - 1;
         }
 
-        // Iterate through each category entry and add it to the ArrayAdapter.
+        // Iterate through each filter entry and add it to the ArrayAdapter.
         while (cursorHasData && !data.isAfterLast()) {
 
             boolean addToRow = true;
@@ -402,18 +427,20 @@ public class AsyncMainLoader implements Runnable {
             int rowType = -1;
 
             String recgroup = data.getString(recgroupIndex);
+            String category = data.getString(categoryIndex);
             int rectype = data.getInt(rectypeIndex);
 
-            String category = null;
-            String categorymatch = null;
+            String filter = null;
+            String filtermatch = null;
             Video video = (Video) mapper.get(data.getPosition());
             Video dbVideo = video;
 
             // For Rec Group type, only use recordings from that recording group.
             // categories are titles.
-            if (mType == TYPE_RECGROUP) {
-                category = data.getString(titleIndex);
-                categorymatch = data.getString(titleMatchIndex);
+            if (mType == TYPE_RECGROUP
+                || (mType == TYPE_TOPLEVEL && filterType == FILTER_NONE)) {
+                filter = data.getString(titleIndex);
+                filtermatch = data.getString(titleMatchIndex);
 //                if (recgroup != null
 //                        && (context.getString(R.string.all_title) + "\t").equals(mBaseName)) {
 //                    // Do not mix deleted episodes or LiveTV in the All group
@@ -488,45 +515,51 @@ public class AsyncMainLoader implements Runnable {
 
             if (mType == TYPE_TOPLEVEL) {
                 if (rectype == RECTYPE_VIDEO) {
-                    category = context.getString(R.string.row_header_videos) + "\t";
-                    categorymatch = category;
+                    filter = context.getString(R.string.row_header_videos) + "\t";
+                    filtermatch = filter;
                     rowType = TYPE_VIDEODIR_ALL;
-                } else if (rectype == RECTYPE_RECORDING)
-                    itemType = TYPE_EPISODE;
-                if (rectype == RECTYPE_RECORDING
-                        || rectype == RECTYPE_CHANNEL) {
-                    category = recgroup;
-                    categorymatch = category;
-                    String title;
-                    if (rectype == RECTYPE_CHANNEL)
-                        // TODO translate
-                        title = "Channels\t";
-                    else
-                        title = data.getString(titleIndex);
-                    if (Objects.equals(title, currentItem)) {
-                        addToRow = false;
-                    } else {
-                        currentItem = title;
-                        rowType = TYPE_RECGROUP;
+                }
+                if (filterType != FILTER_NONE) {
+                    if (rectype == RECTYPE_RECORDING)
+                        itemType = TYPE_EPISODE;
+                    if (rectype == RECTYPE_RECORDING
+                            || rectype == RECTYPE_CHANNEL) {
+                        //                    filter = recgroup;
+                        if (filterType == FILTER_CATEGORY)
+                            filter = category;
+                        else
+                            filter = recgroup;
+                        filtermatch = filter;
+                        String title;
+                        if (rectype == RECTYPE_CHANNEL)
+                            // TODO translate
+                            title = "Channels\t";
+                        else
+                            title = data.getString(titleIndex);
+                        if (Objects.equals(title, currentItem)) {
+                            addToRow = false;
+                        } else {
+                            currentItem = title;
+                            rowType = TYPE_RECGROUP;
+                        }
                     }
                 }
             }
 
             // For Video Directory type, only use videos (recgroup null)
-            // category is full directory name.
+            // filter is full directory name.
             // Only one videos page
             // First is "all" row, then "root" row, then dir rows
             // mBaseName = "Videos" String
             // Display = "Videos" String
             if (mType == TYPE_VIDEODIR) {
-                category = dirname;
-                categorymatch = category;
+                filter = dirname;
+                filtermatch = filter;
                 rowType = TYPE_VIDEODIR;
             }
 
             // Change of row
-            if (addToRow && category != null && !Objects.equals(categorymatch, currentCategoryMatch)) {
-                currentRowNum = categoryList.size();
+            if (addToRow && filter != null && !Objects.equals(filtermatch, currentCategoryMatch)) {
                 // If videos, sort the row
                 if (rowList != null && (rowType == TYPE_VIDEODIR || rowType == TYPE_VIDEODIR_ALL) ) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -534,11 +567,11 @@ public class AsyncMainLoader implements Runnable {
                     }
                 }
                 rowList = new ArrayList<>();
-                header = new MyHeaderItem(category,
+                header = new MyHeaderItem(filter,
                         rowType, mBaseName);
                 rowList.add(header);
-                categoryList.add(rowList);
-                currentCategoryMatch = categorymatch;
+                filterList.add(rowList);
+                currentCategoryMatch = filtermatch;
             }
 
             // If a directory, create a placeholder for directory name
@@ -552,7 +585,7 @@ public class AsyncMainLoader implements Runnable {
             video.type = itemType;
 
             // Add video to row
-            if (addToRow && category != null) {
+            if (addToRow && filter != null) {
                 Video tVideo = video;
                 if (mType == TYPE_TOPLEVEL && video.rectype == RECTYPE_CHANNEL) {
                     // Create dummy video for "All Channels"
@@ -568,7 +601,7 @@ public class AsyncMainLoader implements Runnable {
 
             // Add video to "Root" row
             if (addToRow && rootList != null
-                    && category == null) {
+                    && filter == null) {
                 rootList.add(video);
             }
 
@@ -676,7 +709,7 @@ public class AsyncMainLoader implements Runnable {
             }
             // Remove recents if empty
             if (recentsSparse.size() <= 0) {
-                categoryList.remove(recentsRowNum);
+                filterList.remove(recentsRowNum);
             }
         }
         if (allSparse != null) {

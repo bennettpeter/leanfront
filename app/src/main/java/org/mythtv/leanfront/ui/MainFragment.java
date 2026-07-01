@@ -163,6 +163,10 @@ public class MainFragment extends BrowseSupportFragment
     public static final int TYPE_MANAGE = 24;
     public static final int TYPE_GUIDE = 25;
 
+    int filterType;
+    public static final int FILTER_RECGRP = 1;
+    public static final int FILTER_CATEGORY = 2;
+    public static final int FILTER_NONE = 3;
     public static final String KEY_BASENAME = "LEANFRONT_BASENAME";
     public static final String KEY_ROWNAME = "LEANFRONT_ROWNAME";
     public static final String KEY_ITEMNAME = "LEANFRONT_ITEMNAME";
@@ -190,6 +194,7 @@ public class MainFragment extends BrowseSupportFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initFilterType();
         if (savedInstanceState == null)
             mSavedSelection = null;
         else
@@ -219,6 +224,24 @@ public class MainFragment extends BrowseSupportFragment
         } else {
             mBaseName = intent.getStringExtra(KEY_BASENAME);
             mRowName = intent.getStringExtra(KEY_ROWNAME);
+        }
+    }
+
+
+    public void initFilterType() {
+        String tempFType = Settings.getString("pref_filter");
+        switch (tempFType) {
+            case "recgrp":
+                filterType = FILTER_RECGRP;
+                break;
+            case "category":
+                filterType = FILTER_CATEGORY;
+                break;
+            case "none":
+                filterType = FILTER_NONE;
+                break;
+            default:
+                filterType = FILTER_RECGRP;
         }
     }
 
@@ -294,6 +317,7 @@ public class MainFragment extends BrowseSupportFragment
                 setProgressBar(false);
         }
         else {
+            initFilterType();
             new AsyncMainLoader(getActivity(), isProgressBar).execute(this);
             isLoaderRunning = true;
         }
@@ -999,8 +1023,14 @@ public class MainFragment extends BrowseSupportFragment
                                     });
                     builder.show();
                 }
-
-                return true;
+                break;
+            case MainFragment.TYPE_TOP_ALL:
+            case MainFragment.TYPE_RECGROUP_ALL:
+            case MainFragment.TYPE_RECENTS:
+                Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
+                intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_PROG_LIST_OPTIONS);
+                getContext().startActivity(intent);
+                break;
         }
         return true; // Do not treat long press as a short press
     }

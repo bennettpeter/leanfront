@@ -116,6 +116,7 @@ public final class VideoContract {
         public static final String COLUMN_CHANID = "chanid";
         public static final String COLUMN_CHANNUM = "channum";
         public static final String COLUMN_CALLSIGN = "callsign";
+        public static final String COLUMN_CATEGORY = "category";
     } // end of VideoEntry
 
         /* Inner class that defines the status table */

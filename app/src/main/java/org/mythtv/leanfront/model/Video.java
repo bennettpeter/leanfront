@@ -74,6 +74,7 @@ public final class Video implements Parcelable, ListItem {
     public static final int V31_VID_DAMAGED = 0x00000020;
     public static final int V32_VID_DAMAGED = 0x00000400;
     public String videoPropNames;
+    public String category;
     // Channel values
     public final String chanid;
     public final String channum;
@@ -191,6 +192,7 @@ public final class Video implements Parcelable, ListItem {
             final String chanid,
             final String channum,
             final String callsign,
+            final String category,
             final String storageGroup,
             final long lastUsed,
             final boolean showRecent) {
@@ -224,6 +226,7 @@ public final class Video implements Parcelable, ListItem {
         this.chanid = chanid;
         this.channum = channum;
         this.callsign = callsign;
+        this.category = category;
         this.storageGroup = storageGroup;
         this.lastUsed = lastUsed;
         this.showRecent = showRecent;
@@ -260,6 +263,7 @@ public final class Video implements Parcelable, ListItem {
         chanid = in.readString();
         channum = in.readString();
         callsign = in.readString();
+        category = in.readString();
         storageGroup = in.readString();
         lastUsed = in.readLong();
         showRecent = in.readInt() != 0;
@@ -318,6 +322,7 @@ public final class Video implements Parcelable, ListItem {
         dest.writeString(chanid);
         dest.writeString(channum);
         dest.writeString(callsign);
+        dest.writeString(category);
         dest.writeString(storageGroup);
         dest.writeLong(lastUsed);
         int showRecentInt = 0;
@@ -426,6 +431,7 @@ public final class Video implements Parcelable, ListItem {
         private String chanid;
         private String channum;
         private String callsign;
+        private String category;
         private String storageGroup;
         private long lastUsed;
         private boolean showRecent;
@@ -580,6 +586,11 @@ public final class Video implements Parcelable, ListItem {
             return this;
         }
 
+        public VideoBuilder category(String category) {
+            this.category = category;
+            return this;
+        }
+
         public VideoBuilder storageGroup(String storageGroup) {
             this.storageGroup = storageGroup;
             return this;
@@ -648,6 +659,7 @@ public final class Video implements Parcelable, ListItem {
                     chanid,
                     channum,
                     callsign,
+                    category,
                     storageGroup,
                     lastUsed,
                     showRecent

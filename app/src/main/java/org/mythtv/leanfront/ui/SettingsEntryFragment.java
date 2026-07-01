@@ -67,7 +67,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_SKIP_FWD = 8;
     private static final int ID_SKIP_BACK = 9;
     private static final int ID_JUMP = 10;
-    private static final int ID_PROG_LIST_OPTIONS = 11;
+    public static final int ID_PROG_LIST_OPTIONS = 11;
     private static final int ID_SORT_ORIG_AIRDATE = 12;
     private static final int ID_DESCENDING = 13;
     private static final int ID_BACKEND_MAC = 14;
@@ -127,6 +127,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_VIDEO_MEDIACODEC = 70;
     private static final int ID_VIDEO_FFMPEG = 71;
     private static final int ID_NUM_CC_CHANS = 72;
+    private static final int ID_FILTER = 73;
+    private static final int ID_FILTER_RECGRP = 74;
+    private static final int ID_FILTER_CATEGORY = 75;
+    private static final int ID_FILTER_NONE = 76;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -145,6 +149,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private String mPriorHttpPort;
     private String mPriorRowsize;
     private String mPriorParental;
+    private String mPriorFilter;
     private ArrayList<String> mPlayGroupList;
     public static boolean isActive = false;
     private OnBackPressedCallback bpCallback;
@@ -560,6 +565,28 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .description(R.string.pref_related_watched_desc)
                 .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
+        str = Settings.getString("pref_filter");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_FILTER_RECGRP)
+                .title(R.string.pref_filter_recgrp)
+                .checked("recgrp".equals(str))
+                .description(R.string.pref_filter_recgrp_desc)
+                .checkSetId(ID_FILTER)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_FILTER_CATEGORY)
+                .title(R.string.pref_filter_category)
+                .checked("category".equals(str))
+                .description(R.string.pref_filter_category_desc)
+                .checkSetId(ID_FILTER)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_FILTER_NONE)
+                .title(R.string.pref_filter_none)
+                .checked("none".equals(str))
+                .description(R.string.pref_filter_none_desc)
+                .checkSetId(ID_FILTER)
+                .build());
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_LIVETV_ROWSIZE)
                 .title(R.string.pref_livetv_rowsize)
@@ -578,7 +605,6 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .focusable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
-
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_PROG_LIST_OPTIONS)
                 .title(R.string.pref_title_lists)
@@ -1165,6 +1191,19 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 if (action.isChecked())
                     Settings.putString(editor, "pref_commskip", "2");
                 break;
+            case ID_FILTER_RECGRP:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_filter", "recgrp");
+                break;
+            case ID_FILTER_CATEGORY:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_filter", "category");
+                break;
+            case ID_FILTER_NONE:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_filter", "none");
+                break;
+
             default:
                 return false;
         }
@@ -1326,6 +1365,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         mPriorHttpPort =  Settings.getString("pref_http_port");
         mPriorRowsize =  Settings.getString("pref_livetv_rowsize");
         mPriorParental =  Settings.getString("pref_video_parental");
+        mPriorFilter =  Settings.getString("pref_filter");
         super.onResume();
     }
 
@@ -1335,7 +1375,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         if (!Objects.equals(mPriorBackend, Settings.getString("pref_backend"))
             || !Objects.equals(mPriorHttpPort, Settings.getString("pref_http_port"))
             || !Objects.equals(mPriorRowsize, Settings.getString("pref_livetv_rowsize"))
-            || !Objects.equals(mPriorParental, Settings.getString("pref_video_parental")))
+            || !Objects.equals(mPriorParental, Settings.getString("pref_video_parental"))
+            || !Objects.equals(mPriorFilter, Settings.getString("pref_filter")))
             MainFragment.startFetch(-1, null, null, true);
         mPriorBackend = null;
         mPriorHttpPort = null;
