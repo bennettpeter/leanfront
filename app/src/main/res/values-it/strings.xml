@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Numero massimo di registrazioni/video da caricare</string>
   <string name="pref_refresh_mins">Numero di minuti tra gli aggiornamenti del backend</string>
   <string name="pref_num_cc_chans">Number of CEA closed caption tracks</string>
+  <string name="pref_filter_recgrp">Filtra per gruppo di registrazione</string>
+  <string name="pref_filter_recgrp_desc">Mostra una riga nella schermata principale per ciascun gruppo di registrazione</string>
+  <string name="pref_filter_category">Filtra per categoria</string>
+  <string name="pref_filter_category_desc">Mostra una riga nella schermata principale per ciascuna categoria</string>
+  <string name="pref_filter_none">Nessun filtro</string>
+  <string name="pref_filter_none_desc">Mostra l\'elenco dei programmi direttamente sulla schermata principale</string>
   <string name="msg_no_connection">Errore: nessuna connessione al backend di MythTV.</string>
   <string name="msg_no_delayshutdown">Avviso: impossibile impedire l\'arresto del backend inattivo.</string>
   <string name="msg_backend_login_req">Errore: il backend richiede nome utente e password validi.</string>

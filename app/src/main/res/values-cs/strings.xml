@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Maximální počet nahrávek/videí k načtení</string>
   <string name="pref_refresh_mins">Počet minut mezi aktualizacemi backendu</string>
   <string name="pref_num_cc_chans">Počet uzavřených titulků CEA</string>
+  <string name="pref_filter_recgrp">Filtrujte podle skupiny záznamů</string>
+  <string name="pref_filter_recgrp_desc">Zobrazit jeden řádek na hlavní obrazovce pro každou skupinu nahrávání</string>
+  <string name="pref_filter_category">Filtrovat podle kategorie</string>
+  <string name="pref_filter_category_desc">Zobrazit jeden řádek na hlavní obrazovce pro každou kategorii</string>
+  <string name="pref_filter_none">Žádný filtr</string>
+  <string name="pref_filter_none_desc">Zobrazit seznam programů přímo na hlavní obrazovce</string>
   <string name="msg_no_connection">Chyba: Žádné připojení k MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varování: Nelze zabránit nečinnosti backendu.</string>
   <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné uživatelské jméno a heslo.</string>

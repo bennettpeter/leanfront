@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Μέγιστες εγγραφές/βίντεο προς φόρτωση</string>
   <string name="pref_refresh_mins">Αριθμός λεπτών μεταξύ των ανανεώσεων του backend</string>
   <string name="pref_num_cc_chans">Αριθμός κομματιών κλειστών λεζάνων CEA</string>
+  <string name="pref_filter_recgrp">Φιλτράρισμα κατά ομάδα εγγραφής</string>
+  <string name="pref_filter_recgrp_desc">Εμφάνιση μιας σειράς στην κύρια οθόνη για κάθε ομάδα εγγραφής</string>
+  <string name="pref_filter_category">Φιλτράρισμα ανά κατηγορία</string>
+  <string name="pref_filter_category_desc">Εμφάνιση μιας σειράς στην κύρια οθόνη για κάθε κατηγορία</string>
+  <string name="pref_filter_none">Χωρίς φίλτρο</string>
+  <string name="pref_filter_none_desc">Εμφάνιση λίστας προγραμμάτων απευθείας στην κύρια οθόνη</string>
   <string name="msg_no_connection">Σφάλμα: Δεν υπάρχει σύνδεση στο MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Προειδοποίηση: Δεν είναι δυνατή η αποτροπή του τερματισμού αδράνειας του backend.</string>
   <string name="msg_backend_login_req">Σφάλμα: Το Backend απαιτεί έγκυρο όνομα χρήστη και κωδικό πρόσβασης.</string>

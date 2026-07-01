@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Maksimum opnames/video\'s om te laai</string>
   <string name="pref_refresh_mins">Aantal minute tussen backend-verversings</string>
   <string name="pref_num_cc_chans">Aantal CEA geslote onderskrifspore</string>
+  <string name="pref_filter_recgrp">Filter volgens opnamegroep</string>
+  <string name="pref_filter_recgrp_desc">Wys een ry op die hoofskerm vir elke opnamegroep</string>
+  <string name="pref_filter_category">Filtreer volgens kategorie</string>
+  <string name="pref_filter_category_desc">Wys een ry op hoofskerm vir elke kategorie</string>
+  <string name="pref_filter_none">Geen filter nie</string>
+  <string name="pref_filter_none_desc">Wys programlys direk op hoofskerm</string>
   <string name="msg_no_connection">Fout: Geen verbinding met MythTV Backend nie.</string>
   <string name="msg_no_delayshutdown">Waarskuwing: Kan nie die afskakeling van die agterkant nie verhoed nie.</string>
   <string name="msg_backend_login_req">Fout: Backend benodig geldige gebruikersnaam en wagwoord.</string>

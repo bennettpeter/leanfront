@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Maksimalt antall opptak/videoer å laste</string>
   <string name="pref_refresh_mins">Antall minutter mellom backend-oppdateringer</string>
   <string name="pref_num_cc_chans">Antall CEA -lukkede billedtekstspor</string>
+  <string name="pref_filter_recgrp">Filtrer etter opptaksgruppe</string>
+  <string name="pref_filter_recgrp_desc">Vis én rad på hovedskjermen for hver opptaksgruppe</string>
+  <string name="pref_filter_category">Filtrer etter kategori</string>
+  <string name="pref_filter_category_desc">Vis en rad på hovedskjermen for hver kategori</string>
+  <string name="pref_filter_none">Ingen filter</string>
+  <string name="pref_filter_none_desc">Vis programliste direkte på hovedskjermen</string>
   <string name="msg_no_connection">Feil: Ingen tilkobling til MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Advarsel: Kan ikke forhindre avslutning av backend-tomgang.</string>
   <string name="msg_backend_login_req">Feil: Backend krever gyldig brukernavn og passord.</string>

@@ -128,6 +128,12 @@
   <string name="pref_max_vids">Ladattavien tallenteiden/videoiden enimmäismäärä</string>
   <string name="pref_refresh_mins">Minuuttia taustapäivitysten välillä</string>
   <string name="pref_num_cc_chans">CEA: n suljettujen kuvatekstien lukumäärä</string>
+  <string name="pref_filter_recgrp">Suodata tallennusryhmän mukaan</string>
+  <string name="pref_filter_recgrp_desc">Näytä yksi rivi päänäytöllä jokaiselle tallennusryhmälle</string>
+  <string name="pref_filter_category">Suodata luokan mukaan</string>
+  <string name="pref_filter_category_desc">Näytä yksi rivi päänäytöllä jokaiselle kategorialle</string>
+  <string name="pref_filter_none">Ei suodatinta</string>
+  <string name="pref_filter_none_desc">Näytä ohjelmaluettelo suoraan päänäytöllä</string>
   <string name="msg_no_connection">Virhe: Ei yhteyttä MythTV-taustajärjestelmään.</string>
   <string name="msg_no_delayshutdown">Varoitus: Taustajärjestelmän automaattista sammuttamista ei voida estää.</string>
   <string name="msg_backend_login_req">VIRHE: Taustaohjelma vaatii kelvollisen käyttäjänimen ja salasanan.</string>
