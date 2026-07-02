@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">På slutten av avspillingen starter automatisk neste video eller episode.</string>
   <string name="pref_captions">Bildetekstnummer for å aktivere</string>
   <string name="pref_speed">Avspillingshastighet i prosent (10-800). Standard 100.</string>
+  <string name="pref_volume">Lydvolum i prosent (10-1000). Standard 100.</string>
   <string name="pref_audio_sync">Justering av lydsynkronisering i millisekunder</string>
   <string name="pref_poss_empty">Ignorer ekstra spor</string>
   <string name="pref_poss_empty_desc">Angi dette hvis du har innspillinger med misdannet Second Audio Track (f.eks. UK Freeview).</string>

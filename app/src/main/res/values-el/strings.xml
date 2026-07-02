@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Στο τέλος της αναπαραγωγής ξεκινά αυτόματα το επόμενο βίντεο ή επεισόδιο.</string>
   <string name="pref_captions">Αριθμός λεζάντας για ενεργοποίηση</string>
   <string name="pref_speed">Ταχύτητα αναπαραγωγής ως ποσοστό (10-800). Προεπιλογή 100.</string>
+  <string name="pref_volume">Ένταση ήχου ως ποσοστό (10-1000). Προεπιλογή 100.</string>
   <string name="pref_audio_sync">Ρύθμιση συγχρονισμού ήχου σε χιλιοστά του δευτερολέπτου</string>
   <string name="pref_poss_empty">Αγνοήστε επιπλέον κομμάτι</string>
   <string name="pref_poss_empty_desc">Ρυθμίστε αυτό εάν έχετε εγγραφές με δυσμορφωμένο δεύτερο κομμάτι ήχου (π.χ. UK FreeView).</string>

@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Al final de la reproducción, se inicia automáticamente el siguiente vídeo o episodio.</string>
   <string name="pref_captions">Número de título para habilitar</string>
   <string name="pref_speed">Velocidad de reproducción como porcentaje (10-800). Por defecto 100.</string>
+  <string name="pref_volume">Volumen de audio como porcentaje (10-1000). Por defecto 100.</string>
   <string name="pref_audio_sync">Ajuste de sincronización de audio en milisegundos</string>
   <string name="pref_poss_empty">Ignorar Track Extra</string>
   <string name="pref_poss_empty_desc">Establezca esto si tiene grabaciones con la segunda pista de audio malformada (por ejemplo, el Reino Unido Freeview).</string>

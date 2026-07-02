@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Aan het einde van het afspelen start automatisch de volgende video of aflevering.</string>
   <string name="pref_captions">Onderschriftnummer dat moet worden ingeschakeld</string>
   <string name="pref_speed">Afspeelsnelheid als percentage (10-800). Standaard 100.</string>
+  <string name="pref_volume">Audiovolume als percentage (10-1000). Standaard 100.</string>
   <string name="pref_audio_sync">Aanpassing van audiosynchronisatie in milliseconden</string>
   <string name="pref_poss_empty">Negeer extra nummer</string>
   <string name="pref_poss_empty_desc">Stel dit in als u opnames hebt met een misvormde tweede audiotrack (bijv. UK Freeview).</string>

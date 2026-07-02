@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Po zakończeniu odtwarzania automatycznie rozpocznie się następny film lub odcinek.</string>
   <string name="pref_captions">Numer podpisu do włączenia</string>
   <string name="pref_speed">Szybkość odtwarzania w procentach (10-800). Domyślnie 100.</string>
+  <string name="pref_volume">Głośność dźwięku w procentach (10-1000). Domyślnie 100.</string>
   <string name="pref_audio_sync">Regulacja synchronizacji dźwięku w milisekundach</string>
   <string name="pref_poss_empty">Zignoruj ​​dodatkowy utwór</string>
   <string name="pref_poss_empty_desc">Ustaw to, jeśli masz nagrania z zniekształconą drugą ścieżką audio (np. UK FreeView).</string>

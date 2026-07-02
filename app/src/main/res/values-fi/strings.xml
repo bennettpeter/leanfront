@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Toiston lopussa aloita automaattisesti seuraava video tai jakso.</string>
   <string name="pref_captions">Ota käyttöön kuvatekstinumero</string>
   <string name="pref_speed">Toistonopeus prosentteina (10-800). Oletusarvo 100.</string>
+  <string name="pref_volume">Äänenvoimakkuus prosentteina (10-1000). Oletusarvo 100.</string>
   <string name="pref_audio_sync">Äänen u säätö millisekunteina</string>
   <string name="pref_poss_empty">Ohita ylimääräinen kappale</string>
   <string name="pref_poss_empty_desc">Aseta tämä, jos sinulla on nauhoituksia epämuodollisella toisella ääniradalla (esim. UK Freeview).</string>

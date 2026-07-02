@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Am Ende der Wiedergabe startet automatisch das nächste Video oder die nächste Folge.</string>
   <string name="pref_captions">Zu aktivierende Untertitelnummer</string>
   <string name="pref_speed">Wiedergabegeschwindigkeit in Prozent (10-800). Standard 100.</string>
+  <string name="pref_volume">Audiolautstärke in Prozent (10-1000). Standard 100.</string>
   <string name="pref_audio_sync">Audio-Sync-Anpassung in Millisekunden</string>
   <string name="pref_poss_empty">Ignorieren Sie zusätzliche Strecke</string>
   <string name="pref_poss_empty_desc">Legen Sie dies fest, wenn Sie Aufnahmen mit missgebildeten zweiten Audiospur (z. B. UK Freeview) haben.</string>

@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Al termine della riproduzione avvia automaticamente il video o l\'episodio successivo.</string>
   <string name="pref_captions">Numero della didascalia da abilitare</string>
   <string name="pref_speed">Velocità di riproduzione in percentuale (10-800). Predefinito 100.</string>
+  <string name="pref_volume">Volume audio come percentuale (10-1000). Predefinito 100.</string>
   <string name="pref_audio_sync">Regolazione della sincronizzazione audio in millisecondi</string>
   <string name="pref_poss_empty">Ignora traccia extra</string>
   <string name="pref_poss_empty_desc">Imposta questo se si dispone di registrazioni con la seconda traccia audio malformata (ad esempio UK Freeview).</string>

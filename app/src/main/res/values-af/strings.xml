@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Begin die volgende video of episode outomaties aan die einde van die afspeel.</string>
   <string name="pref_captions">Onderskrifnommer om te aktiveer</string>
   <string name="pref_speed">Terugspeelspoed as persentasie (10-800). Verstek 100.</string>
+  <string name="pref_volume">Oudiovolume as persentasie (10-1000). Verstek 100.</string>
   <string name="pref_audio_sync">Oudio-sinkronisering aanpassing in millisekondes</string>
   <string name="pref_poss_empty">Ignoreer ekstra snit</string>
   <string name="pref_poss_empty_desc">Stel dit in as u opnames het met misvormde tweede klankbaan (bv. UK Freeview).</string>

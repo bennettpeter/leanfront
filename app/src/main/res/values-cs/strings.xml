@@ -105,6 +105,7 @@
   <string name="pref_autoplay_desc">Na konci přehrávání se automaticky spustí další video nebo epizoda.</string>
   <string name="pref_captions">Číslo titulku, které chcete povolit</string>
   <string name="pref_speed">Rychlost přehrávání v procentech (10-800). Výchozí 100.</string>
+  <string name="pref_volume">Hlasitost zvuku v procentech (10-1000). Výchozí 100.</string>
   <string name="pref_audio_sync">Nastavení synchronizace zvuku v milisekundách</string>
   <string name="pref_poss_empty">Ignorujte další skladbu</string>
   <string name="pref_poss_empty_desc">Nastavte to, pokud máte nahrávky s malformovanou druhou zvukovou stopou (např. UK Freeview).</string>
