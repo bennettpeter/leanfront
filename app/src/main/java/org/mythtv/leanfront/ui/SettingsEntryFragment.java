@@ -131,6 +131,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_FILTER_RECGRP = 74;
     private static final int ID_FILTER_CATEGORY = 75;
     private static final int ID_FILTER_NONE = 76;
+    private static final int ID_VOLUME = 77;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -169,7 +170,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     canClose = true;
             }
         };
-        getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
+        if (android.os.Build.VERSION.SDK_INT >= 36)
+            getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
 
         return new GuidanceStylist() {
             // This is commented because save to external directories is no longer
@@ -403,6 +405,13 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .id(ID_SPEED + addon)
                     .title(R.string.pref_speed)
                     .description(Settings.getString("pref_speed", group))
+                    .descriptionEditable(true)
+                    .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
+                    .build());
+            subActions.add(new GuidedAction.Builder(getActivity())
+                    .id(ID_VOLUME + addon)
+                    .title(R.string.pref_volume)
+                    .description(Settings.getString("pref_volume", group))
                     .descriptionEditable(true)
                     .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                     .build());
@@ -756,8 +765,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         int expandId = getActivity().getIntent()
                 .getIntExtra(KEY_EXPAND, 0);
         GuidedAction action = findActionById(expandId);
-        if (action != null)
+        if (action != null) {
             expandAction(action, false);
+            canClose = false;
+        }
         return ret;
     }
 
@@ -884,6 +895,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 Settings.putString(editor, "pref_speed",group,
                         validateNumber(action, 10, 800, 100));
                 break;
+            case ID_VOLUME:
+                Settings.putString(editor, "pref_volume",group,
+                        validateNumber(action, 10, 1000, 100));
+                break;
             case ID_MAX_VIDS:
                 Settings.putString(editor, "pref_max_vids",
                         validateNumber(action, 1000, 90000, 10000));
@@ -989,6 +1004,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_SPEED:
                 action.setDescription(Settings.getString("pref_speed"));
+                break;
+            case ID_VOLUME:
+                action.setDescription(Settings.getString("pref_volume"));
                 break;
             case ID_MAX_VIDS:
                 action.setDescription(Settings.getString("pref_max_vids"));

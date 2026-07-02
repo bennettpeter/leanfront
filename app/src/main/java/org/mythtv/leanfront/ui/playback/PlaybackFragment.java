@@ -46,6 +46,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.media.audiofx.LoudnessEnhancer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -237,6 +238,7 @@ public class PlaybackFragment extends VideoSupportFragment
             MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
     private boolean [] subtFound = new boolean[subtExtens.length];
     private int subtChecked = -1;
+    private LoudnessEnhancer lEnh;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -282,7 +284,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
+        if (android.os.Build.VERSION.SDK_INT > 23) {
             initializePlayer(true);
         }
         scheduleNext();
@@ -315,7 +317,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (Util.SDK_INT <= 23 ) {
+        if (android.os.Build.VERSION.SDK_INT <= 23 ) {
             initializePlayer(true);
         }
         hideNavigation();
@@ -378,7 +380,7 @@ public class PlaybackFragment extends VideoSupportFragment
             mRecordid = -1;
             mNextRecordid = -1;
         }
-        if (Util.SDK_INT <= 23) {
+        if (android.os.Build.VERSION.SDK_INT <= 23) {
             releasePlayer();
         }
     }
@@ -457,7 +459,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onStop() {
         super.onStop();
-        if (Util.SDK_INT > 23) {
+        if (android.os.Build.VERSION.SDK_INT > 23) {
             releasePlayer();
         }
     }
@@ -689,6 +691,7 @@ public class PlaybackFragment extends VideoSupportFragment
             mPlayerGlue = null;
             mPlayerAdapter = null;
             mPlaybackActionListener = null;
+            lEnh = null;
         }
     }
 
@@ -1957,6 +1960,31 @@ public class PlaybackFragment extends VideoSupportFragment
         public void onCues(@NonNull List<Cue> cues) {
             if (mSubtitles != null)
                 mSubtitles.setCues(cues);
+        }
+
+        @Override
+        public void onAudioSessionIdChanged(int audioSessionId) {
+            Player.Listener.super.onAudioSessionIdChanged(audioSessionId);
+            int volume = Settings.getInt("pref_volume",mVideo.playGroup);
+            if (volume <= 100)
+                mPlayer.setVolume((float)volume / 100.0f);
+            if (volume > 100) {
+                mPlayer.setVolume(1.0f);
+                lEnh = new LoudnessEnhancer(audioSessionId);
+                double audioPct = (double) volume / 100.0;
+                int gainmB = (int) Math.round(Math.log10(audioPct) * 2000.0);
+                lEnh.setTargetGain(gainmB);
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!lEnh.getEnabled())
+                            lEnh.setEnabled(true);
+//                        handler.postDelayed(this,3000);
+                    }
+                },3000);
+            }
+
         }
 
         private void handlePlayerError(Exception ex, int msgNum) {

@@ -140,6 +140,7 @@
     <string name="pref_autoplay_desc">At the end of playback automatically start the next video or episode.</string>
     <string name="pref_captions">Caption number to enable</string>
     <string name="pref_speed">Playback speed as percentage (10-800). Default 100.</string>
+    <string name="pref_volume">Audio Volume as percentage (10-1000). Default 100.</string>
     <string name="pref_audio_sync">Audio Sync Adjustment in milliseconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
     <string name="pref_poss_empty_desc">Set this if you have recordings with malformed second audio track (e.g. UK FreeView).</string>
@@ -515,6 +516,7 @@
     <string name="sdef_leftright" translatable="false">rewff</string>
     <string name="sdef_rewff" translatable="false">rewff</string>
     <string name="sdef_speed" translatable="false">100</string>
+    <string name="sdef_volume" translatable="false">100</string>
     <string name="sdef_poss_empty" translatable="false">false</string>
     <string name="sdef_max_vids" translatable="false">20000</string>
     <string name="sdef_refresh_mins" translatable="false">60</string>
