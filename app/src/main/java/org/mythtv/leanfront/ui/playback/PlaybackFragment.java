@@ -761,14 +761,16 @@ public class PlaybackFragment extends VideoSupportFragment
         }
     }
 
-    private void startTablesReload() {
-        if (tablesSched == null || tablesSched.isDone() || tablesSched.isCancelled()) {
-            ScheduledExecutorService executor = MainFragment.getExecutor();
-            tablesSched = executor.scheduleWithFixedDelay(() -> {
-                fillTables();
-            }, TABLES_MONITOR_INTERVAL, TABLES_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
-        }
-    }
+    // Commented because commskip during recording does not write to database until recording is complete
+    // so this is pointless
+//    private void startTablesReload() {
+//        if (tablesSched == null || tablesSched.isDone() || tablesSched.isCancelled()) {
+//            ScheduledExecutorService executor = MainFragment.getExecutor();
+//            tablesSched = executor.scheduleWithFixedDelay(() -> {
+//                fillTables();
+//            }, TABLES_MONITOR_INTERVAL, TABLES_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+//        }
+//    }
 
     private void setPlaySettings(String group) {
         // null and Default should be treated as equal
@@ -1380,7 +1382,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 // or next show in autoplay mode
                 if (isIncreasing) {
                     startStatusMonitor();
-                    startTablesReload();
+//                    startTablesReload();
                 }
                 if (mPlayerGlue.isPlayCompleted())
                     checkNextShow();
@@ -1400,6 +1402,23 @@ public class PlaybackFragment extends VideoSupportFragment
                     mPlaybackActionListener.setNextCommBreak(-1);
                 if (!tablesFilled) {
                     tablesFilled = true;
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.postDelayed(new Runnable() {
+                        boolean olaySetupDone = false;
+                        @Override
+                        public void run() {
+                            if (!olaySetupDone && mPlayerGlue.myGetDuration() >= 0) {
+                                SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
+                                if (olay != null) {
+                                    olay.setup(commBreakTable, mPlayerGlue);
+                                    olay.invalidate();
+                                }
+                                olaySetupDone = true;
+                            }
+                            if (!olaySetupDone)
+                            handler.postDelayed(this,500);
+                        }
+                    },500);
                     play(null);
                 }
                 break;

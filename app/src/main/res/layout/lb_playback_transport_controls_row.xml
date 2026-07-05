@@ -115,11 +115,20 @@
 
         </RelativeLayout>
 
-        <androidx.leanback.widget.SeekBar
-            android:id="@+id/playback_progress"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/lb_playback_transport_progressbar_height"
-            android:focusable="true" />
+            android:layout_height="@dimen/lb_playback_transport_progressbar_height">
+            <androidx.leanback.widget.SeekBar
+                android:id="@+id/playback_progress"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/lb_playback_transport_progressbar_height"
+                android:focusable="true" />
+            <org.mythtv.leanfront.ui.playback.SeekbarOverlay
+                android:id="@+id/ad_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </FrameLayout>
 
         <RelativeLayout android:layout_width="match_parent"
             android:layout_height="wrap_content"
