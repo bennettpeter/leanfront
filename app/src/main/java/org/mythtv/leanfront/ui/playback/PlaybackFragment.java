@@ -1416,7 +1416,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                 olaySetupDone = true;
                             }
                             if (!olaySetupDone)
-                            handler.postDelayed(this,500);
+                                handler.postDelayed(this,500);
                         }
                     },500);
                     play(null);

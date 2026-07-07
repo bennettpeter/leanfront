@@ -3,8 +3,6 @@ package org.mythtv.leanfront.ui.playback;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -21,7 +19,7 @@ public class SeekbarOverlay extends View {
     public SeekbarOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
         adPaint = new Paint();
-        adPaint.setARGB(128,128,0,0);
+        adPaint.setARGB(160,235,64,52);
     }
 
     public void setup(CommBreakTable commBreakTable, VideoPlayerGlue playerGlue) {
