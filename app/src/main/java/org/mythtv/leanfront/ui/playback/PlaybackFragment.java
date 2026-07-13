@@ -229,9 +229,9 @@ public class PlaybackFragment extends VideoSupportFragment
     // will always be initialized on the first playback.
     private String currentPlayGroup = " ";
     private ScheduledFuture<?> monitorSched;
-    private ScheduledFuture<?> tablesSched;
-    private static final int STATUS_MONITOR_INTERVAL = 5000;
-    private static final int TABLES_MONITOR_INTERVAL = 180000;
+//    private ScheduledFuture<?> tablesSched;
+    private static final int STATUS_MONITOR_INTERVAL = 60000;
+//    private static final int TABLES_MONITOR_INTERVAL = 180000;
     private boolean tablesFilled = false;
     private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
     private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
@@ -350,8 +350,8 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayerGlue.setIncreasing(isIncreasing);
         if ( monitorSched != null && !monitorSched.isDone() && !monitorSched.isCancelled())
             monitorSched.cancel(false);
-        if ( tablesSched != null && !tablesSched.isDone() && !tablesSched.isCancelled())
-            tablesSched.cancel(false);
+//        if ( tablesSched != null && !tablesSched.isDone() && !tablesSched.isCancelled())
+//            tablesSched.cancel(false);
         if (mPlayerGlue != null && mPlayerGlue.isPlaying()) {
             mPlayerGlue.pause();
         }
@@ -752,7 +752,7 @@ public class PlaybackFragment extends VideoSupportFragment
                     if (isSpeededUp()) {
                         Activity activity = getActivity();
                         activity.runOnUiThread(() -> {
-                            if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - 10000)
+                            if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - STATUS_MONITOR_INTERVAL - 5000)
                                 resetSpeed();
                         });
                     }
