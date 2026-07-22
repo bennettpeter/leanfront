@@ -38,7 +38,6 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.CONTENT_URI;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -78,6 +77,7 @@ import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
+import androidx.lifecycle.Lifecycle;
 import androidx.media3.common.TrackSelectionOverride;
 import androidx.media3.common.VideoSize;
 import androidx.media3.exoplayer.Renderer;
@@ -216,7 +216,6 @@ public class PlaybackFragment extends VideoSupportFragment
     private float frameRate = -1.0f;
     private boolean possibleEmptyTrack;
     private boolean playWhenPrepared;
-    private ScheduledFuture<?> audioFixTask;
     private boolean isTV;
     boolean isIncreasing;
     CommBreakTable commBreakTable = new CommBreakTable();
@@ -228,10 +227,7 @@ public class PlaybackFragment extends VideoSupportFragment
     // Initialized to invalid value so that the playgroup settings
     // will always be initialized on the first playback.
     private String currentPlayGroup = " ";
-    private ScheduledFuture<?> monitorSched;
-//    private ScheduledFuture<?> tablesSched;
-    private static final int STATUS_MONITOR_INTERVAL = 60000;
-//    private static final int TABLES_MONITOR_INTERVAL = 180000;
+    private static final int STATUS_MONITOR_INTERVAL = 30000;
     private boolean tablesFilled = false;
     private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
     private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
@@ -239,6 +235,8 @@ public class PlaybackFragment extends VideoSupportFragment
     private boolean [] subtFound = new boolean[subtExtens.length];
     private int subtChecked = -1;
     private LoudnessEnhancer lEnh;
+    private Handler myHandler = new Handler(Looper.getMainLooper());
+    int statusCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -348,10 +346,7 @@ public class PlaybackFragment extends VideoSupportFragment
         setBookmark(Video.ACTION_SET_LASTPLAYPOS);
         isIncreasing = false;
         mPlayerGlue.setIncreasing(isIncreasing);
-        if ( monitorSched != null && !monitorSched.isDone() && !monitorSched.isCancelled())
-            monitorSched.cancel(false);
-//        if ( tablesSched != null && !tablesSched.isDone() && !tablesSched.isCancelled())
-//            tablesSched.cancel(false);
+        statusCount = 0;
         if (mPlayerGlue != null && mPlayerGlue.isPlaying()) {
             mPlayerGlue.pause();
         }
@@ -426,11 +421,6 @@ public class PlaybackFragment extends VideoSupportFragment
         }
         posBookmark = -1;
         call.execute(action, action2);
-        // Wait for the update to complete before returning. Hope it takes less than 100 ms
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ignored) {
-        }
     }
 
     boolean canEnd() {
@@ -592,76 +582,67 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     private void audioFix(int millis, boolean setTracks) {
-        // cancel prior audioFix
-        if (audioFixTask !=  null) {
-            audioFixTask.cancel(false);
-            audioFixTask = null;
-        }
-        ScheduledExecutorService executor = MainFragment.getExecutor();
-        if (executor != null && audioFixTask == null) {
-            audioFixTask = executor.schedule(() -> getActivity().runOnUiThread(() -> {
-                audioFixTask = null;
+        myHandler.postDelayed( () -> {
+            if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                return;
+            if (mPlaybackActionListener == null)
+                return;
+            // Enable subtitle if necessary
+            int msgOn = 0;
+            int msgOff = 0;
+            if (setTracks && mCaptions > 0) {
+                TrackInfo tracks
+                        = new TrackInfo(PlaybackFragment.this, C.TRACK_TYPE_TEXT);
+                if (mCaptions <= tracks.trackList.size()) {
+                    mTextSelection = mCaptions - 1;
+                    msgOn = R.string.msg_subtitle_on;
+                    msgOff = R.string.msg_subtitle_off;
+                }
+                mCaptions = 0;  // Reset - this should only be used once pre playback
+            }
+            if (setTracks && mTextSelection != -2)
+                mTextSelection = trackSelector(C.TRACK_TYPE_TEXT, mTextSelection,
+                        msgOn, msgOff, true, false);
+            // change audio track if necessary
+            if (setTracks && mAudioSelection != -2)
+                mAudioSelection = trackSelector(C.TRACK_TYPE_AUDIO, mAudioSelection,
+                        0, 0, true, false);
+            // This may not be needed with new Exoplayer release
+            else if (mAudioPause) {
+                // disable and enable to fix audio sync
+                enableTrack(C.TRACK_TYPE_AUDIO, false);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {
+                }
                 if (mPlaybackActionListener == null)
                     return;
-                // Enable subtitle if necessary
-                int msgOn = 0;
-                int msgOff = 0;
-                if (setTracks && mCaptions > 0) {
-                    TrackInfo tracks
-                            = new TrackInfo(PlaybackFragment.this, C.TRACK_TYPE_TEXT);
-                    if (mCaptions <= tracks.trackList.size()) {
-                        mTextSelection = mCaptions - 1;
-                        msgOn = R.string.msg_subtitle_on;
-                        msgOff = R.string.msg_subtitle_off;
-                    }
-                    mCaptions = 0;  // Reset - this should only be used once pre playback
-                }
-                if (setTracks && mTextSelection != -2)
-                    mTextSelection = trackSelector(C.TRACK_TYPE_TEXT, mTextSelection,
-                            msgOn, msgOff, true, false);
-                // change audio track if necessary
-                if (setTracks && mAudioSelection != -2)
-                    mAudioSelection = trackSelector(C.TRACK_TYPE_AUDIO, mAudioSelection,
-                            0, 0, true, false);
-                // This may not be needed with new Exoplayer release
-                else if (mAudioPause) {
-                    // disable and enable to fix audio sync
-                    enableTrack(C.TRACK_TYPE_AUDIO, false);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (mPlaybackActionListener == null)
-                        return;
-                    enableTrack(C.TRACK_TYPE_AUDIO, true);
-                    if (mPlaybackActionListener.sampleOffsetUs != 0)
-                        mPlaybackActionListener.setAudioSync();
-                }
-            }), millis, TimeUnit.MILLISECONDS);
-        }
+                enableTrack(C.TRACK_TYPE_AUDIO, true);
+                if (mPlaybackActionListener.sampleOffsetUs != 0)
+                    mPlaybackActionListener.setAudioSync();
+            }
+        }, millis);
     }
 
     private void playWait(int delay, String msg) {
-        ScheduledExecutorService executor = MainFragment.getExecutor();
-        if (executor != null) {
-            ScheduledFuture<?> sched;
-            sched = executor.schedule(() -> getActivity().runOnUiThread(() -> {
-                if (msg != null) {
-                    if (mToast != null)
-                        mToast.cancel();
-                    mToast = Toast.makeText(getActivity(),
-                            msg,
-                            Toast.LENGTH_LONG);
-                    mToast.show();
-                }
-                if (!playWhenPrepared) {
-                    mPlayerGlue.playWhenPrepared();
-                    playWhenPrepared = true;
-                    // disable and enable audio to fix sync errors
-                    audioFix(5000, true);
-                }
-            }), delay, TimeUnit.MILLISECONDS);
-        }
+        myHandler.postDelayed( () -> {
+            if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                return;
+            if (msg != null) {
+                if (mToast != null)
+                    mToast.cancel();
+                mToast = Toast.makeText(getActivity(),
+                        msg,
+                        Toast.LENGTH_LONG);
+                mToast.show();
+            }
+            if (!playWhenPrepared) {
+                mPlayerGlue.playWhenPrepared();
+                playWhenPrepared = true;
+                // disable and enable audio to fix sync errors
+                audioFix(5000, true);
+            }
+        }, delay);
     }
 
     private void enableTrack(int trackType, boolean enable) {
@@ -699,7 +680,7 @@ public class PlaybackFragment extends VideoSupportFragment
     // based on the tablesFilled flag.
     @OptIn(markerClass = UnstableApi.class)
     private void play(Video video) {
-
+        statusCount = 0;
         if (video != null) {
             mVideo = video;
             tablesFilled = false;
@@ -744,20 +725,30 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     private void startStatusMonitor() {
-        if (monitorSched == null || monitorSched.isDone() || monitorSched.isCancelled()) {
-            ScheduledExecutorService executor = MainFragment.getExecutor();
-            if (executor != null) {
-                monitorSched = executor.schedule(() -> {
+        // Periodically save the last play position in case of a network failure
+        if (statusCount == 0) {
+            boolean ret = myHandler.postDelayed(() -> {
+                if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                    return;
+                if (statusCount == 0)
+                    return;
+                statusCount--;
+                setBookmark(Video.ACTION_SET_LASTPLAYPOS);
+                if (isIncreasing) {
                     getFileLength(false);
                     if (isSpeededUp()) {
-                        Activity activity = getActivity();
-                        activity.runOnUiThread(() -> {
+                        myHandler.post(() -> {
+                            if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                                return;
                             if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - STATUS_MONITOR_INTERVAL - 5000)
                                 resetSpeed();
                         });
                     }
-                }, STATUS_MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
-            }
+                } else
+                    startStatusMonitor();
+            }, STATUS_MONITOR_INTERVAL);
+            if (ret)
+                statusCount++;
         }
     }
 
@@ -1380,10 +1371,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 mFileLength = fileLength;
                 // Now check for a subsequent show if in LiveTV mode
                 // or next show in autoplay mode
-                if (isIncreasing) {
-                    startStatusMonitor();
-//                    startTablesReload();
-                }
+                startStatusMonitor();
                 if (mPlayerGlue.isPlayCompleted())
                     checkNextShow();
                 break;
@@ -1402,11 +1390,12 @@ public class PlaybackFragment extends VideoSupportFragment
                     mPlaybackActionListener.setNextCommBreak(-1);
                 if (!tablesFilled) {
                     tablesFilled = true;
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
+                    myHandler.postDelayed(new Runnable() {
                         boolean olaySetupDone = false;
                         @Override
                         public void run() {
+                            if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                                return;
                             if (!olaySetupDone && mPlayerGlue.myGetDuration() >= 0) {
                                 SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
                                 if (olay != null) {
@@ -1416,7 +1405,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                 olaySetupDone = true;
                             }
                             if (!olaySetupDone)
-                                handler.postDelayed(this,500);
+                                myHandler.postDelayed(this,500);
                         }
                     },500);
                     play(null);
@@ -1993,14 +1982,11 @@ public class PlaybackFragment extends VideoSupportFragment
                 double audioPct = (double) volume / 100.0;
                 int gainmB = (int) Math.round(Math.log10(audioPct) * 2000.0);
                 lEnh.setTargetGain(gainmB);
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!lEnh.getEnabled())
-                            lEnh.setEnabled(true);
-//                        handler.postDelayed(this,3000);
-                    }
+                myHandler.postDelayed(() -> {
+                    if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
+                        return;
+                    if (!lEnh.getEnabled())
+                        lEnh.setEnabled(true);
                 },3000);
             }
 
