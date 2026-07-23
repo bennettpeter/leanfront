@@ -240,7 +240,7 @@
         Pura, valitse FFmpeg.</string>
   <string name="pberror_recommend_audio">Ei tuettu ääni: kohdassa Leanfront Settings -&gt; Audio Decode,
         valitse Auto tai FFmpeg tai muuta Android-ääniasetuksiasi.</string>
-  <string name="pberror_malformed">Väärin muotoiltu tiedosto: Korjaa tämä tiedosto käyttämällä ffmpeg-, mkvmerge- tai muita työkaluja.</string>
+  <string name="pberror_malformed">Toisto epäonnistui. Tiedosto on huono tai taustayhteys on katkennut.</string>
   <string name="pberror_extractor_array">Virhe: Indeksivirhe BundledExtractorsAdapterissa.</string>
   <string name="pberror_button_continue">Jatka</string>
   <string name="pberror_button_exit">Poistu</string>

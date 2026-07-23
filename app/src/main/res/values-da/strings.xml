@@ -240,7 +240,7 @@
         Afkode, vælg FFmpeg.</string>
   <string name="pberror_recommend_audio">Ikke-understøttet lyd: I leanfront-indstillinger -&gt; Lydafkodning,
         vælg Auto eller FFmpeg, ellers ændre dine Android-lydindstillinger.</string>
-  <string name="pberror_malformed">Forkert fil: Reparer denne fil ved hjælp af ffmpeg, mkvmerge eller andre værktøjer.</string>
+  <string name="pberror_malformed">Afspilning mislykkedes. Filen er dårlig, eller backend-forbindelsen er brudt.</string>
   <string name="pberror_extractor_array">Fejl: OutOfBoundsException i BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Blive ved</string>
   <string name="pberror_button_exit">Afslut</string>
