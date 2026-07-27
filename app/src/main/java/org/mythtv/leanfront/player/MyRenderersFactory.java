@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.media3.common.util.ExperimentalApi;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.Renderer;
@@ -40,21 +42,20 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
      * <p>The default value is {@link #EXTENSION_RENDERER_MODE_OFF}.
      *
      * @param videoExtensionRendererMode The extension renderer mode.
-     * @return This factory, for convenience.
      */
-    public final MyRenderersFactory setVideoExtensionRendererMode(
+    public final void setVideoExtensionRendererMode(
             @ExtensionRendererMode int videoExtensionRendererMode) {
         this.videoExtensionRendererMode = videoExtensionRendererMode;
-        return this;
     }
 
+    @NonNull
     @Override
     public Renderer[] createRenderers(
-            Handler eventHandler,
-            VideoRendererEventListener videoRendererEventListener,
-            AudioRendererEventListener audioRendererEventListener,
-            TextOutput textRendererOutput,
-            MetadataOutput metadataRendererOutput) {
+            @NonNull Handler eventHandler,
+            @NonNull VideoRendererEventListener videoRendererEventListener,
+            @NonNull AudioRendererEventListener audioRendererEventListener,
+            @NonNull TextOutput textRendererOutput,
+            @NonNull MetadataOutput metadataRendererOutput) {
         ArrayList<Renderer> renderersList = new ArrayList<>();
         buildVideoRenderers(
                 context,
@@ -97,13 +98,15 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
         return renderersList.toArray(new Renderer[0]);
     }
 
+    @OptIn(markerClass = ExperimentalApi.class)
     protected void buildTextRenderers(
-            Context context,
-            TextOutput output,
-            Looper outputLooper,
+            @NonNull Context context,
+            @NonNull TextOutput output,
+            @NonNull Looper outputLooper,
             @ExtensionRendererMode int extensionRendererMode,
             ArrayList<Renderer> out) {
         TextRenderer r = new TextRenderer(output, outputLooper);
+        //noinspection deprecation
         r.experimentalSetLegacyDecodingEnabled(true);
         out.add(r);
     }

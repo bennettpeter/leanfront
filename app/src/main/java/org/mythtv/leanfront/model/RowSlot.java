@@ -1,7 +1,7 @@
 package org.mythtv.leanfront.model;
 
 public class RowSlot {
-    public int cellType = 0;
+    public int cellType;
     public static final int CELL_TIMESLOT = 1;
     public static final int CELL_CHANNEL = 2;
     public static final int CELL_PROGRAM = 3;

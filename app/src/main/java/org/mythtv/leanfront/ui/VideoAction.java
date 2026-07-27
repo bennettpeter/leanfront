@@ -28,6 +28,7 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_CHANNEL
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_RECORDING;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -134,14 +135,13 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 if (!set) {
                     bookmark = mLastPlay;
                     posbookmark = mPosLastPlay;
-                    set = true;
                 }
             case Video.ACTION_PLAY:
                 Intent intent = new Intent(activity, PlaybackActivity.class);
                 intent.putExtra(PlaybackActivity.VIDEO, mSelectedVideo);
                 intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
                 intent.putExtra(PlaybackActivity.POSBOOKMARK, posbookmark);
-                fragment.startActivityForResult(intent, Video.ACTION_PLAY);
+                ((VideoDetailsFragment)fragment).startPlayForResult.launch(intent);
                 break;
             case Video.ACTION_LIVETV:
                 setProgressBar(true);
@@ -226,6 +226,7 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 break;
             case Video.ACTION_QUERY_UPDATE_RECGROUP:
                 alertTitle = fragment.getString(R.string.menu_update_recgrp);
+                //noinspection unchecked
                 prompts = (ArrayList<String>) mRecGroupList.clone();
                 prompts.remove("LiveTV");
                 prompts.add(fragment.getString(R.string.sched_new_entry));
@@ -238,7 +239,7 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                                 (dialog, which) -> {
                                     // The 'which' argument contains the index position
                                     // of the selected item
-                                    // Last item in the list is "Create
+                                    // Last item in the list is "Create New Entry"
                                     if (which == groups.size() - 1) {
                                         mNewValueText="";
                                         promptForNewValue(R.string.sched_rec_group, Video.ACTION_UPDATE_RECGROUP);
@@ -251,7 +252,7 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
 
                 break;
             case Video.ACTION_UPDATE_RECGROUP:
-                if (mSelectedVideo.recordedid != null && mNewValueText.length() > 0) {
+                if (mSelectedVideo.recordedid != null && !mNewValueText.isEmpty()) {
                     call = new AsyncBackendCall(activity, this);
                     mSelectedVideo.recGroup = mNewValueText;
                     call.setVideo(mSelectedVideo);
@@ -323,10 +324,11 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 boolean busyRecording = false;
                 // Check End Time
                 try {
+                    @SuppressLint("SimpleDateFormat")
                     SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
                     if (mSelectedVideo.endtime != null) {
                         Date dateEnd = dbFormat.parse(mSelectedVideo.endtime + "+0000");
-                        long dateMS = dateEnd.getTime();
+                        long dateMS = dateEnd != null ? dateEnd.getTime() : 0;
                         // If end time is more than 2 mins in the future allow stopping
                         if (dateMS > System.currentTimeMillis() + 120000)
                             busyRecording = true;
@@ -399,8 +401,8 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                     .setTitle(alertTitle)
                     .setItems(prompts.toArray(new String[0]),
                             new DialogInterface.OnClickListener() {
-                                ArrayList<Action> mActions = finalActions;
-                                OnActionClickedListener mParent = parent;
+                                final ArrayList<Action> mActions = finalActions;
+                                final OnActionClickedListener mParent = parent;
 
                                 public void onClick(DialogInterface dialog, int which) {
                                     // The 'which' argument contains the index position
@@ -536,6 +538,7 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
         if (tasks.length == 2 && tasks[1] == Video.ACTION_FULL_MENU)
             onActionClicked(new Action(Video.ACTION_FULL_MENU));
     }
+    @SuppressWarnings("SameParameterValue")
     private void promptForNewValue(int msgid, int nextId) {
         mNewValueText = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity,

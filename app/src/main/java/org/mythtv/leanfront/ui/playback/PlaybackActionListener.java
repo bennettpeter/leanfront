@@ -51,7 +51,6 @@ import androidx.media3.exoplayer.source.SampleQueue;
 
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.CommBreakTable;
-import org.mythtv.leanfront.model.Playlist;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.player.VideoPlayerGlue;
@@ -63,7 +62,6 @@ import java.util.List;
 class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener {
 
     private final PlaybackFragment playbackFragment;
-    private Playlist mPlaylist;
 
     static final float[] STRETCH_VALUES = {0.75f, 0.88f, 1.0f, 1.18f, 1.33f, 1.5f};
     static final float[] SCALE_VALUES = {0.88f, 1.0f, 1.17f, 1.33f, 1.5f};
@@ -74,7 +72,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     long sampleOffsetUs = 0;
     long priorSampleOffsetUs = 0;
     AlertDialog mDialog;
-    private DialogDismiss dialogDismiss = new DialogDismiss();
+    private final DialogDismiss dialogDismiss = new DialogDismiss();
     private boolean yesPress;
     private long lastSeekFrom;
     private boolean lastSeekIsFwd;
@@ -83,15 +81,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     private static final String TAG = "lfe";
     private static final String CLASS = "PlaybackActionListener";
 
-    PlaybackActionListener(PlaybackFragment playbackFragment, Playlist playlist) {
+    PlaybackActionListener(PlaybackFragment playbackFragment) {
         this.playbackFragment = playbackFragment;
-        this.mPlaylist = playlist;
     }
 
     @Override
     public void onPrevious() {
-        if (playbackFragment.commBreakTable == null
-                || playbackFragment.commBreakTable.entries.length == 0
+        if (playbackFragment.commBreakTable.entries.length == 0
                 || skipComBack() == 0) {
             playbackFragment.tickle();
             playbackFragment.skipToPrevious();
@@ -100,8 +96,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     @Override
     public void onNext() {
-        if (playbackFragment.commBreakTable == null
-                || playbackFragment.commBreakTable.entries.length == 0
+        if (playbackFragment.commBreakTable.entries.length == 0
                 ||  skipComForward() == 0) {
             playbackFragment.tickle();
             playbackFragment.skipToNext();
@@ -111,6 +106,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     public boolean onMenu() {
         playbackFragment.hideControlsOverlay(false);
         PlaybackControlsRow row =  playbackFragment.mPlayerGlue.getControlsRow();
+        if (row == null)
+            return false;
         ArrayObjectAdapter adapter = (ArrayObjectAdapter) row.getPrimaryActionsAdapter();
         List<Object> fullList = new ArrayList<>(adapter.unmodifiableList());
         adapter = (ArrayObjectAdapter) row.getSecondaryActionsAdapter();
@@ -118,11 +115,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         ArrayList<String> prompts = new ArrayList<>();
         ArrayList<Action> actions = new ArrayList<>();
         for (Object obj : fullList) {
+            //noinspection StatementWithEmptyBody
             if (obj instanceof PlaybackControlsRow.PlayPauseAction
                     || obj instanceof PlaybackControlsRow.FastForwardAction
                     || obj instanceof PlaybackControlsRow.RewindAction
-                    || obj == playbackFragment.mPlayerGlue.mMenuAction)
-                continue;
+                    || obj == playbackFragment.mPlayerGlue.mMenuAction) {
+                // do nothing
+            }
             else if (obj instanceof PlaybackControlsRow.MultiAction) {
                 PlaybackControlsRow.MultiAction action
                         = (PlaybackControlsRow.MultiAction) obj;
@@ -133,20 +132,23 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             }
             else if (obj instanceof Action) {
                 Action action = (Action) obj;
-                prompts.add(action.getLabel1().toString());
-                actions.add(action);
+                CharSequence label = action.getLabel1();
+                if (label != null) {
+                    prompts.add(action.getLabel1().toString());
+                    actions.add(action);
+                }
             }
         }
         final ArrayList<Action> finalActions = actions; // needed because used in inner class
         // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         OnActionClickedListener parent = playbackFragment.mPlayerGlue;
         builder
                 .setItems(prompts.toArray(new String[0]),
                         new DialogInterface.OnClickListener() {
-                            ArrayList<Action> mActions = finalActions;
-                            OnActionClickedListener mParent = parent;
+                            final ArrayList<Action> mActions = finalActions;
+                            final OnActionClickedListener mParent = parent;
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
                                 // of the selected item
@@ -158,6 +160,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                 .setOnDismissListener(dialogDismiss);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return false;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -187,7 +191,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
 
     // mode = -1 for smaller, 0 for rotate, 1 for bigger
-    public void zoom(int mode) {
+    public void zoom(int ignoredMode) {
         showZoomSelector();
     }
 
@@ -213,9 +217,6 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     @Override
     public void onCaption() {
-        // This code could be used for rotating among captions instead of showing a list
-        // playbackFragment.mTextSelection = playbackFragment.trackSelector(C.TRACK_TYPE_TEXT, playbackFragment.mTextSelection,
-        //         R.string.msg_subtitle_on, R.string.msg_subtitle_off, true, true);
         showCaptionSelector();
     }
 
@@ -229,6 +230,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         for (int ix = 0; ix < tracks.trackList.size(); ix++) {
             PlaybackFragment.TrackEntry entry = tracks.trackList.get(ix);
             String name = entry.description;
+            if (entry.format.sampleMimeType == null)
+                return;
             String [] mime = entry.format.sampleMimeType.split("/");
             if ("x-media3-cues".equals(mime[mime.length - 1]) && entry.format.codecs != null)
                 mime = entry.format.codecs.split("/");
@@ -241,13 +244,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
         final ArrayList<Integer> finalActions = actions; // needed because used in inner class
         // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder
                 .setTitle(R.string.title_select_caption)
                 .setItems(prompts.toArray(new String[0]),
                         new DialogInterface.OnClickListener() {
-                            ArrayList<Integer> mActions = finalActions;
+                            final ArrayList<Integer> mActions = finalActions;
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
                                 // of the selected item
@@ -261,6 +264,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                 .setOnDismissListener(dialogDismiss);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -273,9 +278,6 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     @Override
     public void onAudioTrack() {
-        // This code could be used for rotating among audio tracks instead of showing a list
-        // playbackFragment.mAudioSelection = playbackFragment.trackSelector(C.TRACK_TYPE_AUDIO, playbackFragment.mAudioSelection,
-        //         R.string.msg_audio_track, R.string.msg_audio_track_off, true, true);
         showAudioSelector();
     }
 
@@ -296,13 +298,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
         final ArrayList<Integer> finalActions = actions; // needed because used in inner class
         // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder
                 .setTitle(R.string.title_select_audio)
                 .setItems(prompts.toArray(new String[0]),
                         new DialogInterface.OnClickListener() {
-                            ArrayList<Integer> mActions = finalActions;
+                            final ArrayList<Integer> mActions = finalActions;
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
                                 // of the selected item
@@ -316,6 +318,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                 .setOnDismissListener(dialogDismiss);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -338,13 +342,15 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     private void showSpeedSelector() {
         playbackFragment.hideControlsOverlay(true);
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert)
                 .setOnDismissListener(dialogDismiss);
         builder.setTitle(R.string.title_select_speed)
                 .setView(R.layout.leanback_preference_widget_seekbar);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -354,9 +360,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         mDialog.getWindow().setAttributes(lp);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100,0,0,0)));
         SeekBar seekBar = mDialog.findViewById(R.id.seekbar);
+        if (seekBar == null)
+            return;
         seekBar.setMax(800);
         seekBar.setProgress(Math.round(playbackFragment.mSpeed * 100.0f));
         TextView seekValue = mDialog.findViewById(R.id.seekbar_value);
+        if (seekValue == null)
+            return;
         seekValue.setText( (int)(playbackFragment.mSpeed * 100.0f) + "%");
         mDialog.setOnKeyListener(
             (DialogInterface dlg, int keyCode, KeyEvent event) -> {
@@ -416,13 +426,15 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     private void showZoomSelector() {
         playbackFragment.hideControlsOverlay(true);
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert)
                 .setOnDismissListener(dialogDismiss);
         builder.setTitle(R.string.title_select_zoom)
                 .setView(R.layout.leanback_preference_widget_seekbar);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -432,11 +444,17 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         mDialog.getWindow().setAttributes(lp);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100,0,0,0)));
         SeekBar seekBar = mDialog.findViewById(R.id.seekbar);
+        if (seekBar == null)
+            return;
         seekBar.setMax(200);
         seekBar.setProgress(Math.round(mScale * 100.0f));
         TextView summary = mDialog.findViewById(android.R.id.summary);
+        if (summary == null)
+            return;
         summary.setText( playbackFragment.getString(R.string.seekbar_instructions));
         TextView seekValue = mDialog.findViewById(R.id.seekbar_value);
+        if (seekValue == null)
+            return;
         seekValue.setText( (int)(mScale * 100.0f) + "%");
         mDialog.setOnKeyListener(
                 (DialogInterface dlg, int keyCode, KeyEvent event) -> {
@@ -450,7 +468,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     if (event.getAction() != KeyEvent.ACTION_DOWN)
                         return false;
                     int value = Math.round((float)seekBar.getProgress() / 5.0f) * 5;
-                    float newfvalue = 0.0f;
+                    float newfvalue;
                     switch(keyCode) {
                         case KeyEvent.KEYCODE_DPAD_LEFT:
                         case KeyEvent.KEYCODE_ZOOM_OUT:
@@ -507,13 +525,15 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     private void showStretchSelector() {
         playbackFragment.hideControlsOverlay(true);
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert)
                 .setOnDismissListener(dialogDismiss);
         builder.setTitle(R.string.title_select_stretch)
                 .setView(R.layout.leanback_preference_widget_seekbar);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -523,11 +543,17 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         mDialog.getWindow().setAttributes(lp);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100,0,0,0)));
         SeekBar seekBar = mDialog.findViewById(R.id.seekbar);
+        if (seekBar == null)
+            return;
         seekBar.setMax(200);
         seekBar.setProgress(Math.round(mStretch * 100.0f));
         TextView summary = mDialog.findViewById(android.R.id.summary);
+        if (summary == null)
+            return;
         summary.setText( playbackFragment.getString(R.string.seekbar_instructions));
         TextView seekValue = mDialog.findViewById(R.id.seekbar_value);
+        if (seekValue == null)
+            return;
         seekValue.setText( (int)(mStretch * 100.0f) + "%");
         mDialog.setOnKeyListener(
                 (DialogInterface dlg, int keyCode, KeyEvent event) -> {
@@ -541,7 +567,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     if (event.getAction() != KeyEvent.ACTION_DOWN)
                         return false;
                     int value = Math.round((float)seekBar.getProgress() / 5.0f) * 5;
-                    float newfvalue = 0.0f;
+                    float newfvalue;
                     switch(keyCode) {
                         case KeyEvent.KEYCODE_DPAD_LEFT:
                             if (value > 5)
@@ -596,14 +622,18 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     private void showPivotSelector() {
         playbackFragment.hideControlsOverlay(true);
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert)
                 .setOnDismissListener(dialogDismiss);
         builder.setTitle(R.string.title_select_position)
                 .setMessage(getPivotMessage());
         mDialog = builder.create();
         mDialog.show();
-        TextView messageText = (TextView)mDialog.findViewById(android.R.id.message);
+        if (mDialog.getWindow() == null)
+            return;
+        TextView messageText = mDialog.findViewById(android.R.id.message);
+        if (messageText == null)
+            return;
         messageText.setGravity(Gravity.CENTER);
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
@@ -682,7 +712,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         else if (x == 100)
             build.append(playbackFragment.getString(R.string.msg_pin_right_edge))
                     .append(" / ");
-        else if (x > 50)
+        else
             build.append(playbackFragment.getString(R.string.msg_pin_right))
                     .append(" / ");
 
@@ -694,7 +724,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             build.append(playbackFragment.getString(R.string.msg_pin_up));
         else if (y == 100)
             build.append(playbackFragment.getString(R.string.msg_pin_bottom));
-        else if (y > 50)
+        else
             build.append(playbackFragment.getString(R.string.msg_pin_down));
         return build.toString();
     }
@@ -708,13 +738,15 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         playbackFragment.hideControlsOverlay(true);
         playbackFragment.mPlayerGlue.setEnableControls(false);
         dialogDismiss.enableControls = true;
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle(R.string.title_select_audiosync)
                 .setView(R.layout.leanback_preference_widget_seekbar)
                 .setOnDismissListener(dialogDismiss);
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         lp.x=0;
@@ -724,9 +756,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         mDialog.getWindow().setAttributes(lp);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100,0,0,0)));
         SeekBar seekBar = mDialog.findViewById(R.id.seekbar);
+        if (seekBar == null)
+            return;
         seekBar.setMax(5000); // --2500ms to +2500ms
         seekBar.setProgress((int)(sampleOffsetUs/1000 + 2500));
         TextView seekValue = mDialog.findViewById(R.id.seekbar_value);
+        if (seekValue == null)
+            return;
         String text = String.format("%+d",sampleOffsetUs / 1000);
         seekValue.setText(text);
         mDialog.setOnKeyListener(
@@ -845,82 +881,86 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     }
 
     long skipComBack() {
-        if (!commSkipCheck())
-            return 0;
-        long position = playbackFragment.mPlayerGlue.getCurrentPosition();
-        if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
-            playbackFragment.seekTo(lastSeekFrom);
-            comskipToast(-3,lastSeekFrom - position);
-            lastSeekTime = 0;
-            return lastSeekFrom;
-        }
-        long newPosition = 0;
-        int mark = 0;
-        synchronized (playbackFragment.commBreakTable) {
-            // Get the last entry that satisfies offset < position
-            for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-                long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-                if (offsetMs < position - 20000) {
-                    newPosition = offsetMs;
-                    mark = entry.mark;
-                } else
-                    break;
+        if (commSkipCheck()) {
+            long position = playbackFragment.mPlayerGlue.getCurrentPosition();
+            if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000L) {
+                playbackFragment.seekTo(lastSeekFrom);
+                comskipToast(-3, lastSeekFrom - position);
+                lastSeekTime = 0;
+                return lastSeekFrom;
             }
-        }
-        if (newPosition == 0) {
-            newPosition = 100;
-            mark = -4;
-        }
-        playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
-        // If this is a start point, prevent it from immediately skipping
-        if (mark == CommBreakTable.MARK_CUT_START)
-            playbackFragment.priorCommBreak = newPosition
-                    + (long)Settings.getInt("pref_commskip_start") * 1000;
-        playbackFragment.seekTo(newPosition);
-        comskipToast(mark, newPosition - position);
-        lastSeekFrom = position;
-        lastSeekIsFwd = false;
-        lastSeekTime = System.currentTimeMillis();
-        return newPosition;
-    }
-
-    long skipComForward() {
-        if (!commSkipCheck())
-            return 0;
-        long position = playbackFragment.mPlayerGlue.getCurrentPosition();
-        if (! lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
-            playbackFragment.seekTo(lastSeekFrom);
-            comskipToast(-3,lastSeekFrom - position);
-            lastSeekTime = 0;
-            return lastSeekFrom;
-        }
-        long newPosition = 0;
-        int mark = 0;
-        synchronized (playbackFragment.commBreakTable) {
-            // Get the first entry that satisfies offset > position
-            for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
-                long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
-                if (offsetMs > position + 5000) {
-                    newPosition = offsetMs;
-                    mark = entry.mark;
-                    break;
+            long newPosition = 0;
+            int mark = 0;
+            synchronized (playbackFragment.commBreakTable) {
+                // Get the last entry that satisfies offset < position
+                for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                    long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                    if (offsetMs < position - 20000) {
+                        newPosition = offsetMs;
+                        mark = entry.mark;
+                    } else
+                        break;
                 }
             }
-        }
-        if (newPosition > 0) {
+            if (newPosition == 0) {
+                newPosition = 100;
+                mark = -4;
+            }
             playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
                 playbackFragment.priorCommBreak = newPosition
-                        + (long)Settings.getInt("pref_commskip_start") * 1000;
+                        + (long) Settings.getInt("pref_commskip_start") * 1000;
             playbackFragment.seekTo(newPosition);
-            comskipToast(mark,  newPosition - position);
+            comskipToast(mark, newPosition - position);
             lastSeekFrom = position;
-            lastSeekIsFwd = true;
+            lastSeekIsFwd = false;
             lastSeekTime = System.currentTimeMillis();
-        } else
-            comskipToast(-1, 0);
-        return newPosition;
+            return newPosition;
+        } else {
+            return 0;
+        }
+    }
+
+    long skipComForward() {
+        if (commSkipCheck()) {
+            long position = playbackFragment.mPlayerGlue.getCurrentPosition();
+            if (!lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000L) {
+                playbackFragment.seekTo(lastSeekFrom);
+                comskipToast(-3, lastSeekFrom - position);
+                lastSeekTime = 0;
+                return lastSeekFrom;
+            }
+            long newPosition = 0;
+            int mark = 0;
+            synchronized (playbackFragment.commBreakTable) {
+                // Get the first entry that satisfies offset > position
+                for (CommBreakTable.Entry entry : playbackFragment.commBreakTable.entries) {
+                    long offsetMs = playbackFragment.commBreakTable.getOffsetMs(entry);
+                    if (offsetMs > position + 5000) {
+                        newPosition = offsetMs;
+                        mark = entry.mark;
+                        break;
+                    }
+                }
+            }
+            if (newPosition > 0) {
+                playbackFragment.mPlayerGlue.setNextCommBreakMs(Long.MAX_VALUE);
+                // If this is a start point, prevent it from immediately skipping
+                if (mark == CommBreakTable.MARK_CUT_START)
+                    playbackFragment.priorCommBreak = newPosition
+                            + (long) Settings.getInt("pref_commskip_start") * 1000;
+                playbackFragment.seekTo(newPosition);
+                comskipToast(mark, newPosition - position);
+                lastSeekFrom = position;
+                lastSeekIsFwd = true;
+                lastSeekTime = System.currentTimeMillis();
+            } else
+                comskipToast(-1, 0);
+            return newPosition;
+        } else {
+            return 0;
+        }
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -935,13 +975,13 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
             case -4:                            msgnum = R.string.msg_commskip_start_show; break;
             default: return;
         }
-        range = range / 1000l;
-        long mins = range/60l;
-        long secs = Math.abs(range%60l);
+        range = range / 1000L;
+        long mins = range/ 60L;
+        long secs = Math.abs(range% 60L);
 
         if (playbackFragment.mToast != null)
             playbackFragment.mToast.cancel();
-        Context ctx = playbackFragment.getContext();
+        Context ctx = playbackFragment.requireContext();
         String time = String.format(" (%1$ 02d:%2$02d).", mins, secs);
         String msg = ctx.getString(msgnum) + time;
         playbackFragment.mToast = Toast.makeText(ctx, msg, Toast.LENGTH_LONG);
@@ -963,7 +1003,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                         startEntry = entry;
                         startOffsetMs = playbackFragment.commBreakTable.getOffsetMs(startEntry);
                     } else {
-                        long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000;
+                        long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000L;
                         if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END
                                 && startEntry != null && possible != playbackFragment.priorCommBreak) {
                             nextCommBreak = possible;
@@ -977,10 +1017,10 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     }
 
     private boolean commSkipCheck() {
-        if (playbackFragment.commBreakTable == null || playbackFragment.commBreakTable.entries.length == 0) {
+        if (playbackFragment.commBreakTable.entries.length == 0) {
             if (playbackFragment.mToast != null)
                 playbackFragment.mToast.cancel();
-            Context ctx = playbackFragment.getContext();
+            Context ctx = playbackFragment.requireContext();
             playbackFragment.mToast = Toast.makeText(ctx,
                     ctx.getString(R.string.msg_commskip_none),
                     Toast.LENGTH_LONG);
@@ -994,33 +1034,35 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     // off, notify or skip.
     @Override
     public void onCommSkip() {
-        if (!commSkipCheck())
-            return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
-                R.style.Theme_AppCompat_Dialog_Alert);
-        builder
-                .setTitle(R.string.title_commskip)
-                .setItems(R.array.menu_commskip,
-                        (dialog, which) -> {
-                            // The 'which' argument contains the index position
-                            // of the selected item
-                            playbackFragment.commBreakOption = which;
-                            playbackFragment.priorCommBreak = Long.MAX_VALUE;
-                        })
-                .setOnDismissListener(dialogDismiss);
-        mDialog = builder.create();
-        mDialog.show();
-        WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
-        lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
-        lp.x=0;
-        lp.y=0;
-        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 4;
-        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-        mDialog.getWindow().setAttributes(lp);
-        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(128,128,128,128)));
-        ListView list = mDialog.getListView();
-        if (list != null)
-            list.setSelection(playbackFragment.commBreakOption);
+        if (commSkipCheck()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
+                    R.style.Theme_AppCompat_Dialog_Alert);
+            builder
+                    .setTitle(R.string.title_commskip)
+                    .setItems(R.array.menu_commskip,
+                            (dialog, which) -> {
+                                // The 'which' argument contains the index position
+                                // of the selected item
+                                playbackFragment.commBreakOption = which;
+                                playbackFragment.priorCommBreak = Long.MAX_VALUE;
+                            })
+                    .setOnDismissListener(dialogDismiss);
+            mDialog = builder.create();
+            mDialog.show();
+            if (mDialog.getWindow() == null)
+                return;
+            WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
+            lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+            lp.x = 0;
+            lp.y = 0;
+            lp.width = Resources.getSystem().getDisplayMetrics().widthPixels / 4;
+            lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+            mDialog.getWindow().setAttributes(lp);
+            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 128, 128, 128)));
+            ListView list = mDialog.getListView();
+            if (list != null)
+                list.setSelection(playbackFragment.commBreakOption);
+        }
     }
 
     @Override
@@ -1063,27 +1105,25 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                 case PlaybackFragment.COMMBREAK_NOTIFY:
                     dismissDialog();
                     playbackFragment.hideControlsOverlay(false);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+                    AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                             R.style.Theme_AppCompat_Dialog_Alert)
                             .setTitle(R.string.title_comm_playing)
                             .setItems(R.array.menu_commplaying,
                                     (dialog, which) -> {
                                         // The 'which' argument contains the index position
                                         // of the selected item
-                                        switch (which) {
-                                            // 0 = skip commercial
-                                            case 0:
-                                                if (playbackFragment.mPlayerGlue.getCurrentPosition()
-                                                        < finalNewPosition) {
-                                                    // controls will be re-enabled by onEndCommBreak
-                                                    // Uncomment this To Hide controls while skipping commercials
+                                        // 0 = skip commercial
+                                        if (which == 0) {
+                                            if (playbackFragment.mPlayerGlue.getCurrentPosition()
+                                                    < finalNewPosition) {
+                                                // controls will be re-enabled by onEndCommBreak
+                                                // Uncomment this To Hide controls while skipping commercials
 //                                                        playbackFragment.mPlayerGlue.setEnableControls(false);
-                                                    // Comment this To Hide controls while skipping commercials
-                                                    playbackFragment.tickle(false,false);
-                                                    dialogDismiss.enableControls = false;
-                                                    playbackFragment.seekTo(finalNewPosition);
-                                                }
-                                                break;
+                                                // Comment this To Hide controls while skipping commercials
+                                                playbackFragment.tickle(false, false);
+                                                dialogDismiss.enableControls = false;
+                                                playbackFragment.seekTo(finalNewPosition);
+                                            }
                                             // 1 = do not skip commercial. Defaults to doing nothing
                                         }
                                     })
@@ -1109,6 +1149,8 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                     dialogDismiss.enableControls = true;
                     mDialog = builder.create();
                     mDialog.show();
+                    if (mDialog.getWindow() == null)
+                        return;
                     WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
                     lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
                     lp.x=0;
@@ -1140,16 +1182,18 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
 
     @Override
     public void onIdleTimeout() {
-        ((PlaybackActivity)playbackFragment.getActivity()).updateTouchTime();
+        if (playbackFragment == null)
+            return;
+        ((PlaybackActivity)playbackFragment.requireActivity()).updateTouchTime();
         dismissDialog();
         playbackFragment.hideControlsOverlay(false);
         yesPress = false;
-        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(playbackFragment.requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert)
                 .setTitle(playbackFragment.mVideo.title)
                 .setMessage(R.string.msg_idle_timeout)
                 .setPositiveButton(R.string.button_yes, (dialog, which) -> {
-                    ((PlaybackActivity)playbackFragment.getActivity()).updateTouchTime();
+                    ((PlaybackActivity)playbackFragment.requireActivity()).updateTouchTime();
                     yesPress = true;
                  })
                 .setNegativeButton(R.string.button_no,null)
@@ -1158,12 +1202,14 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                         dialogDismiss.onDismiss(dialog);
                     else {
                         dialogDismiss.onDismiss(dialog);
-                        playbackFragment.getActivity().finish();
+                        playbackFragment.requireActivity().finish();
                     }
                 });
         dialogDismiss.enableControls = false;
         mDialog = builder.create();
         mDialog.show();
+        if (mDialog.getWindow() == null)
+            return;
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         mDialog.getWindow().setAttributes(lp);

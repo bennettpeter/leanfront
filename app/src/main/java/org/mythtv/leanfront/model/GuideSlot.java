@@ -2,6 +2,7 @@ package org.mythtv.leanfront.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.ui.GuideFragment;
@@ -30,6 +31,8 @@ public class GuideSlot extends RowSlot{
     private static DateFormat timeFormatter;
     private static DateFormat dateFormatter;
     private static DateFormat dayFormatter;
+    private static final String TAG = "lfe";
+    private static final String CLASS = "GuideSlot";
 
     public GuideSlot(int cellType) {
         super(cellType);
@@ -99,7 +102,7 @@ public class GuideSlot extends RowSlot{
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         return build.toString();
     }

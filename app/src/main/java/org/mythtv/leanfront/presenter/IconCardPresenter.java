@@ -3,13 +3,14 @@ package org.mythtv.leanfront.presenter;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.leanback.widget.Presenter;
 
 import org.mythtv.leanfront.model.RowSlot;
 
 public class IconCardPresenter extends Presenter {
-    private Context mContext;
-    private int mType;
+    private final Context mContext;
+    private final int mType;
 
     public IconCardPresenter(Context context, int type) {
         super();
@@ -17,13 +18,14 @@ public class IconCardPresenter extends Presenter {
         mType = type;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent) {
         return new ViewHolder(new IconCardView(mContext, mType));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, Object item) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, Object item) {
         if (item instanceof RowSlot)
             ((IconCardView)viewHolder.view).updateUi((RowSlot) item);
     }

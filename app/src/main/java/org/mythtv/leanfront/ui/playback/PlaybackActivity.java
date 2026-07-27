@@ -139,14 +139,16 @@ public class PlaybackActivity extends LeanbackActivity {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         updateTouchTime();
         boolean ret = false;
+        if (mPlaybackFragment.getView() == null)
+            return false;
         int w = mPlaybackFragment.getView().getWidth();
         int h = mPlaybackFragment.getView().getHeight();
         float x = ev.getX();
         float y = ev.getY();
-        if (y < h / 8 && x < w / 8) {
+        if (y < h / 8f && x < w / 8f) {
             ret = rewindListener.onTouch(ev);
         }
-        else if (y < h / 8 && x > w * 7 / 8) {
+        else if (y < h / 8f && x > w * 7f / 8f) {
             ret = ffListener.onTouch(ev);
         }
         else {
@@ -200,9 +202,9 @@ public class PlaybackActivity extends LeanbackActivity {
 
             if (keycode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
                 switch (mPlaybackFragment.optRewFF) {
-                    case PlaybackFragment.CMD_REWFF:   newKeyCode = KeyEvent.KEYCODE_MEDIA_FAST_FORWARD; break;
                     case PlaybackFragment.CMD_JUMP:    newKeyCode = KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD; break;
                     case PlaybackFragment.CMD_SKIPCOM: newKeyCode = KeyEvent.KEYCODE_MEDIA_STEP_FORWARD; break;
+                    case PlaybackFragment.CMD_REWFF:
                     default:                           newKeyCode = KeyEvent.KEYCODE_MEDIA_FAST_FORWARD; break;
                 }
             }
@@ -216,9 +218,9 @@ public class PlaybackActivity extends LeanbackActivity {
                 if (mArrowSkipJump || isSeekBar) {
                     overload = true;
                     switch (mPlaybackFragment.optLeftRight) {
-                        case PlaybackFragment.CMD_REWFF:   newKeyCode = KeyEvent.KEYCODE_MEDIA_FAST_FORWARD; break;
                         case PlaybackFragment.CMD_JUMP:    newKeyCode = KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD; break;
                         case PlaybackFragment.CMD_SKIPCOM: newKeyCode = KeyEvent.KEYCODE_MEDIA_STEP_FORWARD; break;
+                        case PlaybackFragment.CMD_REWFF:
                         default:                           newKeyCode = KeyEvent.KEYCODE_MEDIA_FAST_FORWARD; break;
                     }
                 }
@@ -226,9 +228,9 @@ public class PlaybackActivity extends LeanbackActivity {
 
             if (keycode == KeyEvent.KEYCODE_MEDIA_REWIND) {
                 switch (mPlaybackFragment.optRewFF) {
-                    case PlaybackFragment.CMD_REWFF:   newKeyCode = KeyEvent.KEYCODE_MEDIA_REWIND;        break;
                     case PlaybackFragment.CMD_JUMP:    newKeyCode = KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD; break;
                     case PlaybackFragment.CMD_SKIPCOM: newKeyCode = KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD; break;
+                    case PlaybackFragment.CMD_REWFF:
                     default:                           newKeyCode = KeyEvent.KEYCODE_MEDIA_REWIND;        break;
                 }
             }
@@ -242,9 +244,9 @@ public class PlaybackActivity extends LeanbackActivity {
                 if (mArrowSkipJump || isSeekBar) {
                     overload = true;
                     switch (mPlaybackFragment.optLeftRight) {
-                        case PlaybackFragment.CMD_REWFF:   newKeyCode = KeyEvent.KEYCODE_MEDIA_REWIND;        break;
                         case PlaybackFragment.CMD_JUMP:    newKeyCode = KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD; break;
                         case PlaybackFragment.CMD_SKIPCOM: newKeyCode = KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD; break;
+                        case PlaybackFragment.CMD_REWFF:
                         default:                           newKeyCode = KeyEvent.KEYCODE_MEDIA_REWIND;        break;
                     }
                 }
@@ -258,7 +260,7 @@ public class PlaybackActivity extends LeanbackActivity {
                 }
                 else if (mPlaybackFragment.optUpDown != PlaybackFragment.CMD_CONTROLS) {
                     mArrowSkipJump = true;
-                    mPlaybackFragment.tickle(mArrowSkipJump, !mArrowSkipJump);
+                    mPlaybackFragment.tickle(true, false);
                     overload = true;
                     switch (mPlaybackFragment.optUpDown) {
                         case PlaybackFragment.CMD_JUMP:    newKeyCode = KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD; break;
@@ -296,7 +298,7 @@ public class PlaybackActivity extends LeanbackActivity {
                 if (wasVisible && mArrowSkipJump)
                     wasVisible = false;
                 mArrowSkipJump = false;
-                mPlaybackFragment.tickle(false,!mArrowSkipJump);
+                mPlaybackFragment.tickle(false, true);
                 if (!wasVisible)
                     return true;
             }

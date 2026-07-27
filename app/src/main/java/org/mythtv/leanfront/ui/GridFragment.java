@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.app.BrowseSupportFragment;
-import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnChildLaidOutListener;
@@ -47,11 +46,8 @@ import androidx.leanback.widget.VerticalGridPresenter;
 
 import org.mythtv.leanfront.R;
 
-import java.util.Date;
-
 public class GridFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider,
         ManageRecordingsFragment.Paging {
-    private static final String TAG = "GridFragment";
 
     private ObjectAdapter mAdapter;
     private VerticalGridPresenter mGridPresenter;
@@ -60,8 +56,8 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     private OnItemViewClickedListener mOnItemViewClickedListener;
     protected int mSelectedPosition = -1;
     protected boolean isStarted;
-    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
-            new BrowseSupportFragment.MainFragmentAdapter(this);
+    private final BrowseSupportFragment.MainFragmentAdapter<GridFragment> mMainFragmentAdapter =
+            new BrowseSupportFragment.MainFragmentAdapter<>(this);
     // These must be filled in the derived class for use with paging
     protected int numberColumns;
     protected ArrayObjectAdapter mGridAdapter;
@@ -96,25 +92,11 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     }
 
     /**
-     * Returns the grid presenter.
-     */
-    public VerticalGridPresenter getGridPresenter() {
-        return mGridPresenter;
-    }
-
-    /**
      * Sets the object adapter for the fragment.
      */
     public void setAdapter(ObjectAdapter adapter) {
         mAdapter = adapter;
         updateAdapter();
-    }
-
-    /**
-     * Returns the object adapter.
-     */
-    public ObjectAdapter getAdapter() {
-        return mAdapter;
     }
 
     final private OnItemViewSelectedListener mViewSelectedListener =
@@ -141,6 +123,7 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     /**
      * Sets an item selection listener.
      */
+    @SuppressWarnings("unused")
     public void setOnItemViewSelectedListener(OnItemViewSelectedListener listener) {
         mOnItemViewSelectedListener = listener;
     }
@@ -157,11 +140,8 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
                 == null) {
             return;
         }
-        if (!mGridViewHolder.getGridView().hasPreviousViewInSameRow(mSelectedPosition)) {
-            mMainFragmentAdapter.getFragmentHost().showTitleView(true);
-        } else {
-            mMainFragmentAdapter.getFragmentHost().showTitleView(false);
-        }
+        mMainFragmentAdapter.getFragmentHost().showTitleView
+                (!mGridViewHolder.getGridView().hasPreviousViewInSameRow(mSelectedPosition));
     }
 
     /**
@@ -177,6 +157,7 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     /**
      * Returns the item clicked listener.
      */
+    @SuppressWarnings("unused")
     public OnItemViewClickedListener getOnItemViewClickedListener() {
         return mOnItemViewClickedListener;
     }
@@ -229,7 +210,7 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     }
 
     @Override
-    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter<GridFragment> getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 

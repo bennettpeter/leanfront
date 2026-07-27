@@ -74,6 +74,8 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         int [] tasks = taskRunner.getTasks();
         ArrayList<XmlNode> resultsList = taskRunner.getXmlResults();
         XmlNode xml = taskRunner.getXmlResult();
+        // Leasve the switch statement because this is a common pattern for onPostExecute
+        //noinspection SwitchStatementWithTooFewBranches
         switch (tasks[0]) {
             case Video.ACTION_DVR_WSDL:
                 wsdlDone = false;
@@ -91,10 +93,8 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                     if (parameterNode != null)
                         canUpdateRecGroup = true;
                     // Check if AllowReRecord supports Forget History
-                    parameterNode = null;
-                    if (schemaNode != null)
-                        parameterNode = schemaNode.getNode
-                                (new String[]{"AllowReRecord", "complexType", "sequence", "ChanId"}, 0);
+                    parameterNode = schemaNode.getNode
+                            (new String[]{"AllowReRecord", "complexType", "sequence", "ChanId"}, 0);
                     if (parameterNode != null)
                         canForgetHistory = true;
                 }

@@ -60,6 +60,8 @@ public class VideoProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
+        if (context == null)
+            return false;
         mContentResolver = context.getContentResolver();
         mOpenHelper = VideoDbHelper.getInstance(context);
         return true;
@@ -213,7 +215,8 @@ public class VideoProvider extends ContentProvider {
         }
         // Release here becasue we have no control over when or if the cursor is used
         VideoDbHelper.releaseDatabase();
-        retCursor.setNotificationUri(mContentResolver, uri);
+        if (retCursor != null)
+            retCursor.setNotificationUri(mContentResolver, uri);
         return retCursor;
     }
 
@@ -243,23 +246,19 @@ public class VideoProvider extends ContentProvider {
         final Uri returnUri;
         final int match = sUriMatcher.match(uri);
 
-        switch (match) {
-            case VIDEO: {
-                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-                if (db == null)
-                    return null;
-                long _id = db.insert(
-                        VideoContract.VideoEntry.TABLE_NAME, null, values);
-                if (_id > 0) {
-                    returnUri = VideoContract.VideoEntry.buildVideoUri(_id);
-                } else {
-                    throw new SQLException("Failed to insert row into " + uri);
-                }
-                break;
+        if (match == VIDEO) {
+            SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+            if (db == null)
+                return null;
+            long _id = db.insert(
+                    VideoContract.VideoEntry.TABLE_NAME, null, values);
+            if (_id > 0) {
+                returnUri = VideoContract.VideoEntry.buildVideoUri(_id);
+            } else {
+                throw new SQLException("Failed to insert row into " + uri);
             }
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
+        } else {
+            throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         VideoDbHelper.releaseDatabase();
         mContentResolver.notifyChange(uri, null);
@@ -274,19 +273,15 @@ public class VideoProvider extends ContentProvider {
             throw new UnsupportedOperationException("Cannot delete without selection specified.");
         }
 
-        switch (sUriMatcher.match(uri)) {
-            case VIDEO: {
-                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-                if (db == null)
-                    return 0;
+        if (sUriMatcher.match(uri) == VIDEO) {
+            SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+            if (db == null)
+                return 0;
 
-                rowsDeleted = db.delete(
-                        VideoContract.VideoEntry.TABLE_NAME, selection, selectionArgs);
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
+            rowsDeleted = db.delete(
+                    VideoContract.VideoEntry.TABLE_NAME, selection, selectionArgs);
+        } else {
+            throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         VideoDbHelper.releaseDatabase();
         if (rowsDeleted != 0) {
@@ -301,18 +296,14 @@ public class VideoProvider extends ContentProvider {
             String[] selectionArgs) {
         final int rowsUpdated;
 
-        switch (sUriMatcher.match(uri)) {
-            case VIDEO: {
-                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-                if (db == null)
-                    return 0;
-                rowsUpdated = db.update(
-                        VideoContract.VideoEntry.TABLE_NAME, values, selection, selectionArgs);
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
+        if (sUriMatcher.match(uri) == VIDEO) {
+            SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+            if (db == null)
+                return 0;
+            rowsUpdated = db.update(
+                    VideoContract.VideoEntry.TABLE_NAME, values, selection, selectionArgs);
+        } else {
+            throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         VideoDbHelper.releaseDatabase();
         if (rowsUpdated != 0) {
@@ -324,33 +315,29 @@ public class VideoProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        switch (sUriMatcher.match(uri)) {
-            case VIDEO: {
-                final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-                if (db == null)
-                    return 0;
-                int returnCount = 0;
+        if (sUriMatcher.match(uri) == VIDEO) {
+            final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+            if (db == null)
+                return 0;
+            int returnCount = 0;
 
-                db.beginTransaction();
-                try {
-                    for (ContentValues value : values) {
-                        long _id = db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
-                                null, value, SQLiteDatabase.CONFLICT_REPLACE);
-                        if (_id != -1) {
-                            returnCount++;
-                        }
+            db.beginTransaction();
+            try {
+                for (ContentValues value : values) {
+                    long _id = db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
+                            null, value, SQLiteDatabase.CONFLICT_REPLACE);
+                    if (_id != -1) {
+                        returnCount++;
                     }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
                 }
-                VideoDbHelper.releaseDatabase();
-                mContentResolver.notifyChange(uri, null);
-                return returnCount;
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
             }
-            default: {
-                return super.bulkInsert(uri, values);
-            }
+            VideoDbHelper.releaseDatabase();
+            mContentResolver.notifyChange(uri, null);
+            return returnCount;
         }
+        return super.bulkInsert(uri, values);
     }
 }

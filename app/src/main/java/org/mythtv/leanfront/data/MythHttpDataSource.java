@@ -44,7 +44,7 @@ import java.util.Map;
 public class MythHttpDataSource extends BaseDataSource implements DataSource {
 
     private DataSpec mDataSpec;
-    private HttpDataSource mHttpDataSource;
+    private final HttpDataSource mHttpDataSource;
     private long mTotalLength;
     private long mCurrentPos;
     private static final String TAG = "lfe";
@@ -56,7 +56,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         Map<String, String> defaultRequestProperties = new HashMap<>();
         defaultRequestProperties.put("accept-encoding","identity");
         String auth = BackendCache.getInstance().authorization;
-        if (auth != null && auth.length() > 0)
+        if (auth != null && !auth.isEmpty())
             defaultRequestProperties.put("Authorization",auth);
         defaultRequestProperties.put("Connection","close");
         mHttpDataSource = new OkHttpDataSource.Factory(MyApplication.httpClient)
@@ -77,7 +77,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                 .setKey(dataSpec.key)
                 .setFlags(dataSpec.flags)
                 .build();
-        long leng = 0;
+        long leng;
         try {
             leng = mHttpDataSource.open(mDataSpec);
         } catch (HttpDataSource.InvalidResponseCodeException e) {
@@ -116,7 +116,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                     .build();
             mHttpDataSource.close();
 
-            long leng2 = 0;
+            long leng2;
             try {
                 try {
                     Thread.sleep(5000);
@@ -163,12 +163,8 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         mHttpDataSource.close();
     }
 
-    public long getCurrentPos() {
-        return mCurrentPos;
-    }
-
     public static class Factory implements DataSource.Factory {
-        private String mUserAgent;
+        private final String mUserAgent;
 
         public Factory(String userAgent) {
             mUserAgent = userAgent;

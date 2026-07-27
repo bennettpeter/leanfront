@@ -24,6 +24,7 @@
 
 package org.mythtv.leanfront.presenter;
 
+import androidx.annotation.NonNull;
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 
 import org.mythtv.leanfront.MyApplication;
@@ -34,6 +35,7 @@ import org.mythtv.leanfront.model.Video;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -45,9 +47,11 @@ import java.util.Objects;
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
     private ViewHolder mViewHolder;
     private Video mVideo;
+    private static final String TAG = "lfe";
+    private static final String CLASS = "DetailsDescriptionPresenter";
 
     @Override
-    protected void onBindDescription(ViewHolder viewHolder, Object item) {
+    protected void onBindDescription(@NonNull ViewHolder viewHolder, @NonNull Object item) {
         mVideo = (Video) item;
         mViewHolder = viewHolder;
         setupDescription();
@@ -89,14 +93,17 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                 // Date Recorded
                 SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
                 DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat(context);
-                String recDate = null;
+                String recDate = "";
                 if (mVideo.starttime != null) {
                     Date date = dbFormat.parse(mVideo.starttime + "+0000");
-                    recDate = outFormat.format(date);
+                    if (date != null)
+                        recDate = outFormat.format(date);
                     description.append(recDate);
                 }
                 // Length of recording
-                long duration = Long.parseLong(mVideo.duration, 10);
+                long duration = 0;
+                if (mVideo.duration != null)
+                    duration = Long.parseLong(mVideo.duration, 10);
                 duration = duration / 60000;
                 if (duration > 0) {
                     if (description.length() > 0)
@@ -104,7 +111,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                     description.append(duration).append(" ").append(context.getString(R.string.video_minutes));
                 }
                 // Channel
-                if (mVideo.channel != null && mVideo.channel.length()>0)
+                if (mVideo.channel != null && !mVideo.channel.isEmpty())
                     description.append("  ").append(mVideo.channel);
                 // Original Air date
                 dbFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -113,14 +120,16 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                         description.append("   [").append(mVideo.airdate.substring(0, 4)).append("]");
                     else {
                         Date date = dbFormat.parse(mVideo.airdate);
-                        String origDate = outFormat.format(date);
+                        String origDate = "";
+                        if (date != null)
+                            origDate = outFormat.format(date);
                         if (!Objects.equals(origDate,recDate))
-                            description.append("   [").append(outFormat.format(date)).append("]");
+                            description.append("   [").append(origDate).append("]");
                     }
                 }
                 description.append('\n');
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
             }
             description
                     .append(mVideo.description);
@@ -141,7 +150,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                             .append(context.getString(R.string.video_filesize)).append(":\t")
                             .append(fmt.format(((double) mVideo.filesize) / 1000000.0))
                             .append(" MB");
-                if (mVideo.videoPropNames != null && mVideo.videoPropNames.length() > 0
+                if (mVideo.videoPropNames != null && !mVideo.videoPropNames.isEmpty()
                     && !mVideo.videoPropNames.equals("UNKNOWN")) {
                     description.append("\n")
                             .append(context.getString(R.string.video_props)).append(":\t")
@@ -216,19 +225,21 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                 .append(context.getString(R.string.details_starttime)).append(":\t");
         try {
             Date date = dbFormat.parse(rec.getString("StartTs")+"+0000");
-            description.append(dateFormat.format(date))
-                    .append(' ').append(timeFormat.format(date));
+            if (date != null)
+                description.append(dateFormat.format(date))
+                        .append(' ').append(timeFormat.format(date));
         } catch(Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         description.append("\n")
                 .append(context.getString(R.string.details_endtime)).append(":\t");
         try {
             Date date = dbFormat.parse(rec.getString("EndTs")+"+0000");
-            description.append(dateFormat.format(date))
-                    .append(' ').append(timeFormat.format(date));
+            if (date != null)
+                description.append(dateFormat.format(date))
+                        .append(' ').append(timeFormat.format(date));
         } catch(Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         description.append("\n")
                 .append(context.getString(R.string.details_audioprops)).append(":\t")
@@ -253,7 +264,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
             }
             description.append("\n");
             String role = cast.getString("CharacterName");
-            if (role == null || role.length() == 0)
+            if (role == null || role.isEmpty())
                 role = cast.getString("TranslatedRole");
             description.append(role).append(":\t")
                     .append(cast.getString("Name"));
@@ -263,7 +274,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
     private void addVidDetails(Context context, XmlNode xml, StringBuilder description) {
         SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
         DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
+//        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         description.append("\n")
                 .append(context.getString(R.string.details_genre)).append(":\t");
         XmlNode genre = xml.getNode("Genres").getNode("GenreList").getNode("Genre");
@@ -279,9 +290,10 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                 .append(context.getString(R.string.details_adddate)).append(":\t");
         try {
             Date date = dbFormat.parse(xml.getString("AddDate") + "+0000");
-            description.append(dateFormat.format(date));
+            if (date != null)
+                description.append(dateFormat.format(date));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         description.append("\n")
                 .append(context.getString(R.string.details_director)).append(":\t")

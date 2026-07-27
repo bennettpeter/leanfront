@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.app.SearchSupportFragment;
@@ -94,8 +95,8 @@ public class SearchFragment extends SearchSupportFragment
     private int mSearchLoaderId = 1;
     private boolean mResultsFound = false;
     private boolean mGuideInProgress = false;
-    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
-            new BrowseSupportFragment.MainFragmentAdapter(this);
+    private final BrowseSupportFragment.MainFragmentAdapter<Fragment> mMainFragmentAdapter =
+            new BrowseSupportFragment.MainFragmentAdapter<>(this);
     public int type;
     public static final int TYPE_SEARCH = 1;
     public static final int TYPE_NEWTITLES = 2;
@@ -149,11 +150,12 @@ public class SearchFragment extends SearchSupportFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (type == TYPE_NEWTITLES) {
-            View view = getView().findViewById(R.id.lb_search_bar_items);
+        View mainView = getView();
+        if (mainView != null && type == TYPE_NEWTITLES) {
+            View view = mainView.findViewById(R.id.lb_search_bar_items);
             if (view != null)
                 view.setVisibility(View.GONE);
-            view = getView().findViewById(R.id.lb_search_bar_speech_orb);
+            view = mainView.findViewById(R.id.lb_search_bar_speech_orb);
             if (view != null)
                 view.setVisibility(View.GONE);
         }
@@ -162,8 +164,6 @@ public class SearchFragment extends SearchSupportFragment
     /**
      * onQueryTextChange
      * Return false because we do not want to search after each keystroke
-     * @param newQuery
-     * @return
      */
 
     @Override
@@ -213,7 +213,9 @@ public class SearchFragment extends SearchSupportFragment
     }
 
     public void focusOnSearch() {
-        getView().findViewById(R.id.lb_search_bar).requestFocus();
+        View mainView = getView();
+        if (mainView != null)
+            mainView.findViewById(R.id.lb_search_bar).requestFocus();
     }
 
     @NonNull
@@ -244,7 +246,7 @@ public class SearchFragment extends SearchSupportFragment
         orderby.append(", ").append(VideoContract.VideoEntry.COLUMN_RECORDEDID).append(" ")
                 .append(ascdesc);
         return new CursorLoader(
-                getActivity(),
+                requireActivity(),
                 VideoContract.VideoEntry.CONTENT_URI,
                 null, // Return all fields.
                 VideoContract.VideoEntry.COLUMN_TITLE + " LIKE ? OR " +
@@ -352,7 +354,7 @@ public class SearchFragment extends SearchSupportFragment
     }
 
     @Override
-    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter<Fragment> getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 
@@ -397,11 +399,14 @@ public class SearchFragment extends SearchSupportFragment
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                 intent.putExtra(PlaybackActivity.VIDEO, video);
 
+                View view = ((ImageCardView) itemViewHolder.view).getMainImageView();
+                if (view == null)
+                    return;
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                        requireActivity(),
+                        view,
                         PlaybackActivity.SHARED_ELEMENT_NAME).toBundle();
-                getActivity().startActivity(intent, bundle);
+                requireActivity().startActivity(intent, bundle);
             } else if (item instanceof GuideSlot) {
                 GuideSlot card = (GuideSlot) item;
                 Intent intent = new Intent(getContext(), EditScheduleActivity.class);
@@ -416,8 +421,8 @@ public class SearchFragment extends SearchSupportFragment
 
     private class SelectionSetter implements Runnable {
 
-        private int selectedRowNum;
-        private int selectedItemNum;
+        private final int selectedRowNum;
+        private final int selectedItemNum;
 
         public SelectionSetter(int selectedRowNum, int selectedItemNum) {
             this.selectedRowNum = selectedRowNum;

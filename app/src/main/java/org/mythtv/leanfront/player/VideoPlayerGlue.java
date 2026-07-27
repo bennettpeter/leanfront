@@ -30,8 +30,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.media.PlaybackTransportControlGlue;
@@ -83,7 +83,11 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         void onPivot();
         void onRewind();
         void onFastForward();
+        // unused as we do not currently have OSD icons for this
+        @SuppressWarnings("unused")
         void onJumpForward();
+        // unused as we do not currently have OSD icons for this
+        @SuppressWarnings("unused")
         void onJumpBack();
         void onSpeed();
         void onAudioTrack();
@@ -101,29 +105,28 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     }
 
     private final OnActionClickedListener mActionListener;
-    private WidgetAccess.MySelectedListener mActionSelectedListener = new SelectedListener();
-
-    private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
-    private PlaybackControlsRow.SkipNextAction mSkipNextAction;
-    private PlaybackControlsRow.FastForwardAction mFastForwardAction;
-    private PlaybackControlsRow.RewindAction mRewindAction;
-    private PlaybackControlsRow.ClosedCaptioningAction mClosedCaptioningAction;
-    private MyAction mZoomAction;
-    private MyAction mPivotAction;
-    private MyAction mAspectAction;
-    private MyAction mSpeedAction;
-    private MyAction mAudioTrackAction;
-    private MyAction mAudioSyncAction;
-    private MyAction mAutoPlayAction;
-    private MyAction mBookmarkAction;
+    private final WidgetAccess.MySelectedListener mActionSelectedListener = new SelectedListener();
+    private final PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
+    private final PlaybackControlsRow.SkipNextAction mSkipNextAction;
+    private final PlaybackControlsRow.FastForwardAction mFastForwardAction;
+    private final PlaybackControlsRow.RewindAction mRewindAction;
+    private final PlaybackControlsRow.ClosedCaptioningAction mClosedCaptioningAction;
+    private final MyAction mZoomAction;
+    private final MyAction mPivotAction;
+    private final MyAction mAspectAction;
+    private final MyAction mSpeedAction;
+    private final MyAction mAudioTrackAction;
+    private final MyAction mAudioSyncAction;
+    private final MyAction mAutoPlayAction;
+    private final MyAction mBookmarkAction;
     public final MyAction mMenuAction;
-    private MyAction mCommSkipAction;
+    private final MyAction mCommSkipAction;
     private final MyAction mRecordAction;
     private boolean mActionsVisible;
     // Skip means go to next or previous track
     // Skip is disallowed when playing Live TV
-    private boolean mAllowSkip;
-    private boolean mLiveTV;
+    private final boolean mAllowSkip;
+    private final boolean mLiveTV;
     private long mSavedCurrentPosition = -1;
     private long mSavedDuration = -1;
     private final boolean isTV;
@@ -132,8 +135,8 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     private boolean enableControls = true;
     private long nextCommBreakMs = Long.MAX_VALUE;
     private long endCommBreakMs = Long.MAX_VALUE;
-    private PlaybackActivity activity;
-    private long idleTimeoutMillis;
+    private final PlaybackActivity activity;
+    private final long idleTimeoutMillis;
     private long playbackStartTime;
     private long recordAdjustment;
     private boolean isIncreasing;
@@ -179,11 +182,11 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         mRecordAction = new MyAction(context,Video.ACTION_RECORD,
                 new int[] {R.drawable.ic_record, R.drawable.ic_record_active},
                 new int[] {R.string.button_record, R.string.button_record});
-        idleTimeoutMillis = Settings.getInt("pref_idle_timeout") * 60000;
+        idleTimeoutMillis = (long)Settings.getInt("pref_idle_timeout") * 60000L;
     }
 
     @Override
-    protected void onCreatePrimaryActions(ArrayObjectAdapter adapter) {
+    protected void onCreatePrimaryActions(@NonNull ArrayObjectAdapter adapter) {
         // Order matters, super.onCreatePrimaryActions() will create the play / pause action.
         // Will display as follows:
         // play/pause, previous, rewind, fast forward, next
@@ -205,7 +208,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     }
 
     @Override
-    protected void onCreateSecondaryActions(ArrayObjectAdapter adapter) {
+    protected void onCreateSecondaryActions(@NonNull ArrayObjectAdapter adapter) {
         super.onCreateSecondaryActions(adapter);
         adapter.add(mClosedCaptioningAction);
         adapter.add(mZoomAction);
@@ -238,6 +241,8 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
             if (mActionsVisible)
                 return;
             PlaybackControlsRow row =  getControlsRow();
+            if (row == null)
+                return;
             ArrayObjectAdapter adapter = (ArrayObjectAdapter) row.getPrimaryActionsAdapter();
             adapter.clear();
             onCreatePrimaryActions(adapter);
@@ -253,6 +258,8 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
             if (!mActionsVisible)
                 return;
             PlaybackControlsRow row =  getControlsRow();
+            if (row == null)
+                return;
             ArrayObjectAdapter adapter = (ArrayObjectAdapter) row.getPrimaryActionsAdapter();
             adapter.clear();
             adapter.notifyArrayItemRangeChanged(0,0);
@@ -273,7 +280,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
     }
 
     @Override
-    public void onActionClicked(Action action) {
+    public void onActionClicked(@NonNull Action action) {
         if (shouldDispatchAction(action)) {
             dispatchAction(action);
             return;
@@ -303,7 +310,7 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
                 || action == mRecordAction;
     }
 
-    private void dispatchAction(Action action) {
+    private void dispatchAction(@NonNull Action action) {
         // Primary actions are handled manually.
         if (action == mRewindAction) {
             mActionListener.onRewind();
@@ -333,16 +340,21 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
             mActionListener.onRecord();
             mRecordAction.setIndex(1);
             PlaybackControlsRow row =  getControlsRow();
+            if (row == null)
+                return;
             ArrayObjectAdapter adapter = (ArrayObjectAdapter) row.getPrimaryActionsAdapter();
             notifyActionChanged(mRecordAction, adapter);
         } else if (action instanceof PlaybackControlsRow.MultiAction) {
             PlaybackControlsRow.MultiAction multiAction = (PlaybackControlsRow.MultiAction) action;
             multiAction.nextIndex();
+            PlaybackControlsRow row =  getControlsRow();
+            if (row == null)
+                return;
             // Notify adapter of action changes to handle secondary actions, such as, thumbs up/down
             // and repeat.
             notifyActionChanged(
                     multiAction,
-                    (ArrayObjectAdapter) getControlsRow().getSecondaryActionsAdapter());
+                    (ArrayObjectAdapter) row.getSecondaryActionsAdapter());
         }
         if (action == mAutoPlayAction) {
             if (mAutoPlayAction.getIndex() == 1
@@ -404,15 +416,6 @@ public class VideoPlayerGlue extends PlaybackTransportControlGlue<LeanbackPlayer
         mActionListener.onPlayCompleted(mAutoPlayAction);
         playCompleted = true;
         super.onPlayCompleted();
-    }
-
-    static int getIconHighlightColor(Context context) {
-        TypedValue outValue = new TypedValue();
-        if (context.getTheme().resolveAttribute(R.attr.playbackControlsIconHighlightColor,
-                outValue, true)) {
-            return outValue.data;
-        }
-        return context.getResources().getColor(R.color.lb_playback_icon_highlight_no_theme);
     }
 
     @Override

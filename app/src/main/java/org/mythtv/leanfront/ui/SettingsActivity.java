@@ -68,7 +68,7 @@ public class SettingsActivity extends FragmentActivity
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
         FragmentManager fm = getSupportFragmentManager();
-        if (fm == null || fm.isDestroyed())
+        if (fm.isDestroyed())
             return;
         mPlayGroupList = XmlNode.getStringList(taskRunner.getXmlResult()); // ACTION_GETPLAYGROUPLIST
         GuidedStepSupportFragment.addAsRoot(this,

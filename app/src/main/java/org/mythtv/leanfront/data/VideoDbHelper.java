@@ -49,7 +49,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
 
     private static int usageCount = 0;
     private static boolean dbLocked = false;
-    private static Object sync = new Object();
+    private static final Object sync = new Object();
 
     private VideoDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -72,7 +72,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public SQLiteDatabase getReadableDatabase() {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         synchronized (sync) {
             if (dbLocked)
                 return null;
@@ -84,7 +84,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public SQLiteDatabase getWritableDatabase() {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         synchronized (sync) {
             if (dbLocked)
                 return null;

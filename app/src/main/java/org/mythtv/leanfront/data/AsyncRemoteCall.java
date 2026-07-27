@@ -21,6 +21,7 @@ package org.mythtv.leanfront.data;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.JsonReader;
@@ -31,11 +32,9 @@ import androidx.annotation.Nullable;
 
 import org.mythtv.leanfront.MyApplication;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -86,7 +85,7 @@ public class AsyncRemoteCall implements Runnable {
         try {
             runTasks();
         } catch (Throwable e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         finally {
             if (listener != null)
@@ -97,7 +96,7 @@ public class AsyncRemoteCall implements Runnable {
         }
     }
 
-    protected Void runTasks() {
+    protected void runTasks() {
         this.tasks = new int[inTasks.length];
         for (int count = 0; count < tasks.length; count++) {
             int task = inTasks[count];
@@ -115,17 +114,11 @@ public class AsyncRemoteCall implements Runnable {
                     parser = new TvDbParser(task, stringParameter);
                     break;
                 default:
-                    return null;
+                    return;
             }
             parser.fetch(null);
             results.add(parser);
         }
-        return null;
-    }
-
-    protected void onPostExecute(Void result) {
-        if (listener != null)
-            listener.onPostExecute(this);
     }
 
     public static class TvEntry {
@@ -255,60 +248,55 @@ public class AsyncRemoteCall implements Runnable {
             //   ],
             //   "**OTHER TAGS**": XXXX,
             // }
-            JsonReader reader = null;
-            try {
-                reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            try (JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 reader.beginObject();
                 doc:
-                for (;;) {
+                for (; ; ) {
                     switch (reader.peek()) {
                         case NAME:
                             String name = reader.nextName();
-                            switch (name) {
-                                case "results":
-                                    reader.beginArray();
-                                    results:
-                                    for (;;) {
-                                        if (reader.peek() == JsonToken.END_ARRAY) {
-                                            reader.endArray();
-                                            break results;
+                            if (name.equals("results")) {
+                                reader.beginArray();
+                                for (; ; ) {
+                                    if (reader.peek() == JsonToken.END_ARRAY) {
+                                        reader.endArray();
+                                        break;
+                                    }
+                                    reader.beginObject();
+                                    TvEntry entry = new TvEntry();
+                                    entry:
+                                    for (; ; ) {
+                                        switch (reader.peek()) {
+                                            case NAME:
+                                                String name1 = reader.nextName();
+                                                switch (name1) {
+                                                    case "id":
+                                                        entry.id = reader.nextInt();
+                                                        break;
+                                                    case "name":
+                                                    case "title":
+                                                        entry.name = reader.nextString();
+                                                        break;
+                                                    case "first_air_date":
+                                                    case "release_date":
+                                                        entry.firstAirDate = reader.nextString();
+                                                        break;
+                                                    case "overview":
+                                                        entry.overview = reader.nextString();
+                                                        break;
+                                                    default:
+                                                        reader.skipValue();
+                                                }
+                                                break;
+                                            case END_OBJECT:
+                                                entries.add(entry);
+                                                reader.endObject();
+                                                break entry;
                                         }
-                                        reader.beginObject();
-                                        TvEntry entry = new TvEntry();
-                                        entry:
-                                        for (;;) {
-                                            switch (reader.peek()) {
-                                                case NAME:
-                                                    String name1 = reader.nextName();
-                                                    switch (name1) {
-                                                        case "id":
-                                                            entry.id = reader.nextInt();
-                                                            break;
-                                                        case "name":
-                                                        case "title":
-                                                            entry.name = reader.nextString();
-                                                            break;
-                                                        case "first_air_date":
-                                                        case "release_date":
-                                                            entry.firstAirDate = reader.nextString();
-                                                            break;
-                                                        case "overview":
-                                                            entry.overview = reader.nextString();
-                                                            break;
-                                                        default:
-                                                            reader.skipValue();
-                                                    }
-                                                    break;
-                                                case END_OBJECT:
-                                                    entries.add(entry);
-                                                    reader.endObject();
-                                                    break entry;
-                                            }
-                                        } // entry
-                                    } // results
-                                    break;
-                                default:
-                                    reader.skipValue();
+                                    } // entry
+                                } // results
+                            } else {
+                                reader.skipValue();
                             }
                             break;
                         case END_OBJECT:
@@ -320,15 +308,6 @@ public class AsyncRemoteCall implements Runnable {
             } catch (IOException | IllegalStateException e) {
                 Log.e(TAG, CLASS + " Exception parsing: " + parameter, e);
             }
-            finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception closing reader: " + parameter, e);
-                    }
-                }
-            } // finally
         } // parseStream
     } // TmdbParser
 
@@ -359,11 +338,9 @@ public class AsyncRemoteCall implements Runnable {
             blc.header("Authorization", "Bearer " + bearerToken);
         }
 
-        int getBearerToken() {
-            int ret = 0;
+        void getBearerToken() {
             Response response = null;
             InputStream is = null;
-            OutputStream os = null;
             String urlString = BASEURL + "login";
             bearerToken = null;
             try {
@@ -376,7 +353,7 @@ public class AsyncRemoteCall implements Runnable {
                 final String jsonInputString = "{ \"apikey\": \"" + APIKEY + "\" }";
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
                 MediaType type = MediaType.parse("application/json; charset=utf-8");
-                RequestBody body = RequestBody.create(type,input);
+                RequestBody body = RequestBody.create(input, type);
                 builder.post(body);
                 Request request = builder.build();
                 Call call = MyApplication.apiHttpClient.newCall(request);
@@ -390,7 +367,6 @@ public class AsyncRemoteCall implements Runnable {
                 parseLogin(is);
             } catch(IOException e) {
                 Log.e(TAG, CLASS + " Exception accessing: " + urlString, e);
-                ret = response.code();
             } finally {
                 if (response != null)
                     response.close();
@@ -402,7 +378,6 @@ public class AsyncRemoteCall implements Runnable {
                     }
                 }
             }
-            return ret;
         }
 
         @Override
@@ -429,39 +404,34 @@ public class AsyncRemoteCall implements Runnable {
             //     }
             // }
 
-            JsonReader reader = null;
-            try {
-                reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            try (JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 reader.beginObject();
                 results:
-                for (;;) {
+                for (; ; ) {
                     switch (reader.peek()) {
                         case NAME:      // status or data
                             String name1 = reader.nextName();
-                            switch (name1) {
-                                case "data":
-                                    reader.beginObject();
-                                    data:
-                                    for (;;) {
-                                        switch (reader.peek()) {
-                                            case NAME:      // token
-                                                String name2 = reader.nextName();
-                                                switch (name2) {
-                                                    case "token":
-                                                        bearerToken = reader.nextString();
-                                                        break;
-                                                    default:
-                                                        reader.skipValue();     // not expected
-                                                }
-                                                break;
-                                            case END_OBJECT:        // end of data tage
-                                                reader.endObject();
-                                                break data;
-                                        }
-                                    } // data
-                                    break;
-                                default:        // status
-                                    reader.skipValue();
+                            // status
+                            if (name1.equals("data")) {
+                                reader.beginObject();
+                                data:
+                                for (; ; ) {
+                                    switch (reader.peek()) {
+                                        case NAME:      // token
+                                            String name2 = reader.nextName();
+                                            if (name2.equals("token")) {
+                                                bearerToken = reader.nextString();
+                                            } else {
+                                                reader.skipValue();     // not expected
+                                            }
+                                            break;
+                                        case END_OBJECT:        // end of data tage
+                                            reader.endObject();
+                                            break data;
+                                    }
+                                } // data
+                            } else {
+                                reader.skipValue();
                             }
                             break;
                         case END_OBJECT:    // end of main object
@@ -472,15 +442,6 @@ public class AsyncRemoteCall implements Runnable {
             } catch (IOException | IllegalStateException e) {
                 Log.e(TAG, CLASS + " Exception parsing: " + parameter, e);
             }
-            finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception closing reader: " + parameter, e);
-                    }
-                }
-            } // finally
         } // parseLogin
 
         @Override
@@ -516,72 +477,67 @@ public class AsyncRemoteCall implements Runnable {
             //    ]
             // }
 
-            JsonReader reader = null;
-            try {
-                reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            try (JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 reader.beginObject();
                 results:
-                for (;;) {
-                    entry:
-                    for (;;) {
+                for (; ; ) {
+                    for (; ; ) {
                         switch (reader.peek()) {
                             case NAME:
                                 String name1 = reader.nextName();
-                                switch (name1) {
-                                    case "data":
-                                        reader.beginArray();            // start of "data"
-                                        shows:
-                                        for (;;) {                      // shows
-                                            switch (reader.peek()) {
-                                                case BEGIN_OBJECT:      // start a show entry
-                                                    reader.beginObject();
-                                                    TvEntry show = new TvEntry();
-                                                    show:
-                                                    for (;;) {          // fields in a show
-                                                        switch (reader.peek()) {
-                                                            case NAME:
-                                                                String name2 = reader.nextName();
-                                                                switch (name2) {
-                                                                    case "tvdb_id":
-                                                                        show.id = reader.nextInt();
-                                                                        break;
-                                                                    case "name":
-                                                                        show.name = reader.nextString();
-                                                                        break;
-                                                                    case "first_air_time":
-                                                                        show.firstAirDate = reader.nextString();
-                                                                        break;
-                                                                    case "overview":
-                                                                        Spanned spanned;
-                                                                        if (android.os.Build.VERSION.SDK_INT >= 24)
-                                                                            spanned = Html.fromHtml(reader.nextString(), Html.FROM_HTML_MODE_COMPACT);
-                                                                        else
-                                                                            spanned = Html.fromHtml(reader.nextString());
-                                                                        show.overview = spanned.toString();
-                                                                        break;
-                                                                    case "type":
-                                                                        show.type = reader.nextString();
-                                                                        break;
-                                                                    default:
-                                                                        reader.skipValue();
-                                                                }
-                                                                break;
-                                                            case END_OBJECT:    // end show entry
-                                                                entries.add(show);
-                                                                reader.endObject();
-                                                                break show;
-                                                        }
-                                                    } // show
-                                                    break;
-                                                case END_ARRAY:     // end show array
-                                                    reader.endArray();
-                                                    break shows;
-                                            }
-                                        }  // shows
-                                        break;
-                                    default:
-                                        reader.skipValue();  // status or other top-level entries
-                                        break;
+                                if (name1.equals("data")) {
+                                    reader.beginArray();            // start of "data"
+                                    shows:
+                                    for (; ; ) {                      // shows
+                                        switch (reader.peek()) {
+                                            case BEGIN_OBJECT:      // start a show entry
+                                                reader.beginObject();
+                                                TvEntry show = new TvEntry();
+                                                //noinspection TextLabelInSwitchStatement
+                                                show:
+                                                for (; ; ) {          // fields in a show
+                                                    switch (reader.peek()) {
+                                                        case NAME:
+                                                            String name2 = reader.nextName();
+                                                            switch (name2) {
+                                                                case "tvdb_id":
+                                                                    show.id = reader.nextInt();
+                                                                    break;
+                                                                case "name":
+                                                                    show.name = reader.nextString();
+                                                                    break;
+                                                                case "first_air_time":
+                                                                    show.firstAirDate = reader.nextString();
+                                                                    break;
+                                                                case "overview":
+                                                                    Spanned spanned;
+                                                                    if (Build.VERSION.SDK_INT >= 24)
+                                                                        spanned = Html.fromHtml(reader.nextString(), Html.FROM_HTML_MODE_COMPACT);
+                                                                    else
+                                                                        spanned = Html.fromHtml(reader.nextString());
+                                                                    show.overview = spanned.toString();
+                                                                    break;
+                                                                case "type":
+                                                                    show.type = reader.nextString();
+                                                                    break;
+                                                                default:
+                                                                    reader.skipValue();
+                                                            }
+                                                            break;
+                                                        case END_OBJECT:    // end show entry
+                                                            entries.add(show);
+                                                            reader.endObject();
+                                                            break show;
+                                                    }
+                                                } // show
+                                                break;
+                                            case END_ARRAY:     // end show array
+                                                reader.endArray();
+                                                break shows;
+                                        }
+                                    }  // shows
+                                } else {
+                                    reader.skipValue();  // status or other top-level entries
                                 }
                                 break;
                             case END_OBJECT:
@@ -593,15 +549,6 @@ public class AsyncRemoteCall implements Runnable {
             } catch (IOException | IllegalStateException e) {
                 Log.e(TAG, CLASS + " Exception parsing: " + parameter, e);
             }
-            finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception closing reader: " + parameter, e);
-                    }
-                }
-            } // finally
         } // parseStream
     } // TvDbParser
 
@@ -646,62 +593,57 @@ public class AsyncRemoteCall implements Runnable {
             //       **MORE_RESULTS** ...
             //     }
             // ]
-            JsonReader reader = null;
-            try {
-                reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            try (JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 reader.beginArray();
-                results:
-                for (;;) {
+                for (; ; ) {
                     if (reader.peek() == JsonToken.END_ARRAY) {
                         reader.endArray();
-                        break results;
+                        break;
                     }
                     reader.beginObject();
                     entry:
-                    for (;;) {
+                    for (; ; ) {
                         switch (reader.peek()) {
                             case NAME:
                                 String name1 = reader.nextName();
-                                switch (name1) {
-                                    case "show":
-                                        TvEntry show = new TvEntry();
-                                        reader.beginObject();
-                                        show:
-                                        for (;;) {
-                                            switch (reader.peek()) {
-                                                case NAME:
-                                                    String name2 = reader.nextName();
-                                                    switch (name2) {
-                                                        case "id":
-                                                            show.id = reader.nextInt();
-                                                            break;
-                                                        case "name":
-                                                            show.name = reader.nextString();
-                                                            break;
-                                                        case "premiered":
-                                                            show.firstAirDate = reader.nextString();
-                                                            break;
-                                                        case "summary":
-                                                            Spanned spanned;
-                                                            if (android.os.Build.VERSION.SDK_INT >= 24)
-                                                                spanned = Html.fromHtml(reader.nextString(),Html.FROM_HTML_MODE_COMPACT);
-                                                            else
-                                                                spanned =  Html.fromHtml(reader.nextString());
-                                                            show.overview = spanned.toString();
-                                                            break;
-                                                        default:
-                                                            reader.skipValue();
-                                                    }
-                                                    break;
-                                                case END_OBJECT:
-                                                    entries.add(show);
-                                                    reader.endObject();
-                                                    break show;
-                                            }
-                                        } // show
-                                        break;
-                                    default:
-                                        reader.skipValue();
+                                if (name1.equals("show")) {
+                                    TvEntry show = new TvEntry();
+                                    reader.beginObject();
+                                    show:
+                                    for (; ; ) {
+                                        switch (reader.peek()) {
+                                            case NAME:
+                                                String name2 = reader.nextName();
+                                                switch (name2) {
+                                                    case "id":
+                                                        show.id = reader.nextInt();
+                                                        break;
+                                                    case "name":
+                                                        show.name = reader.nextString();
+                                                        break;
+                                                    case "premiered":
+                                                        show.firstAirDate = reader.nextString();
+                                                        break;
+                                                    case "summary":
+                                                        Spanned spanned;
+                                                        if (Build.VERSION.SDK_INT >= 24)
+                                                            spanned = Html.fromHtml(reader.nextString(), Html.FROM_HTML_MODE_COMPACT);
+                                                        else
+                                                            spanned = Html.fromHtml(reader.nextString());
+                                                        show.overview = spanned.toString();
+                                                        break;
+                                                    default:
+                                                        reader.skipValue();
+                                                }
+                                                break;
+                                            case END_OBJECT:
+                                                entries.add(show);
+                                                reader.endObject();
+                                                break show;
+                                        }
+                                    } // show
+                                } else {
+                                    reader.skipValue();
                                 }
                                 break;
                             case END_OBJECT:
@@ -713,15 +655,6 @@ public class AsyncRemoteCall implements Runnable {
             } catch (IOException | IllegalStateException e) {
                 Log.e(TAG, CLASS + " Exception parsing: " + parameter, e);
             }
-            finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, CLASS + " Exception closing reader: " + parameter, e);
-                    }
-                }
-            } // finally
         } // parseStream
     } // TvMazeParser
 

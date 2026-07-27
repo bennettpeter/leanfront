@@ -1,5 +1,6 @@
 package org.mythtv.leanfront.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
@@ -11,6 +12,7 @@ import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.model.RecRuleSlot;
 import org.mythtv.leanfront.model.RowSlot;
 
+@SuppressLint("ViewConstructor")
 public class IconCardView extends BaseCardView {
 
     public static final int TYPE_SMALL = 1;

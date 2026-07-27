@@ -86,10 +86,10 @@ public class ScrollSupport {
             int[] l = new int[2];
             view.getLocationOnScreen(l);
             int x = l[0];
-            int y = l[1];
             int w = view.getWidth();
-            int h = view.getHeight();
             View mainView = rowsSupportFragment.getView();
+            if (mainView == null)
+                return;
             mainView.getGlobalVisibleRect(rect);
             int distance = 0;
             if (x < rect.left) {

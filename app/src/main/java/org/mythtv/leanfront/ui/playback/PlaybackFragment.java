@@ -37,13 +37,12 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_VIDEO_UR
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.CONTENT_URI;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 
-import android.annotation.TargetApi;
-import android.app.UiModeManager;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.audiofx.LoudnessEnhancer;
 import android.net.Uri;
@@ -61,6 +60,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.leanback.app.ProgressBarManager;
 import androidx.leanback.app.VideoSupportFragment;
@@ -74,12 +74,14 @@ import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.OnItemViewClickedListener;
+import androidx.leanback.widget.PlaybackControlsRow;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.lifecycle.Lifecycle;
 import androidx.media3.common.TrackSelectionOverride;
 import androidx.media3.common.VideoSize;
+import androidx.media3.common.text.CueGroup;
 import androidx.media3.exoplayer.Renderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.core.app.ActivityOptionsCompat;
@@ -110,7 +112,6 @@ import androidx.media3.common.PlaybackException;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.common.Player;
 import androidx.media3.common.TrackGroup;
-import androidx.media3.common.text.Cue;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.util.Util;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
@@ -134,7 +135,6 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -144,6 +144,7 @@ import java.util.concurrent.TimeUnit;
  * Plays selected video, loads playlist and related videos, and delegates playback to {@link
  * VideoPlayerGlue}.
  */
+@SuppressWarnings("CommentedOutCode")
 @OptIn(markerClass = UnstableApi.class)
 public class PlaybackFragment extends VideoSupportFragment
         implements AsyncBackendCall.OnBackendCallListener, LeanbackPlayerAdapter.SizeGetter {
@@ -173,7 +174,6 @@ public class PlaybackFragment extends VideoSupportFragment
     int mTextSelection = -2;
     int mAudioSelection = -2;
     private long mFileLength = -1;
-    private MythHttpDataSource.Factory mDsFactory;
     ProgressiveMediaSource mMediaSource;
     // Settings - These are default values that will be changed if the video
     // uses a different playback group
@@ -181,7 +181,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private int mSkipBack = 1000 * Settings.getInt("pref_skip_back");
     private int mJump = 60000 * Settings.getInt("pref_jump");
     private String prefAudio = Settings.getString("pref_audio");
-    private String prefVideo = Settings.getString("pref_video");
+    private final String prefVideo = Settings.getString("pref_video");
     private boolean mFrameMatch = "true".equals(Settings.getString("pref_framerate_match"));
     private int mSubtitleSize =  Settings.getInt("pref_subtitle_size");
     private int mBgColor = Settings.getInt("pref_letterbox_color");
@@ -216,9 +216,8 @@ public class PlaybackFragment extends VideoSupportFragment
     private float frameRate = -1.0f;
     private boolean possibleEmptyTrack;
     private boolean playWhenPrepared;
-    private boolean isTV;
     boolean isIncreasing;
-    CommBreakTable commBreakTable = new CommBreakTable();
+    final CommBreakTable commBreakTable = new CommBreakTable();
     int commBreakOption =  Settings.getInt("pref_commskip");
     public static final int COMMBREAK_OFF = 0;
     public static final int COMMBREAK_NOTIFY = 1;
@@ -229,28 +228,30 @@ public class PlaybackFragment extends VideoSupportFragment
     private String currentPlayGroup = " ";
     private static final int STATUS_MONITOR_INTERVAL = 30000;
     private boolean tablesFilled = false;
-    private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
-    private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
+    private final String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
+    private final String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
             MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
-    private boolean [] subtFound = new boolean[subtExtens.length];
+    private final boolean [] subtFound = new boolean[subtExtens.length];
     private int subtChecked = -1;
     private LoudnessEnhancer lEnh;
-    private Handler myHandler = new Handler(Looper.getMainLooper());
+    private final Handler myHandler = new Handler(Looper.getMainLooper());
     int statusCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UiModeManager uiModeManager = (UiModeManager) getContext().getSystemService(Context.UI_MODE_SERVICE);
-        isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-
-        mVideo = getActivity().getIntent().getParcelableExtra(PlaybackActivity.VIDEO);
+        Activity activity = requireActivity();
+        mVideo = activity.getIntent().getParcelableExtra(PlaybackActivity.VIDEO);
+        if (mVideo == null) {
+            activity.finish();
+            return;
+        }
         setPlaySettings(mVideo.playGroup);
-        mBookmark = getActivity().getIntent().getLongExtra(PlaybackActivity.BOOKMARK, 0);
-        posBookmark = getActivity().getIntent().getLongExtra(PlaybackActivity.POSBOOKMARK, -1);
-        mRecordid = getActivity().getIntent().getLongExtra(PlaybackActivity.RECORDID, -1);
-        long endTimeL = getActivity().getIntent().getLongExtra(PlaybackActivity.ENDTIME, -1);
+        mBookmark = activity.getIntent().getLongExtra(PlaybackActivity.BOOKMARK, 0);
+        posBookmark = activity.getIntent().getLongExtra(PlaybackActivity.POSBOOKMARK, -1);
+        mRecordid = activity.getIntent().getLongExtra(PlaybackActivity.RECORDID, -1);
+        long endTimeL = activity.getIntent().getLongExtra(PlaybackActivity.ENDTIME, -1);
         if (endTimeL > 0)
             endTime = new Date(endTimeL);
         mPlaylist = new Playlist();
@@ -261,7 +262,7 @@ public class PlaybackFragment extends VideoSupportFragment
         // Loads the playlist.
         Bundle args = new Bundle();
         // related videos only display directory list in this case
-        // otherwise treated as tv series
+        // otherwise treated as TV series
         if (mVideo.rectype == RECTYPE_VIDEO
                 && (mVideo.season == null || mVideo.season.equals("0"))
                 && (mVideo.episode == null || mVideo.episode.equals("0"))
@@ -282,7 +283,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onStart() {
         super.onStart();
-        if (android.os.Build.VERSION.SDK_INT > 23) {
+        if (Build.VERSION.SDK_INT > 23) {
             initializePlayer(true);
         }
         scheduleNext();
@@ -304,7 +305,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 nextScheduler = executor.schedule(() -> {
                     AsyncBackendCall call = new AsyncBackendCall(getActivity(), this );
                     call.setStartTime(endTime);
-                    call.setChanid(Integer.parseInt(mVideo.chanid));
+                    call.setChanid(Integer.parseInt(mVideo.chanid != null ? mVideo.chanid : "0"));
                     call.setCallSign(mVideo.callsign);
                     call.execute(Video.ACTION_LIVETV, Video.ACTION_ADD_OR_UPDATERECRULE);
                 }, millis, TimeUnit.MILLISECONDS);
@@ -315,7 +316,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT <= 23 ) {
+        if (Build.VERSION.SDK_INT <= 23 ) {
             initializePlayer(true);
         }
         hideNavigation();
@@ -324,13 +325,15 @@ public class PlaybackFragment extends VideoSupportFragment
         setBackgroundType(BG_LIGHT);
 
         View view = getView();
-        view.setBackgroundColor(mBgColor);
+        if (view != null)
+            view.setBackgroundColor(mBgColor);
     }
 
     public void hideNavigation () {
-        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
+        if (requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
             View view = getView();
-            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            if (view != null)
+                view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
@@ -339,7 +342,7 @@ public class PlaybackFragment extends VideoSupportFragment
     /**
      * Pauses the player.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @Override
     public void onPause() {
         super.onPause();
@@ -355,7 +358,7 @@ public class PlaybackFragment extends VideoSupportFragment
             AsyncBackendCall call;
             if (!saveLiveRec) {
                 call = new AsyncBackendCall(getActivity(), null);
-                call.setRecordedId(Integer.parseInt(mVideo.recordedid));
+                call.setRecordedId(Integer.parseInt(mVideo.recordedid != null ? mVideo.recordedid : "0"));
                 call.setRecordId(mRecordid);
                 call.execute(
                         Video.ACTION_STOP_RECORDING,
@@ -374,9 +377,6 @@ public class PlaybackFragment extends VideoSupportFragment
             }
             mRecordid = -1;
             mNextRecordid = -1;
-        }
-        if (android.os.Build.VERSION.SDK_INT <= 23) {
-            releasePlayer();
         }
     }
 
@@ -426,7 +426,7 @@ public class PlaybackFragment extends VideoSupportFragment
     boolean canEnd() {
         if (mRecordid >= 0) {
                 // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
                         R.style.Theme_AppCompat_Dialog_Alert);
                 builder
                         .setTitle(R.string.title_are_you_sure)
@@ -436,7 +436,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                     // of the selected item
                                     // 0 = don't stop, 1 = stop
                                     if (which == 1) {
-                                        getActivity().finish();
+                                        requireActivity().finish();
                                     }
                                 });
                 builder.show();
@@ -449,13 +449,15 @@ public class PlaybackFragment extends VideoSupportFragment
     @Override
     public void onStop() {
         super.onStop();
-        if (android.os.Build.VERSION.SDK_INT > 23) {
+        if (Build.VERSION.SDK_INT > 23) {
             releasePlayer();
         }
     }
 
     private void initializePlayer(boolean enableControls) {
         Log.i(TAG, CLASS + " Initializing Player for " + mVideo.title + " " + mVideo.videoUrl);
+        if (mVideo.videoUrl == null)
+            return;
         if (frameRate <= 0.0f) {
             AsyncBackendCall call = new AsyncBackendCall(getActivity(), (taskRunner) ->{
                 XmlNode streamInfo = taskRunner.getXmlResult();
@@ -467,10 +469,10 @@ public class PlaybackFragment extends VideoSupportFragment
                         vsi = vsi.getNode("VideoStreamInfo");
                         while (vsi != null && !"V".equals(vsi.getString("CodecType")))
                             vsi = vsi.getNextSibling();
-                        frameRate = Float.parseFloat(vsi.getString("FrameRate"));
-                        avgFrameRate = Float.parseFloat(vsi.getString("AvgFrameRate"));
-                    } catch(Exception ex) {
-                        ex.printStackTrace();
+                        frameRate = Float.parseFloat(vsi != null ? vsi.getString("FrameRate") : "0");
+                        avgFrameRate = Float.parseFloat(vsi != null ? vsi.getString("AvgFrameRate") : "0");
+                    } catch(Exception e) {
+                        Log.e(TAG, CLASS + " Exception", e);
                     }
                 }
                 if (frameRate == 0.0)
@@ -502,12 +504,10 @@ public class PlaybackFragment extends VideoSupportFragment
         }
         if (subtChecked < subtExtens.length) {
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed( () -> {
-                initializePlayer(enableControls);
-            }, 100);
+            handler.postDelayed( () -> initializePlayer(enableControls), 100);
             return;
         }
-        mTrackSelector = new DefaultTrackSelector(getContext());
+        mTrackSelector = new DefaultTrackSelector(requireContext());
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
         if ("mediacodec".equals(prefAudio))
@@ -522,13 +522,13 @@ public class PlaybackFragment extends VideoSupportFragment
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         rFactory.setVideoExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
-        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory)
+        ExoPlayer.Builder builder = new ExoPlayer.Builder(requireContext(),rFactory)
                 .setTrackSelector(mTrackSelector)
                 // 12 hours to cater for playback of recordings in progress
                 .setStuckPlayingNotEndingTimeoutMs(12*60*60*1000);
         mPlayer = builder.build();
 
-        mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
+        mSubtitles = requireActivity().findViewById(R.id.leanback_subtitles);
         if (mSubtitles != null) {
             mSubtitles.setFractionalTextSize
                     (SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * mSubtitleSize / 100.0f);
@@ -537,11 +537,10 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayerEventListener = new PlayerEventListener();
         mPlayer.addListener(mPlayerEventListener);
 
-        mPlayerAdapter = new LeanbackPlayerAdapter(getActivity(), mPlayer, UPDATE_DELAY);
+        mPlayerAdapter = new LeanbackPlayerAdapter(requireActivity(), mPlayer, UPDATE_DELAY);
         if (mPlaybackActionListener == null) {
-            mPlaybackActionListener = new PlaybackActionListener(this, mPlaylist);
-            int sampleOffsetUs = 1000 * Settings.getInt("pref_audio_sync", mVideo.playGroup);
-            mPlaybackActionListener.sampleOffsetUs = sampleOffsetUs;
+            mPlaybackActionListener = new PlaybackActionListener(this);
+            mPlaybackActionListener.sampleOffsetUs = 1000L * Settings.getInt("pref_audio_sync", mVideo.playGroup);
 //            if (sampleOffsetUs != 0)
 //                mAudioPause = true;
         }
@@ -562,6 +561,7 @@ public class PlaybackFragment extends VideoSupportFragment
         mPlayerGlue.setupSelectedListener();
     }
 
+    @NonNull
     @OptIn(markerClass = UnstableApi.class)
     @Override
     public VideoSize getVideoSize() {
@@ -572,7 +572,7 @@ public class PlaybackFragment extends VideoSupportFragment
             if (renderer.getState() != Renderer.STATE_DISABLED) {
                 if ("ExperimentalFfmpegVideoRenderer".equals(renderer.getName())) {
                     Format format = mPlayer.getVideoFormat();
-                    if (vs.width == format.width && vs.height == format.height
+                    if (format != null && vs.width == format.width && vs.height == format.height
                             && vs.pixelWidthHeightRatio != format.pixelWidthHeightRatio)
                         return new VideoSize(vs.width, vs.height, format.pixelWidthHeightRatio);
                 }
@@ -581,6 +581,7 @@ public class PlaybackFragment extends VideoSupportFragment
         return vs;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void audioFix(int millis, boolean setTracks) {
         myHandler.postDelayed( () -> {
             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
@@ -624,6 +625,7 @@ public class PlaybackFragment extends VideoSupportFragment
         }, millis);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void playWait(int delay, String msg) {
         myHandler.postDelayed( () -> {
             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
@@ -645,6 +647,7 @@ public class PlaybackFragment extends VideoSupportFragment
         }, delay);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void enableTrack(int trackType, boolean enable) {
         if (mTrackSelector == null)
             return;
@@ -684,7 +687,7 @@ public class PlaybackFragment extends VideoSupportFragment
         if (video != null) {
             mVideo = video;
             tablesFilled = false;
-            commBreakTable = new CommBreakTable();
+            commBreakTable.clear(0);
             fillTables();
             return;
         }
@@ -692,7 +695,8 @@ public class PlaybackFragment extends VideoSupportFragment
         setPlaySettings(mVideo.playGroup);
 
         View view = getView();
-        view.setBackgroundColor(mBgColor);
+        if (view != null)
+            view.setBackgroundColor(mBgColor);
 
         mPlayerGlue.setTitle(mVideo.title);
 
@@ -791,32 +795,33 @@ public class PlaybackFragment extends VideoSupportFragment
         possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty",mVideo.playGroup));
         commBreakOption = Settings.getInt("pref_commskip");
         switch(Settings.getString("pref_updown",group)) {
-            case "controls": optUpDown = CMD_CONTROLS; break;
             case "jump":     optUpDown = CMD_JUMP;     break;
             case "skipcom":  optUpDown = CMD_SKIPCOM;  break;
+            case "controls":
             default:         optUpDown = CMD_CONTROLS; break;
         }
         switch(Settings.getString("pref_leftright",group)) {
-            case "rewff":    optLeftRight = CMD_REWFF;   break;
             case "jump":     optLeftRight = CMD_JUMP;   break;
             case "skipcom":  optLeftRight = CMD_SKIPCOM; break;
+            case "rewff":
             default:         optLeftRight = CMD_REWFF;   break;
         }
         switch(Settings.getString("pref_rewff",group)) {
-            case "rewff":    optRewFF = CMD_REWFF;   break;
             case "jump":     optRewFF = CMD_JUMP;   break;
             case "skipcom":  optRewFF = CMD_SKIPCOM; break;
+            case "rewff":
             default:         optRewFF = CMD_REWFF;   break;
         }
         currentPlayGroup = group;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private void setupRefreshRate() {
         // Setup video frame rate
-        float ratio = 1.0f;
+        float ratio;
         float desiredRefreshRate = 1.0f;
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        float refreshRate = display.getRefreshRate();
+        Display display = requireActivity().getWindowManager().getDefaultDisplay();
+//        float refreshRate = display.getRefreshRate();
         if (frameRate > 1.0f) {
             if (frameRate < 35.0f)
                 // assume interlaced, prefer double rate
@@ -828,7 +833,7 @@ public class PlaybackFragment extends VideoSupportFragment
         int setId = -1;
         float setRate = 0.0f;
         if (desiredRefreshRate > 1.0f) {
-            if (android.os.Build.VERSION.SDK_INT >= 23) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 float matchedRate = 0.0f;
                 float halfRate = 0.0f;
                 float dblRate = 0.0f;
@@ -883,15 +888,13 @@ public class PlaybackFragment extends VideoSupportFragment
                 float displayRate = setRate;
 
                 if (displayMode == -1)
-                    msg = getActivity().getString(R.string.msg_no_good_refresh,frameRate);
+                    msg = requireContext().getString(R.string.msg_no_good_refresh,frameRate);
 
                 else if (displayMode != currMode.getModeId())
-                    msg = getContext().getString(R.string.msg_setting_framerate, displayRate);
+                    msg = requireContext().getString(R.string.msg_setting_framerate, displayRate);
 
                 if (displayMode != -1 && displayMode != currMode.getModeId()) {
-                    displayMode = setId;
-                    displayRate = setRate;
-                    Window window = getActivity().getWindow();
+                    Window window = requireActivity().getWindow();
                     WindowManager.LayoutParams params = window.getAttributes();
                     params.preferredDisplayModeId = displayMode;
                     window.setAttributes(params);
@@ -979,20 +982,22 @@ public class PlaybackFragment extends VideoSupportFragment
     private void prepareMediaForPlaying(Uri mediaSourceUri) {
         mFileLength = -1;
         getFileLength(false);
-        String userAgent = Util.getUserAgent(getActivity(), "VideoPlayerGlue");
-        mDsFactory = new MythHttpDataSource.Factory(userAgent);
+        String userAgent = Util.getUserAgent(requireActivity(), "VideoPlayerGlue");
+        MythHttpDataSource.Factory dsFactory = new MythHttpDataSource.Factory(userAgent);
         MediaItem item = MediaItem.fromUri(mediaSourceUri);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
-                (mDsFactory,
+                (dsFactory,
                         extFactory);
+        //noinspection deprecation
         pmf.experimentalParseSubtitlesDuringExtraction(false);
         mMediaSource = (ProgressiveMediaSource) pmf.createMediaSource(item);
         mMediaSource.setPossibleEmptyTrack(possibleEmptyTrack);
         // see DefaultMediaSourceFactory for non-deprecated code. Must be done
         // in conjunction with abve call to experimentalParseSubtitlesDuringExtraction
+        @SuppressWarnings("deprecation")
         SingleSampleMediaSource.Factory singleSampleMediaSourceFactory =
-                new SingleSampleMediaSource.Factory(mDsFactory);
+                new SingleSampleMediaSource.Factory(dsFactory);
         ArrayList<MediaSource> msList = new ArrayList<>();
         msList.add(mMediaSource);
         for (int ix = 0 ; ix < subtExtens.length; ix++) {
@@ -1037,8 +1042,10 @@ public class PlaybackFragment extends VideoSupportFragment
          * the media player glue, then add the related videos row.
          */
         ClassPresenterSelector presenterSelector = new ClassPresenterSelector();
-        presenterSelector.addClassPresenter(
-                mPlayerGlue.getControlsRow().getClass(), mPlayerGlue.getPlaybackRowPresenter());
+        Row cRow = mPlayerGlue.getControlsRow();
+        if (cRow != null)
+            presenterSelector.addClassPresenter(
+                cRow.getClass(), mPlayerGlue.getPlaybackRowPresenter());
         presenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(presenterSelector);
@@ -1062,7 +1069,7 @@ public class PlaybackFragment extends VideoSupportFragment
 
         Bundle args = new Bundle();
         // related videos only display directory list in this case
-        // otherwise treated as tv series
+        // otherwise treated as TV series
         if (mVideo.rectype == RECTYPE_VIDEO
                 && (mVideo.season == null || mVideo.season.equals("0"))
                 && (mVideo.episode == null || mVideo.episode.equals("0"))
@@ -1188,11 +1195,14 @@ public class PlaybackFragment extends VideoSupportFragment
         }
     }
 
-    // trackSelection = current selection. -1 = disabled, -2 = leave as is
-    // disable = true : Include disabled in the rotation
-    // doChange = true : select a new track, false = leave same track
-    // Return = new track selection.
 
+    /**
+     * Select track to play
+     * @param trackSelection  current selection. -1 = disabled, -2 = leave as is
+     * @param disable true : Include disabled in the rotation
+     * @param doChange true : select a new track, false = leave same track
+     */
+    @SuppressWarnings("SameParameterValue")
     @OptIn(markerClass = UnstableApi.class)
     int trackSelector(int trackType, int trackSelection, int msgOn,
             int msgOff, boolean disable, boolean doChange) {
@@ -1208,7 +1218,7 @@ public class PlaybackFragment extends VideoSupportFragment
                     trackSelection = 0;
             }
         }
-        if (tracks.trackList.size() == 0)
+        if (tracks.trackList.isEmpty())
             trackSelection = -2;
         if (trackSelection >= 0) {
             TrackEntry entry = tracks.trackList.get(trackSelection);
@@ -1227,7 +1237,8 @@ public class PlaybackFragment extends VideoSupportFragment
                 String language = entry.format.language;
                 if (language == null) {
                     if (MimeTypes.APPLICATION_CEA608.equals(entry.format.sampleMimeType))
-                        language = trackSelection + 1 + " " + getContext().getString(R.string.msg_subtitle_cc);
+                        language = trackSelection + 1 + " "
+                                + requireContext().getString(R.string.msg_subtitle_cc);
                     else
                         language = String.valueOf(trackSelection + 1);
                 } else {
@@ -1236,7 +1247,7 @@ public class PlaybackFragment extends VideoSupportFragment
                     language = trackSelection + 1 + " " + langDesc;
                 }
                 if (msgOn > 0)
-                    msg.append(getActivity().getString(msgOn, language));
+                    msg.append(requireActivity().getString(msgOn, language));
 //            } else {
 //                msg.append(getActivity().getString(R.string.msg_subtitle_notsupp,
 //                        entry.format.sampleMimeType));
@@ -1249,7 +1260,7 @@ public class PlaybackFragment extends VideoSupportFragment
                             .build()
             );
             if (msgOff > 0)
-                msg.append(getActivity().getString(msgOff));
+                msg.append(requireActivity().getString(msgOff));
         }
 
         if (msg.length() > 0) {
@@ -1270,6 +1281,8 @@ public class PlaybackFragment extends VideoSupportFragment
 
     public void actionSelected(Action action) {
         View view = getView();
+        if (view == null)
+            return;
         TextView text = view.findViewById(R.id.button_selected);
         if (text == null)
             return;
@@ -1294,8 +1307,11 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     boolean onControlsUp() {
+        PlaybackControlsRow row = mPlayerGlue.getControlsRow();
+        if (row == null)
+            return false;
         ArrayObjectAdapter primaryActionsAdapter
-            = (ArrayObjectAdapter) mPlayerGlue.getControlsRow().getPrimaryActionsAdapter();
+            = (ArrayObjectAdapter) row.getPrimaryActionsAdapter();
         if (primaryActionsAdapter.indexOf(mCurrentAction) >= 0) {
             hideControlsOverlay(true);
             return true;
@@ -1313,7 +1329,7 @@ public class PlaybackFragment extends VideoSupportFragment
             if (mToast != null)
                 mToast.cancel();
             mToast = Toast.makeText(getActivity(),
-                    getActivity().getString(R.string.msg_save_record),
+                    requireActivity().getString(R.string.msg_save_record),
                     Toast.LENGTH_LONG);
             mToast.show();
 
@@ -1362,10 +1378,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 if (fileLength == -1) {
                     mPlayerEventListener.handlePlayerError(null, R.string.pberror_file_length_fail);
                 }
-                if (mFileLength > -1 && fileLength > mFileLength)
-                    isIncreasing = true;
-                else
-                    isIncreasing = false;
+                isIncreasing = mFileLength > -1 && fileLength > mFileLength;
                 mPlayerGlue.setIncreasing(isIncreasing);
                 mPlayerGlue.onUpdateDuration();
                 mFileLength = fileLength;
@@ -1379,7 +1392,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 if (mToast != null)
                     mToast.cancel();
                 mToast = Toast.makeText(getActivity(),
-                        getActivity().getString(R.string.msg_bookmark_set),
+                        requireActivity().getString(R.string.msg_bookmark_set),
                         Toast.LENGTH_LONG);
                 mToast.show();
                 break;
@@ -1397,12 +1410,15 @@ public class PlaybackFragment extends VideoSupportFragment
                             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                                 return;
                             if (!olaySetupDone && mPlayerGlue.myGetDuration() >= 0) {
-                                SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
-                                if (olay != null) {
-                                    olay.setup(commBreakTable, mPlayerGlue);
-                                    olay.invalidate();
+                                View v = getView();
+                                if (v != null) {
+                                    SeekbarOverlay olay = v.findViewById(R.id.ad_overlay);
+                                    if (olay != null) {
+                                        olay.setup(commBreakTable, mPlayerGlue);
+                                        olay.invalidate();
+                                    }
+                                    olaySetupDone = true;
                                 }
-                                olaySetupDone = true;
                             }
                             if (!olaySetupDone)
                                 myHandler.postDelayed(this,500);
@@ -1441,7 +1457,7 @@ public class PlaybackFragment extends VideoSupportFragment
                         AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
                         call.setVideo(video);
                         call.setRecordId(recordId);
-                        call.setRecordedId(Integer.parseInt(video.recordedid));
+                        call.setRecordedId(Integer.parseInt(video.recordedid != null ? video.recordedid : "0"));
                         call.execute(
                                 Video.ACTION_STOP_RECORDING,
                                 Video.ACTION_REMOVE_RECORD_RULE);
@@ -1474,7 +1490,7 @@ public class PlaybackFragment extends VideoSupportFragment
             call.execute(Video.ACTION_WAIT_RECORDING);
             // delete record rule for completed show
             call = new AsyncBackendCall(getActivity(), null);
-            call.setRecordedId(Integer.parseInt(mVideo.recordedid));
+            call.setRecordedId(Integer.parseInt(mVideo.recordedid != null ? mVideo.recordedid : "0"));
             call.setRecordId(mRecordid);
             call.execute(
                     Video.ACTION_PAUSE,
@@ -1525,7 +1541,7 @@ public class PlaybackFragment extends VideoSupportFragment
         return mSpeed > SPEED_START_VALUE;
     }
 
-    public PlaybackActionListener getPlaybackActionListener() {
+    PlaybackActionListener getPlaybackActionListener() {
         return mPlaybackActionListener;
     }
 
@@ -1547,7 +1563,7 @@ public class PlaybackFragment extends VideoSupportFragment
             if (mToast != null)
                 mToast.cancel();
             mToast = Toast.makeText(getActivity(),
-                    getActivity().getString(R.string.msg_unable_speed),
+                    requireActivity().getString(R.string.msg_unable_speed),
                     Toast.LENGTH_LONG);
             mToast.show();
         }
@@ -1571,36 +1587,32 @@ public class PlaybackFragment extends VideoSupportFragment
                 if (mti.getRendererType(ixRenderer) == trackType) {
                     renderList.add(ixRenderer);
                     TrackGroupArray tga = mti.getTrackGroups(ixRenderer);
-                    if (tga != null) {
-                        TrackGroup tg = null;
-                        for (int ixTrackGroup = 0 ; ixTrackGroup < tga.length; ixTrackGroup++) {
-                            tg = tga.get(ixTrackGroup);
-                            if (tg != null) {
-                                Log.i(TAG, CLASS + " Trk Group "+ixTrackGroup+": "+tg.id
-                                        +" type: "+tg.type);
-                                for (int ixTrack = 0; ixTrack < tg.length; ixTrack++) {
-                                    Format format = tg.getFormat(ixTrack);
-                                    String description = format.language;
-                                    if (description == null) {
-                                        if (MimeTypes.APPLICATION_CEA608.equals(format.sampleMimeType))
-                                            description = ++ccNum + " "
-                                                    + pb.getContext().getString(R.string.msg_subtitle_cc);
-                                        else
-                                            description = String.valueOf(++ccNum);
-                                    }
-                                    else {
-                                        Locale locale = new Locale(description);
-                                        String langDesc = locale.getDisplayLanguage();
-                                        description = ++ccNum + " " + langDesc;
-                                    }
-                                    Log.i(TAG, CLASS + " Track "+ixTrack+": "+description
-                                            +" mimetype: "+format.sampleMimeType+" codecs: "+format.codecs);
-                                    if (format.label != null)
-                                        description += " " + format.label;
-                                    trackList.add (new TrackEntry
-                                        (ixRenderer,ixTrackGroup,tg, ixTrack,format,description));
-                                }
+                    TrackGroup tg;
+                    for (int ixTrackGroup = 0 ; ixTrackGroup < tga.length; ixTrackGroup++) {
+                        tg = tga.get(ixTrackGroup);
+                        Log.i(TAG, CLASS + " Trk Group " + ixTrackGroup + ": " + tg.id
+                                + " type: " + tg.type);
+                        for (int ixTrack = 0; ixTrack < tg.length; ixTrack++) {
+                            Format format = tg.getFormat(ixTrack);
+                            String description = format.language;
+                            if (description == null) {
+                                if (MimeTypes.APPLICATION_CEA608.equals(format.sampleMimeType))
+                                    description = ++ccNum + " "
+                                            + pb.requireContext().getString(R.string.msg_subtitle_cc);
+                                else
+                                    description = String.valueOf(++ccNum);
                             }
+                            else {
+                                Locale locale = new Locale(description);
+                                String langDesc = locale.getDisplayLanguage();
+                                description = ++ccNum + " " + langDesc;
+                            }
+                            Log.i(TAG, CLASS + " Track "+ixTrack+": "+description
+                                    +" mimetype: "+format.sampleMimeType+" codecs: "+format.codecs);
+                            if (format.label != null)
+                                description += " " + format.label;
+                            trackList.add (new TrackEntry
+                                (ixRenderer,ixTrackGroup,tg, ixTrack,format,description));
                         }
                     }
                 }
@@ -1641,14 +1653,16 @@ public class PlaybackFragment extends VideoSupportFragment
 
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                 intent.putExtra(PlaybackActivity.VIDEO, video);
-
+                View view = ((ImageCardView) itemViewHolder.view).getMainImageView();
+                if (view == null)
+                    return;
                 Bundle bundle =
                         ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                getActivity(),
-                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                requireActivity(),
+                                view,
                                 PlaybackActivity.SHARED_ELEMENT_NAME)
                                 .toBundle();
-                getActivity().startActivity(intent, bundle);
+                requireActivity().startActivity(intent, bundle);
             }
         }
     }
@@ -1672,7 +1686,6 @@ public class PlaybackFragment extends VideoSupportFragment
         @NonNull
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
             boolean showDeleted = "true".equals(Settings.getString("pref_related_deleted"));
             // Always show watched videos because the one you are watching could become watched
             // Also when rewatching a series you want all episodes not just the unwatched.
@@ -1681,9 +1694,10 @@ public class PlaybackFragment extends VideoSupportFragment
             String ascdesc = Settings.getString("pref_seq_ascdesc");
 
             // When loading related videos or videos for the playlist, query by category.
-            int rectype = args.getInt(COLUMN_RECTYPE, -1);
-            String recgroup = args.getString(COLUMN_RECGROUP);
-            String filename = args.getString(COLUMN_FILENAME);
+            int rectype = args != null ? args.getInt(COLUMN_RECTYPE, -1) : -1;
+            String filename = args != null ? args.getString(COLUMN_FILENAME) : "";
+            if (filename == null)
+                filename = "";
             StringBuilder orderby;
             if (rectype == RECTYPE_VIDEO) {
                 // Videos
@@ -1696,33 +1710,28 @@ public class PlaybackFragment extends VideoSupportFragment
 
                 orderby = MainFragment.makeTitleSort
                         (COLUMN_FILENAME, '/');
-                StringBuilder where = new StringBuilder();
-                where   .append(COLUMN_RECTYPE)
-                        .append(" = ").append(RECTYPE_VIDEO)
-                        .append(" and ")
-                        .append(COLUMN_FILENAME)
-                        .append(" like ? and ")
-                        .append(COLUMN_FILENAME)
-                        .append(" not like ? ");
+                String where = COLUMN_RECTYPE + " = " + RECTYPE_VIDEO +
+                        " and " +
+                        COLUMN_FILENAME + " like ? and " +
+                        COLUMN_FILENAME + " not like ? " +
 //                if (!showWatched)
 //                    where.append(" and ")
 //                            .append(COLUMN_PROGFLAGS)
 //                            .append(" & ").append(Video.FL_WATCHED)
 //                            .append(" == 0 ");
-                where.append(" or ")
-                        .append(COLUMN_VIDEO_URL)
-                        .append(" = ? ");
+                        " or " +
+                        COLUMN_VIDEO_URL + " = ? ";
                 return new CursorLoader(
-                        getActivity(),
+                        requireActivity(),
                         CONTENT_URI,
                         null,
-                        where.toString(),
+                        where,
                         new String[]{dirname, subdirname,
                                 args.getString(COLUMN_VIDEO_URL)},
                         orderby.toString());
             } else {
                 // Recordings, LiveTV or videos that are part of a series
-                String category = args.getString(COLUMN_TITLEMATCH);
+                String category = args != null ? args.getString(COLUMN_TITLEMATCH) : "";
                 StringBuilder where = new StringBuilder();
                 where.append(COLUMN_TITLEMATCH).append(" = ? ")
                         .append(" AND ( ").append(COLUMN_RECGROUP)
@@ -1762,9 +1771,9 @@ public class PlaybackFragment extends VideoSupportFragment
                 }
                 String [] selectionArgs;
                 selectionArgs = new String[]{category,
-                        args.getString(COLUMN_VIDEO_URL)};
+                        args != null ? args.getString(COLUMN_VIDEO_URL) : ""};
                 return new CursorLoader(
-                        getActivity(),
+                        requireActivity(),
                         CONTENT_URI,
                         null,
                         where.toString(),
@@ -1808,12 +1817,12 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     // Allowed fps values. 0.0f means unknown
-    private static final float[] FPS_VALUES = {
-            0.0f,  59.94f, 50.0f, 29.97f, 25.0f, 23.976f, 0.0f};
+//    private static final float[] FPS_VALUES = {
+//            0.0f,  59.94f, 50.0f, 29.97f, 25.0f, 23.976f, 0.0f};
     // Frame intervals in microsecs. Values below each of these are taken
     // as being for the corresponding fps value above.
-    private static final long[] FPS_INTERVALS = {
-            15000, 18000,  30000, 35000,  40800, 43000, Long.MAX_VALUE};
+//    private static final long[] FPS_INTERVALS = {
+//            15000, 18000,  30000, 35000,  40800, 43000, Long.MAX_VALUE};
 
     @UnstableApi
     class PlayerEventListener implements Player.Listener {
@@ -1825,8 +1834,8 @@ public class PlaybackFragment extends VideoSupportFragment
         private long mTimeLastError = 0;
 
         @Override
-        public void onPositionDiscontinuity( Player.PositionInfo oldPosition,
-                  Player.PositionInfo newPosition,int reason) {
+        public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition,
+                                            @NonNull Player.PositionInfo newPosition, int reason) {
             if (reason == Player.DISCONTINUITY_REASON_SEEK) {
                 // disable and enable to fix audio sync
                 audioFix(5000, true);
@@ -1933,7 +1942,7 @@ public class PlaybackFragment extends VideoSupportFragment
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             int stretchPerc = Math.round(playbackParameters.speed * 100.0f);
-            StringBuilder msg = new StringBuilder(getActivity().getString(R.string.playback_speed))
+            StringBuilder msg = new StringBuilder(requireActivity().getString(R.string.playback_speed))
                     .append(" ").append(stretchPerc).append("%");
             if (mToast != null)
                 mToast.cancel();
@@ -1955,19 +1964,19 @@ public class PlaybackFragment extends VideoSupportFragment
             // passed in because this is called with false on a skip
             if (mPlayerGlue.isPlaying())
                 // Prevent screen saver during playback
-                getActivity().getWindow()
+                requireActivity().getWindow()
                     .addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             else {
                 // Enable screen saver during pause
-                getActivity().getWindow()
+                requireActivity().getWindow()
                         .clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
 
         @Override
-        public void onCues(@NonNull List<Cue> cues) {
+        public void onCues(@NonNull CueGroup group) {
             if (mSubtitles != null)
-                mSubtitles.setCues(cues);
+                mSubtitles.setCues(group.cues);
         }
 
         @Override
@@ -1999,12 +2008,11 @@ public class PlaybackFragment extends VideoSupportFragment
             long now = System.currentTimeMillis();
             int recommendation = 0;
             boolean setPossibleEmptyTrack = false;
-            if (ex != null && ex instanceof ExoPlaybackException) {
+            if (ex instanceof ExoPlaybackException) {
                 ExoPlaybackException error = (ExoPlaybackException)ex;
                 switch (error.type) {
                     case ExoPlaybackException.TYPE_REMOTE:
                         msgNum = R.string.pberror_remote;
-                        cause = null;
                         break;
                     case ExoPlaybackException.TYPE_RENDERER:
                         msgNum = R.string.pberror_renderer;
@@ -2020,7 +2028,8 @@ public class PlaybackFragment extends VideoSupportFragment
                     case ExoPlaybackException.TYPE_SOURCE:
                         msgNum = R.string.pberror_source;
                         cause = error.getSourceException();
-                        if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
+                        String msg = cause.getMessage();
+                        if (msg != null && msg.startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
                             msgNum = R.string.pberror_extractor_array;
                             break;
                         }
@@ -2033,13 +2042,12 @@ public class PlaybackFragment extends VideoSupportFragment
                         if (mPlayerGlue.getSavedCurrentPosition() < 200
                             && "Playback stuck buffering and not loading".equals(cause.getMessage()))
                             setPossibleEmptyTrack = true;
-                        // this error comes from fire stick 4k when selecting an mpeg level l2 audio track
+                        // this error comes from fire stick 4k when selecting a mpeg level l2 audio track
                         if ("Multiple renderer media clocks enabled.".equals(cause.getMessage()))
                             recommendation = R.string.pberror_recommend_ffmpeg;
                         break;
                     default:
                         msgNum = R.string.pberror_default;
-                        cause = null;
                         break;
                 }
             }
@@ -2069,7 +2077,7 @@ public class PlaybackFragment extends VideoSupportFragment
                             if (mToast != null)
                                 mToast.cancel();
                             mToast = Toast.makeText(getActivity(),
-                                    getActivity().getString(msgNum),
+                                    requireContext().getString(msgNum),
                                     Toast.LENGTH_LONG);
                             mToast.show();
                         }
@@ -2085,7 +2093,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                 if (mToast != null)
                                     mToast.cancel();
                                 mToast = Toast.makeText(getActivity(),
-                                        getActivity().getString(R.string.pberror_malformed),
+                                        requireContext().getString(R.string.pberror_malformed),
                                         Toast.LENGTH_LONG);
                                 mToast.show();
                                 mPlayer.stop();
@@ -2113,7 +2121,7 @@ public class PlaybackFragment extends VideoSupportFragment
                         builder.setOnDismissListener(
                                 dialog -> {
                                     if (mDialogStatus != DIALOG_RETRY)
-                                        getActivity().finish();
+                                        requireActivity().finish();
                                     mDialogStatus = DIALOG_NONE;
                                 });
                         builder.show();

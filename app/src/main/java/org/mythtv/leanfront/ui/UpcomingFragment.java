@@ -40,9 +40,11 @@ import java.util.Date;
 
 public class UpcomingFragment extends GridFragment implements AsyncBackendCall.OnBackendCallListener {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_NONE;
     // 3 columns - program, override, edit
     private final int NUMBER_COLUMNS = 3;
+    @SuppressWarnings("FieldCanBeLocal")
     private final int PAGING_ROWS = 11;
     public boolean allStatusValues;
 

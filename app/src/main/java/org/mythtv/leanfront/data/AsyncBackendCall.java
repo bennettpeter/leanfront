@@ -71,8 +71,8 @@ public class AsyncBackendCall implements Runnable {
     private long mPosBookmark = -1;
     private long mLastPlay = -1;
     private long mPosLastPlay = -1;
-    private OnBackendCallListener listener;
-    private Activity activity;
+    private final OnBackendCallListener listener;
+    private final Activity activity;
     private View view;
     private boolean mWatched;
     private int [] mTasks;
@@ -81,7 +81,7 @@ public class AsyncBackendCall implements Runnable {
     private long mRecordId = -1;
     private long mRecordedId = -1;
     private String mStringResult = null;
-    private ArrayList<XmlNode> mXmlResults = new ArrayList<>();
+    private final ArrayList<XmlNode> mXmlResults = new ArrayList<>();
     private Date mStartTime;
     private Date mEndTime;
     private int mId;
@@ -181,7 +181,7 @@ public class AsyncBackendCall implements Runnable {
 
     public XmlNode getXmlResult()
     {
-        if (mXmlResults.size() > 0)
+        if (!mXmlResults.isEmpty())
             return mXmlResults.get(0);
         else
             return null;
@@ -283,22 +283,19 @@ public class AsyncBackendCall implements Runnable {
 
     @Override
     public void run() {
-        if (!XmlNode.isSetupDone())
+        if (XmlNode.isSetupNotDone())
             return;
         try {
             if (XmlNode.getIpAndPort(null) == null)
                 return;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
+        } catch (IOException | XmlPullParserException e) {
+            Log.e(TAG, CLASS + " Exception ", e);
             return;
         }
         try {
             runTasks();
         } catch (Throwable e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         finally {
             if (listener != null) {
@@ -312,6 +309,7 @@ public class AsyncBackendCall implements Runnable {
         }
     }
 
+    @SuppressWarnings({"BusyWait", "DataFlowIssue"})
     @SuppressLint("SimpleDateFormat")
     private void runTasks() {
         BackendCache bCache = BackendCache.getInstance();
@@ -347,7 +345,7 @@ public class AsyncBackendCall implements Runnable {
             if (mVideo != null)
                 isRecording = (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING);
             String urlString = null;
-            String urlMethod = null;
+            String urlMethod;
             boolean allowRerecord = false;
             XmlNode xmlResult = null;
             String paramValue = null;
@@ -452,7 +450,7 @@ public class AsyncBackendCall implements Runnable {
                     } catch(IOException | XmlPullParserException e){
                         mBookmark = 0;
                         mLastPlay = 0;
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_DELETE_AND_RERECORD:
@@ -472,7 +470,7 @@ public class AsyncBackendCall implements Runnable {
                             MainFragment.startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
                                     mVideo.recordedid, null, false);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_UNDELETE:
@@ -488,7 +486,7 @@ public class AsyncBackendCall implements Runnable {
                             MainFragment.startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
                                     mVideo.recordedid, null, false);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_REMOVE_BOOKMARK:
@@ -499,7 +497,7 @@ public class AsyncBackendCall implements Runnable {
                     try {
                         xmlResult = updateBookmark("SetSavedBookmark", mBookmark, mPosBookmark);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_REMOVE_LASTPLAYPOS:
@@ -561,12 +559,12 @@ public class AsyncBackendCall implements Runnable {
                             // Try an insert instead
                             values.put(VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH, mVideo.videoUrlPath);
                             // Insert the new row, returning the primary key value of the new row
-                            long newRowId = db.insert(VideoContract.StatusEntry.TABLE_NAME,
+                            db.insert(VideoContract.StatusEntry.TABLE_NAME,
                                     null, values);
                         }
                         VideoDbHelper.releaseDatabase();
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_SET_WATCHED:
@@ -592,7 +590,7 @@ public class AsyncBackendCall implements Runnable {
                         if (context != null)
                             MainFragment.startFetch(type, mVideo.recordedid, null, false);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_UPDATE_RECGROUP:
@@ -611,7 +609,7 @@ public class AsyncBackendCall implements Runnable {
                                 MainFragment.startFetch(type, mVideo.recordedid, null, false);
                         }
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
                 case Video.ACTION_REMOVE_RECENT: {
@@ -638,7 +636,7 @@ public class AsyncBackendCall implements Runnable {
 
                     if (context != null)
                         MainFragment.startFetch(mVideo.rectype, mVideo.recordedid, null, false);
-                    // Fake out an xml node with true to pass back success status
+                    // Fake out an XML node with true to pass back success status
                     xmlResult = new XmlNode();
                     xmlResult.setString("true");
                     break;
@@ -668,7 +666,7 @@ public class AsyncBackendCall implements Runnable {
                             builder.header("Cache-Control", "no-cache");
                             builder.header("Accept-Encoding", "identity");
                             String auth = BackendCache.getInstance().authorization;
-                            if (auth != null && auth.length() > 0 )
+                            if (auth != null && !auth.isEmpty())
                                 builder.header("Authorization", auth);
                             builder.head();
                             Log.i(TAG, CLASS + " URL: " + urlString);
@@ -1005,14 +1003,11 @@ public class AsyncBackendCall implements Runnable {
                         try {
                             tResult = Long.parseLong(testNode.getString());
                         } catch (NumberFormatException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, CLASS + " Exception ", e);
                             tResult = 0;
                         }
                     }
-                    if (tResult == -1)
-                        bCache.supportLastPlayPos = true;
-                    else
-                        bCache.supportLastPlayPos = false;
+                    bCache.supportLastPlayPos = (tResult == -1);
                     Log.i(TAG, CLASS + " Last Play Position Support:" + bCache.supportLastPlayPos);
                     break;
                 case Video.ACTION_GET_HOSTNAME:
@@ -1036,7 +1031,7 @@ public class AsyncBackendCall implements Runnable {
                                 .url(urlString);
                         builder.header("Cache-Control", "no-cache");
                         String auth = BackendCache.getInstance().authorization;
-                        if (auth != null && auth.length() > 0 )
+                        if (auth != null && !auth.isEmpty())
                             builder.header("Authorization", auth);
                         Log.i(TAG, CLASS + " URL: " + urlString);
                         Request request = builder.build();
@@ -1051,7 +1046,7 @@ public class AsyncBackendCall implements Runnable {
                         InputStreamReader reader = new InputStreamReader(is);
                         char[] buffer = new char[1024];
                         StringBuilder output = new StringBuilder();
-                        int leng = 0;
+                        int leng;
                         for ( ; ; ) {
                             leng = reader.read(buffer, 0, buffer.length);
                             if (leng == -1)
@@ -1253,13 +1248,11 @@ public class AsyncBackendCall implements Runnable {
                     try {
                         SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-                        StringBuilder urlBuilder = new StringBuilder
-                            (XmlNode.mythApiUrl(null,
-                    "/Dvr/AddDontRecordSchedule"))
-                            .append("?ChanId=" + mRecordRule.chanId)
-                            .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"))
-                            .append("&NeverRecord=").append(neverRecord);
-                        xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                        String url = XmlNode.mythApiUrl(null, "/Dvr/AddDontRecordSchedule") +
+                                "?ChanId=" + mRecordRule.chanId +
+                                "&StartTime=" + URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8") +
+                                "&NeverRecord=" + neverRecord;
+                        xmlResult = XmlNode.fetch(url, "POST");
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception in Add Dont Record Schedule.", e);
                     }
@@ -1282,8 +1275,7 @@ public class AsyncBackendCall implements Runnable {
                 case Video.ACTION_PAUSE:
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException ignored) {
                     }
                     break;
 
@@ -1296,7 +1288,7 @@ public class AsyncBackendCall implements Runnable {
                                         + mVideo.recordedid);
                         xmlResult = XmlNode.fetch(urlString, "POST");
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
 
@@ -1305,15 +1297,14 @@ public class AsyncBackendCall implements Runnable {
                         if (BackendCache.getInstance().canForgetHistory) {
                             SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            StringBuilder urlBuilder = new StringBuilder
-                                    (XmlNode.mythApiUrl(null,
-                                            "/Dvr/AllowReRecord"))
-                                    .append("?ChanId=" + mRecordRule.chanId)
-                                    .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8"));
-                            xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                            String url = XmlNode.mythApiUrl(null,
+                                    "/Dvr/AllowReRecord") +
+                                    "?ChanId=" + mRecordRule.chanId +
+                                    "&StartTime=" + URLEncoder.encode(sdfUTC.format(mRecordRule.startTime), "UTF-8");
+                            xmlResult = XmlNode.fetch(url, "POST");
                         }
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
 
@@ -1331,7 +1322,7 @@ public class AsyncBackendCall implements Runnable {
                                         + "&OffsetType=" + paramValue);
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
 
@@ -1350,7 +1341,7 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.w(TAG, CLASS + " " + e);
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                         break;
                     }
                     if (commBreakTable != null)
@@ -1428,7 +1419,7 @@ public class AsyncBackendCall implements Runnable {
                                         + URLEncoder.encode(mVideo.filename, "UTF-8"));
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
 
@@ -1476,7 +1467,7 @@ public class AsyncBackendCall implements Runnable {
     private long[] fetchBookmark(String method) throws XmlPullParserException, IOException {
         boolean isRecording = (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING);
         String urlString;
-        XmlNode bkmrkData = null;
+        XmlNode bkmrkData;
         long[] retValue = {0, -1};
         if (isRecording) {
             urlString = XmlNode.mythApiUrl(mVideo.hostname,
@@ -1486,7 +1477,7 @@ public class AsyncBackendCall implements Runnable {
             try {
                 retValue[0] = Long.parseLong(bkmrkData.getString());
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
                 retValue[0] = -1;
             }
             // sanity check bookmark - between 0 and 24 hrs.
@@ -1510,7 +1501,7 @@ public class AsyncBackendCall implements Runnable {
             try {
                 retValue[1] = Long.parseLong(bkmrkData.getString());
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
                 retValue[1] = -1;
             }
         }

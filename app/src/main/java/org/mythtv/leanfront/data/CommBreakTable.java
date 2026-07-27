@@ -70,8 +70,7 @@ public class CommBreakTable {
         while (node != null) {
             int mark = node.getInt("Mark", 0);
             if (mark == MARK_VIDEO_RATE) {
-//                frameratex1000 =  node.getInt("Offset", 1);
-                node = node.getNextSibling();;
+                node = node.getNextSibling();
                 continue;
             }
             int duration = node.getInt("Offset", 0);

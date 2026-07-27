@@ -44,7 +44,7 @@ import java.util.Map;
 @UnstableApi
 public class MyExtractorsFactory implements ExtractorsFactory {
 
-    private DefaultExtractorsFactory defaultFactory;
+    private final DefaultExtractorsFactory defaultFactory;
 
     public MyExtractorsFactory() {
         this.defaultFactory = new DefaultExtractorsFactory();

@@ -39,15 +39,13 @@ public class GuideCardView extends BaseCardView {
     public static final int COLOR_WILLRECORD = 0xff005500;
     public static final int COLOR_WONTRECORD = 0xff671313;
 
-    private int mType;
     public static final int TYPE_SMALL = 1;
     public static final int TYPE_LARGE = 2;
 
     public GuideCardView(Context context, int type) {
         super(context);
-        mType = type;
         int layout;
-        if (mType == TYPE_LARGE)
+        if (type == TYPE_LARGE)
             layout = R.layout.text_card_large;
         else
             layout = R.layout.text_card;

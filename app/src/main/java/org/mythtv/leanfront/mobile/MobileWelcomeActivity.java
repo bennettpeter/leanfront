@@ -32,6 +32,7 @@ import android.view.View;
 
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.ui.MainActivity;
+import org.mythtv.leanfront.ui.MainFragment;
 
 public class MobileWelcomeActivity extends Activity {
 
@@ -43,6 +44,8 @@ public class MobileWelcomeActivity extends Activity {
 
     public void onClickBanner(View view) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainFragment.KEY_TYPE, MainFragment.TYPE_TOPLEVEL);
         startActivity(intent);
+        finish();
     }
 }

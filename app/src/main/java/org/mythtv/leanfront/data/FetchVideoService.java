@@ -123,18 +123,22 @@ public class FetchVideoService extends IntentService {
                         urls[1] = mythApiUrl(null,
                                 "/Video/GetVideoList?Descending=true&Count=" + pagesize + "&StartIndex=" + start[1]);
                 }
-                List<ContentValues> contentValuesList = new ArrayList<>();
-                for (int i = 0; i < urls.length; i++) {
-                    String url = urls[i];
-                    if (url != null && start[i] < maxAvailable[i]) {
-                        // This call expects recordings to be 0, videos to be 1, channels to be 2
-                        maxAvailable[i] = builder.fetch(url, i, contentValuesList);
-                        start[i] += pagesize;
+                ContentValues[] downloadedVideoContentValues;
+                // This bracketed code is so that contentValuesList is released as soon
+                // as possible. Assigning null to it caused a warning of unused assignment
+                {
+                    List<ContentValues> contentValuesList = new ArrayList<>();
+                    for (int i = 0; i < urls.length; i++) {
+                        String url = urls[i];
+                        if (url != null && start[i] < maxAvailable[i]) {
+                            // This call expects recordings to be 0, videos to be 1, channels to be 2
+                            maxAvailable[i] = builder.fetch(url, i, contentValuesList);
+                            start[i] += pagesize;
+                        }
                     }
+                    downloadedVideoContentValues =
+                            contentValuesList.toArray(new ContentValues[0]);
                 }
-                ContentValues[] downloadedVideoContentValues =
-                        contentValuesList.toArray(new ContentValues[0]);
-                contentValuesList = null; // This is to free the storage used
                 if (firstLoop) {
                     AsyncMainLoader.lock.lock();
                     try {
@@ -152,7 +156,7 @@ public class FetchVideoService extends IntentService {
                                 db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
                                         + " WHERE RECORDEDID = '" + recordedId
                                         + "' AND RECTYPE = '" + recType + "'");
-                            else if (recGroup != null) {
+                            else { // if (recGroup != null) {
                                 db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
                                         + " WHERE RECGROUP = '" + recGroup.replace("'", "''")
                                         + "' AND RECTYPE = '" + recType + "'");

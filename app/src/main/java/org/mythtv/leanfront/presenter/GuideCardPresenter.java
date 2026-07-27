@@ -22,18 +22,20 @@ package org.mythtv.leanfront.presenter;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.leanback.widget.Presenter;
 
 import org.mythtv.leanfront.model.GuideSlot;
 
 public class GuideCardPresenter extends Presenter {
-    private int mType;
+    private final int mType;
 
     public GuideCardPresenter(int type) {
         super();
         mType = type;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         return new ViewHolder(new GuideCardView(parent.getContext(), mType));
@@ -45,6 +47,6 @@ public class GuideCardPresenter extends Presenter {
     }
 
     @Override
-    public void onUnbindViewHolder(ViewHolder viewHolder) {
+    public void onUnbindViewHolder(@NonNull ViewHolder viewHolder) {
     }
 }

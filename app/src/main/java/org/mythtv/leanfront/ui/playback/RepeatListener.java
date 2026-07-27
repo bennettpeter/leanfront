@@ -5,7 +5,7 @@ import android.view.MotionEvent;
 
 /**
  * A class, that can be used as a TouchListener on any view (e.g. a Button).
- * It cyclically runs a clickListener, emulating keyboard-like behaviour. First
+ * It cyclically runs a clickListener, emulating keyboard-like behavior. First
  * click is fired immediately, next one after the initialInterval, and subsequent
  * ones after the normalInterval.
  *
@@ -15,15 +15,15 @@ import android.view.MotionEvent;
  */
 public class RepeatListener {
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private final int initialInterval;
     private final int normalInterval;
-    private PlaybackFragment playbackFragment;
-    private int direction;
+    private final PlaybackFragment playbackFragment;
+    private final int direction;
     private boolean active;
 
-    private Runnable handlerRunnable = new Runnable() {
+    private final Runnable handlerRunnable = new Runnable() {
         @Override
         public void run() {
             handler.postDelayed(this, normalInterval);
@@ -35,7 +35,7 @@ public class RepeatListener {
      * @param initialInterval The interval after first click event
      * @param normalInterval The interval after second and subsequent click
      *       events
-     * @param playbackFragment
+     * @param playbackFragment Playback Fragment
      * @param direction -1 for back, +1 for forward.
      */
     public RepeatListener(int initialInterval, int normalInterval,

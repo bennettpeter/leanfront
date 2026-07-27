@@ -27,6 +27,8 @@ package org.mythtv.leanfront.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.ui.MainFragment;
@@ -68,7 +70,7 @@ public final class Video implements Parcelable, ListItem {
     // From MythTV libmyth/programtypes.h
     // This flag is also set for videos as needed.
     public static final int FL_WATCHED = 0x00000200;
-    public static final int FL_BOOKMARK = 0x00000010;
+//    public static final int FL_BOOKMARK = 0x00000010;
     public String videoProps;
     // These values changed between V31 and V32 of MythTV
     public static final int V31_VID_DAMAGED = 0x00000020;
@@ -135,7 +137,6 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_PLAYLIST_PLAY          = 48;
     public static final int ACTION_SEEK_BYTES             = 49;
     public static final int ACTION_SEEK_DURATION          = 50;
-    public static final int ACTION_SEEK_LOAD              = 51;
     public static final int ACTION_COMMBREAK_LOAD         = 52;
     public static final int ACTION_MENU                   = 53;
     public static final int ACTION_COMMSKIP               = 54;
@@ -153,8 +154,6 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_SEARCHGUIDE_KEYWORD    = 66;
     public static final int ACTION_REFRESH_FULL           = 67;
     public static final int ACTION_FULL_MENU              = 68;
-    public static final int ACTION_FETCH_VIDEOS           = 69;
-    public static final int ACTION_GET_BOOKMARK           = 70;
     public static final int ACTION_GET_STREAM_INFO        = 71;
     public static final int ACTION_SEARCHGUIDE_NEWTITLES  = 72;
     public static final int ACTION_TESTURL = 73;
@@ -331,6 +330,7 @@ public final class Video implements Parcelable, ListItem {
         dest.writeInt(showRecentInt);
     }
 
+    @NonNull
     @Override
     public String toString() {
         String s = "Video{";
@@ -350,7 +350,7 @@ public final class Video implements Parcelable, ListItem {
     public int getItemType() {
         if (type != 0)
             return type;
-        return recGroup == null || recGroup.length() == 0
+        return recGroup == null || recGroup.isEmpty()
                 ? MainFragment.TYPE_VIDEO : MainFragment.TYPE_EPISODE;
     }
 
@@ -382,11 +382,6 @@ public final class Video implements Parcelable, ListItem {
     public boolean isWatched() {
         return progflags != null
                 && (Integer.parseInt(progflags) & Video.FL_WATCHED) != 0;
-    }
-
-    public boolean isBookmarked() {
-        return progflags != null
-                && (Integer.parseInt(progflags) & Video.FL_BOOKMARK) != 0;
     }
 
     public boolean isDamaged() {
@@ -605,27 +600,6 @@ public final class Video implements Parcelable, ListItem {
             this.showRecent = showRecent;
             return this;
         }
-
-        // This is removed because it is only used in case you are playing videos from
-        // sources outside of this application. That is not a supported function of
-        // this application.
-//        public Video buildFromMediaDesc(MediaDescription desc) {
-//            return new Video(
-//                    Long.parseLong(desc.getMediaId()),
-//                    VideoContract.VideoEntry.RECTYPE_VIDEO,
-//                    String.valueOf(desc.getTitle()),
-//                    "",
-//                    String.valueOf(desc.getDescription()),
-//                    "", // Media URI - not provided by MediaDescription.
-//                    "", // Background Image URI - not provided by MediaDescription.
-//                    String.valueOf(desc.getIconUri()),
-//                    String.valueOf(desc.getSubtitle()),
-//                    "", //recordid not provided
-//                    "","","","","","","",
-//                    "","","","", "", "0","0","",
-//                    "","","","", 0, false
-//            );
-//        }
 
         public Video build() {
             return new Video(

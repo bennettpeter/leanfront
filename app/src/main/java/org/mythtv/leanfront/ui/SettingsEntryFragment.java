@@ -19,14 +19,12 @@
 
 package org.mythtv.leanfront.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
@@ -38,6 +36,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
@@ -59,7 +58,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final String TAG = "lfe";
     private static final String CLASS = "SettingsEntryFragment";
     // For multiple occurrence items (e.g. playback groups),
-    // add 100, 200, 300 etc to the number
+    // add 100, 200, 300 etc. to the number
     private static final int ID_BACKEND_IP = 1;
     private static final int ID_HTTP_PORT = 2;
     private static final int ID_BOOKMARK_LOCAL = 5;
@@ -153,26 +152,27 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private String mPriorFilter;
     private ArrayList<String> mPlayGroupList;
     public static boolean isActive = false;
-    private OnBackPressedCallback bpCallback;
     private boolean canClose = true;
 
 
+    @NonNull
     @Override
     public GuidanceStylist onCreateGuidanceStylist() {
-        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
+        /* enabled by default */
+        OnBackPressedCallback bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
                 if (canClose) {
                     setEnabled(false);
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
-                else
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                } else
                     canClose = true;
             }
         };
         if (android.os.Build.VERSION.SDK_INT >= 36)
-            getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
 
+        //noinspection CommentedOutCode
         return new GuidanceStylist() {
             // This is commented because save to external directories is no longer
             // permitted
@@ -186,16 +186,15 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     @NonNull
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
-        Activity activity = getActivity();
         String title = getString(R.string.personal_settings);
         String breadcrumb = "";
         String description = getString(R.string.pref_title_settings);
-        Drawable icon = activity.getDrawable(R.drawable.ic_settings);
+        Drawable icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_settings);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, icon);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("playgroups",mPlayGroupList);
     }
@@ -205,7 +204,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         if (savedInstanceState != null)
             mPlayGroupList = savedInstanceState.getStringArrayList("playgroups");
         else
-            mPlayGroupList = ( (SettingsActivity)getActivity() ).getPlayGroupList();  // ACTION_GETPLAYGROUPLIST
+            mPlayGroupList = ( (SettingsActivity)requireActivity() ).getPlayGroupList();  // ACTION_GETPLAYGROUPLIST
         super.onCreate(savedInstanceState);
     }
 
@@ -257,7 +256,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .build());
 
         // playback entries one per playback group
-        for (int ix = 0 ; ix < mPlayGroupList.size(); ix++) {
+        for (int ix = 0 ; ix < mPlayGroupList.size(); ix++)
+            //noinspection CommentedOutCode
+        {
             int addon = 100 * ix;
             String group = mPlayGroupList.get(ix);
             subActions = new ArrayList<>();
@@ -267,9 +268,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .title(R.string.pref_title_framerate_match)
                     .checked("true".equals(str))
                     .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID);
-            if (Build.VERSION.SDK_INT < 23)
-                tmp.description(R.string.pref_msg_needs_6_0)
-                        .enabled(false);
+//            if (Build.VERSION.SDK_INT < 23)
+//                tmp.description(R.string.pref_msg_needs_6_0)
+//                        .enabled(false);
             subActions.add(tmp.build());
             subActions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_SKIP_FWD + addon)
@@ -424,7 +425,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                     .build());
 
-            str = getContext().getString(R.string.pref_title_playback,group);
+            str = requireContext().getString(R.string.pref_title_playback,group);
             actions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_PLAYBACK + addon)
                     .title(str)
@@ -547,15 +548,15 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         str = Settings.getString("pref_recents_trim");
+        boolean recentsTrimmable = "true".equals(recents)
+                && ("true".equals(recentsDel) || "true".equals(recentsWatched));
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_RECENTS_TRIM)
                 .title(R.string.pref_recents_trim)
                 .description(R.string.pref_recents_trim_desc)
                 .checked("true".equals(str))
-                .enabled("true".equals(recents)
-                        && ("true".equals(recentsDel) || "true".equals(recentsWatched)))
-                .focusable("true".equals(recents)
-                        && ("true".equals(recentsDel) || "true".equals(recentsWatched)))
+                .enabled(recentsTrimmable)
+                .focusable(recentsTrimmable)
                 .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         str = Settings.getString("pref_related_deleted");
@@ -760,9 +761,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View ret =  super.onCreateView(inflater, container, savedInstanceState);
-        int expandId = getActivity().getIntent()
+        int expandId = requireActivity().getIntent()
                 .getIntExtra(KEY_EXPAND, 0);
         GuidedAction action = findActionById(expandId);
         if (action != null) {
@@ -794,7 +795,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
 
     @Override
-    public void onGuidedActionClicked(GuidedAction action) {
+    public void onGuidedActionClicked(@NonNull GuidedAction action) {
         canClose = false;
         super.onGuidedActionClicked(action);
     }
@@ -806,10 +807,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         int actualId = id % 100;
         int groupId = id / 100;
         String group = mPlayGroupList.get(groupId);
-        String newVal;
+        String newVal = String.valueOf(action.getDescription()).trim();
         switch(actualId) {
             case ID_BACKEND_IP:
-                newVal = action.getDescription().toString();
+//                newVal = action.getDescription().toString();
                 // strip any '[' or ']' characters, which are invalid and will
                 // be used for identifying an IPV6
                 newVal = newVal.replace("[","");
@@ -825,19 +826,19 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     validateNumber(action, 1, 65535, 6544));
                 break;
             case ID_BACKEND_USERID:
-                newVal = action.getDescription().toString().trim();
+//                newVal = action.getDescription().toString().trim();
                 Settings.putString(editor, "pref_backend_userid",newVal);
                 action.setDescription(newVal);
                 BackendCache.getInstance().authorization = null;
                 break;
             case ID_BACKEND_PASSWD:
-                newVal = action.getDescription().toString().trim();
+//                newVal = action.getDescription().toString().trim();
                 Settings.putString(editor, "pref_backend_passwd",newVal);
                 action.setDescription(newVal);
                 BackendCache.getInstance().authorization = null;
                 break;
             case ID_BACKEND_MAC:
-                Settings.putString(editor, "pref_backend_mac",action.getDescription().toString());
+                Settings.putString(editor, "pref_backend_mac",newVal);
                 break;
             case ID_SKIP_FWD:
                 Settings.putString(editor, "pref_skip_fwd",group,
@@ -926,7 +927,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static String validateNumber(GuidedAction action, int min, int max, int defValue) {
         String s;
         int i;
-        s = action.getDescription().toString();
+        s = String.valueOf(action.getDescription());
         try {
             i = Integer.parseInt(s);
         } catch (Exception e) {
@@ -1014,7 +1015,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
             case ID_REFRESH_MINS:
                 action.setDescription(Settings.getString("pref_refresh_mins"));
                 break;
-            case ID_NUM_CC_CHANS:S:
+            case ID_NUM_CC_CHANS:
                 action.setDescription(Settings.getString("pref_num_cc_chans"));
                 break;
         }
@@ -1236,7 +1237,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         return false;
     }
 
-    public void onClickMenu(View view) {
+    public void onClickMenu(View ignoredView) {
         final int [] promptIds = {
                 R.string.menu_backup_settings,
                 R.string.menu_backup_database,
@@ -1251,23 +1252,23 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         // /storage/emulated/0
         File extStoreDir = Environment.getExternalStorageDirectory();
         // /data/user/0/org.mythtv.leanfront/cache
-        File cacheDir = getContext().getCacheDir();
+        File cacheDir = requireContext().getCacheDir();
         // /data/user/0/org.mythtv.leanfront
         File appDir = cacheDir.getParentFile();
         // /storage/emulated/0/leanfront
         File bkupDir = new File(extStoreDir + "/" +Environment.DIRECTORY_DOCUMENTS);
         File settings = new File(appDir + "/shared_prefs/org.mythtv.leanfront_preferences.xml");
         File settingsBkup = new File(bkupDir + "/" + sBkupName);
-        File dbPath = getContext().getDatabasePath("leanback");
+        File dbPath = requireContext().getDatabasePath("leanback");
         // /data/user/0/org.mythtv.leanfront/databases/leanback
         File db = new File(dbPath + ".db");
         File dbBkup = new File(bkupDir + "/" + dbBkupName);
 
         String [] prompts = new String[promptIds.length];
         for (int ix = 0 ; ix < promptIds.length; ix++)
-            prompts[ix] = getContext().getString(promptIds[ix], ix%2 == 0 ? sBkupName : dbBkupName);
-        String title = getContext().getString(R.string.backup_menu, bkupDir);
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(),
+            prompts[ix] = requireContext().getString(promptIds[ix], ix%2 == 0 ? sBkupName : dbBkupName);
+        String title = requireContext().getString(R.string.backup_menu, bkupDir);
+        AlertDialog.Builder alert = new AlertDialog.Builder(requireActivity(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         alert
                 .setTitle(title)
@@ -1304,14 +1305,14 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                                 default:
                                     result = null;
                             }
-                            AlertDialog.Builder alert2 = new AlertDialog.Builder(getActivity(),
+                            AlertDialog.Builder alert2 = new AlertDialog.Builder(requireActivity(),
                                     R.style.Theme_AppCompat_Dialog_Alert)
                                     .setTitle(prompts[which]);
                             if (result == null) {
-                                String msg = getContext()
+                                String msg = requireContext()
                                         .getString(R.string.msg_success);
                                 if (isRestore)
-                                    msg = msg +  "\n" + getContext()
+                                    msg = msg +  "\n" + requireContext()
                                             .getString(R.string.msg_restart);
                                 else
                                     msg = msg + "\n" + fName;
@@ -1332,7 +1333,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     }
 
     private void restartApp() {
-        Context context = getContext();
+        Context context = requireContext();
         Intent intent = new Intent(context,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("LEANFRONT_SETTINGS",true);
@@ -1341,7 +1342,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     }
 
     private String lockDatabase() {
-        Context context = getContext();
+        Context context = requireContext();
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
         if (dbh.lockDatabase())
             return null;
@@ -1349,8 +1350,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     }
 
     private String copyFile(File from, File to) {
-        FileChannel inChannel = null;
-        FileChannel outChannel = null;
+        FileChannel inChannel;
+        FileChannel outChannel;
         String ret = null;
         try {
             FileInputStream in = new FileInputStream(from);
@@ -1367,12 +1368,13 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         return ret;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void restart(int key) {
         // restart the activity so the recent options below get appropriately
         // enabled or disabled
         Intent intent = new Intent(getContext(), SettingsActivity.class);
         intent.putExtra(KEY_EXPAND, key);
-        getContext().startActivity(intent);
+        requireContext().startActivity(intent);
         finishGuidedStepSupportFragments();
     }
 

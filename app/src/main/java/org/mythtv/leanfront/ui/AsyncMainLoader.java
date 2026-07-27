@@ -147,8 +147,6 @@ public class AsyncMainLoader implements Runnable {
             if (db == null)
                 return;
             Cursor csr = queryDb(db);
-            if (csr == null)
-                return;
             // This fills filterList
             buildRows(csr);
             csr.close();
@@ -264,8 +262,6 @@ public class AsyncMainLoader implements Runnable {
             selection.append(RECTYPE_VIDEO);
         }
 
-//        StringBuilder titleSort = makeTitleSort(VideoContract.VideoEntry.COLUMN_TITLE, '^');
-//        orderby.append(titleSort).append(", ");
         orderby.append(COLUMN_TITLEMATCH).append(", ");
         if ("airdate".equals(seq)) {
             // +0 is used to convert the value to a number
@@ -288,7 +284,7 @@ public class AsyncMainLoader implements Runnable {
         orderby.append(", ").append(COLUMN_RECORDEDID).append(" ")
                 .append(ascdesc);
 
-        Cursor cursor = db.query(
+        return db.query(
                 VIEW_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
                 selection.toString(),              // The columns for the WHERE clause
@@ -297,7 +293,6 @@ public class AsyncMainLoader implements Runnable {
                 null,                   // don't filter by row groups
                 orderby.toString()               // The sort order
         );
-        return cursor;
     }
 
     void makeRecGroupSelection(StringBuilder selection, String recgroups, boolean mergevideos) {
@@ -366,7 +361,7 @@ public class AsyncMainLoader implements Runnable {
 
         // Every time we have to re-get the filter loader, we must re-create the sidebar.
         filterList.clear();
-        ArrayList<ListItem> rowList = null;
+        ArrayList<ListItem> rowList = new ArrayList<>();
         SparseArray<ListItem> allSparse = null;
         ArrayList<ListItem> allList = null;
         SparseArray<ListItem> recentsSparse = null;
@@ -375,16 +370,11 @@ public class AsyncMainLoader implements Runnable {
         mapper.changeCursor(data);
 
         String currentCategoryMatch = null;
-        int currentRowType = -1;
         // For videos currentItem is itemname saved used in toplevel videos and videos page
         // For Recordings currentItem is title saved used in toplevel page --> change to titlematch
         String currentItem = null;
-        int currentRowNum = -1;
-        int allRowNum = -1;
         int recentsRowNum = -1;
-        int rootRowNum = -1;
         MyHeaderItem header;
-
 
         // Create the recents row, only for top level
         if (mType == TYPE_TOPLEVEL && showRecents) {
@@ -405,7 +395,6 @@ public class AsyncMainLoader implements Runnable {
             allList = new ArrayList<>();
             allList.add(header);
             filterList.add(allList);
-            allRowNum = filterList.size() - 1;
         }
 
         // Create "Root" row
@@ -416,12 +405,10 @@ public class AsyncMainLoader implements Runnable {
             rootList = new ArrayList<>();
             rootList.add(header);
             filterList.add(rootList);
-            rootRowNum = filterList.size() - 1;
         }
 
         // Iterate through each filter entry and add it to the ArrayAdapter.
         while (cursorHasData && !data.isAfterLast()) {
-
             boolean addToRow = true;
             int itemType = -1;
             int rowType = -1;
@@ -441,19 +428,6 @@ public class AsyncMainLoader implements Runnable {
                 || (mType == TYPE_TOPLEVEL && filterType == FILTER_NONE)) {
                 filter = data.getString(titleIndex);
                 filtermatch = data.getString(titleMatchIndex);
-//                if (recgroup != null
-//                        && (context.getString(R.string.all_title) + "\t").equals(mBaseName)) {
-//                    // Do not mix deleted episodes or LiveTV in the All group
-//                    if ("Deleted".equals(recgroup) || "LiveTV".equals(recgroup)) {
-//                        data.moveToNext();
-//                        continue;
-//                    }
-//                } else {
-//                    if (!Objects.equals(mBaseName, recgroup)) {
-//                        data.moveToNext();
-//                        continue;
-//                    }
-//                }
                 if (rectype == RECTYPE_RECORDING || rectype == RECTYPE_VIDEO) {
                     rowType = TYPE_SERIES;
                     itemType = TYPE_EPISODE;
@@ -475,16 +449,14 @@ public class AsyncMainLoader implements Runnable {
             // Split file name and see if it is a directory
             if (rectype == RECTYPE_VIDEO && filename != null && mType != TYPE_RECGROUP) {
                 String shortName = filename;
-                // itemlevel 0 means there is only one row for all
+                // there is only one row for all
                 // videos so the first part of the name is the entry
                 // in the row.
-                int itemlevel = 1;
                 if (mType == TYPE_VIDEODIR) {
-                    // itemlevel 1 means there is one row for each
+                    // there is one row for each
                     // directory so the second part of the name is the entry
                     // in the row.
-                    itemlevel = 2;
-                    if (mBaseName.length() == 0)
+                    if (mBaseName.isEmpty())
                         shortName = filename;
                     else if (shortName.startsWith(mBaseName + "/"))
                         shortName = filename.substring(mBaseName.length() + 1);
@@ -561,7 +533,7 @@ public class AsyncMainLoader implements Runnable {
             // Change of row
             if (addToRow && filter != null && !Objects.equals(filtermatch, currentCategoryMatch)) {
                 // If videos, sort the row
-                if (rowList != null && (rowType == TYPE_VIDEODIR || rowType == TYPE_VIDEODIR_ALL) ) {
+                if (!rowList.isEmpty() && (rowType == TYPE_VIDEODIR || rowType == TYPE_VIDEODIR_ALL) ) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         rowList.sort(videoComparator);
                     }
@@ -617,14 +589,15 @@ public class AsyncMainLoader implements Runnable {
                         Date date = sortKeyFormat.parse(sortKeyStr);
                         // 525960 minutes in a year
                         // Get position as number of minutes since 1970
-                        position = (int) (date.getTime() / 60000L);
+                        if (date != null)
+                            position = (int) (date.getTime() / 60000L);
                         // Add 70 years in case it is before 1970
                         position += 36817200;
                         if ("desc".equals(ascdesc))
                             position = Integer.MAX_VALUE - position;
                     } catch (ParseException | NullPointerException e) {
-                        e.printStackTrace();
-                        position = 0;
+                        Log.e(TAG, CLASS + " Exception ", e);
+                        position = 36817200;
                     }
                 }
                 // Make sure we have an empty slot
@@ -658,7 +631,6 @@ public class AsyncMainLoader implements Runnable {
                 // If the user does not want duplicates of recent titles that were
                 // watched or deleted
 
-                boolean isDeleted = "Deleted".equals(dbVideo.recGroup);
                 if (recentsTrim) {
 
                     // If all recently viewed episodes of a series are watched/deleted, show the most
@@ -670,7 +642,6 @@ public class AsyncMainLoader implements Runnable {
                     if (series != null) {
                         for (int fx = 0; fx < recentsSparse.size(); fx++) {
                             Video fvid = (Video) recentsSparse.get(recentsSparse.keyAt(fx));
-                            boolean fisDeleted = "Deleted".equals(fvid.recGroup);
                             if (series.equals(fvid.titlematch)) {
                                 int fkey = Integer.MAX_VALUE - ((int) (fvid.lastUsed / 60000L) + 36817200);
                                 if (key < fkey)
@@ -719,7 +690,7 @@ public class AsyncMainLoader implements Runnable {
             }
         }
     }
-    class VideoComparator implements Comparator<ListItem> {
+    static class VideoComparator implements Comparator<ListItem> {
         int sign = 1;
         VideoComparator(String ascdesc) {
             if ("desc".equals(ascdesc))
@@ -748,16 +719,14 @@ public class AsyncMainLoader implements Runnable {
             try {
                 result = Integer.parseInt(((Video)t1).season)
                         - Integer.parseInt(((Video)t2).season);
-            } catch (Exception e) {
-                result = 0;
+            } catch (Exception ignored) {
             }
             if (result != 0)
                 return result * sign;
             try {
                 result = Integer.parseInt(((Video)t1).episode)
                     - Integer.parseInt(((Video)t2).episode);
-            } catch (Exception e) {
-                result = 0;
+            } catch (Exception ignored) {
             }
             return result * sign;
         }

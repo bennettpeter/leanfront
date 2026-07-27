@@ -33,22 +33,18 @@ import org.mythtv.leanfront.model.RecordRule;
 
 @SuppressLint("ViewConstructor")
 public class RecRuleCardView extends BaseCardView {
-    public static final int COLOR_TIMESLOT = 0xff265990;
     public static final int COLOR_CHANNEL = 0xff202a49;
-    public static final int COLOR_PROGRAM = 0xff673300;
     public static final int COLOR_WILLRECORD = 0xff005500;
     public static final int COLOR_WONTRECORD = 0xff671313;
 
-    private int mType;
     public static final int TYPE_SMALL = 1;
     public static final int TYPE_LARGE = 2;
     public static final int TYPE_WIDE = 3;
 
     public RecRuleCardView(Context context, int type) {
         super(context);
-        mType = type;
         int layout;
-        switch (mType) {
+        switch (type) {
             case TYPE_LARGE:
                 layout = R.layout.text_card_large;
                 break;

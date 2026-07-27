@@ -29,6 +29,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.Presenter;
@@ -49,12 +51,14 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
 
     private float mUnselectedAlpha;
     private MyHeaderItem headerItem;
-    private MainFragment mainFragment;
+    private final MainFragment mainFragment;
 
     public IconHeaderItemPresenter(MainFragment mainFragment) {
         this.mainFragment = mainFragment;
     }
 
+    @SuppressLint("PrivateResource")
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup) {
         mUnselectedAlpha = viewGroup.getResources()
@@ -74,6 +78,7 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
         headerItem = (MyHeaderItem) ((ListRow) item).getHeaderItem();
@@ -89,51 +94,51 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         Resources resources = rootView.getResources();
         switch (headerItem.getItemType()) {
             case MainFragment.TYPE_TOOLS:
-                icon = resources.getDrawable(R.drawable.ic_tools, null);
+                icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_tools, null);
                 count = 0;
                 break;
             case MainFragment.TYPE_VIDEODIR:
             case MainFragment.TYPE_VIDEODIR_ALL:
-                icon = resources.getDrawable(R.drawable.im_folder, null);
+                icon = ResourcesCompat.getDrawable(resources, R.drawable.im_folder, null);
                 break;
             case MainFragment.TYPE_RECGROUP:
             case MainFragment.TYPE_RECGROUP_ALL:
             case MainFragment.TYPE_TOP_ALL:
             case MainFragment.TYPE_SERIES:
                 if ("LiveTV".equals(name)) {
-                    icon = resources.getDrawable(R.drawable.im_live_tv, null);
+                    icon = ResourcesCompat.getDrawable(resources, R.drawable.im_live_tv, null);
                 }
                 else
-                    icon = resources.getDrawable(R.drawable.ic_voicemail, null);
+                    icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_voicemail, null);
                 break;
             case MainFragment.TYPE_RECENTS:
-                icon = resources.getDrawable(R.drawable.im_movie, null);
+                icon = ResourcesCompat.getDrawable(resources, R.drawable.im_movie, null);
                 break;
             case MainFragment.TYPE_CHANNEL:
             case MainFragment.TYPE_CHANNEL_ALL:
-                icon = resources.getDrawable(R.drawable.im_live_tv, null);
+                icon = ResourcesCompat.getDrawable(resources, R.drawable.im_live_tv, null);
                 break;
             default:
-                icon = resources.getDrawable(R.drawable.ic_launcher_lean, null);
+                icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_launcher_lean, null);
         }
         iconView.setImageDrawable(icon);
 
         TextView label = rootView.findViewById(R.id.header_label);
         label.setText(headerItem.getName());
-        label.setTextColor(resources.getColor(R.color.header_text));
+        label.setTextColor(resources.getColor(R.color.header_text, null));
 
         TextView countView = rootView.findViewById(R.id.header_count);
         if (countView != null && count > 0)
             // The space is only big enough for 4 digits.
             // If mmore than that display e.g. 10K
-            if (count < 10000)
+            if (count < 10000)  // 10000
                 countView.setText(String.valueOf(count));
             else
-                countView.setText(String.valueOf(count/1000) + "K");
+                countView.setText(count / 1000 + " K");  // 1000
     }
 
     @Override
-    public void onUnbindViewHolder(Presenter.ViewHolder viewHolder) {
+    public void onUnbindViewHolder(@NonNull Presenter.ViewHolder viewHolder) {
         // no op
     }
 

@@ -32,8 +32,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:clickable="true"
+        android:contentDescription="@string/app_name"
         android:focusable="true"
-        android:focusableInTouchMode="true"
+        android:focusableInTouchMode="false"
         android:onClick="onClickBanner"
         android:src="@drawable/banner_lean" />
 </RelativeLayout>

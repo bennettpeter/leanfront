@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class Playlist {
 
-    private List<Video> playlist;
+    private final List<Video> playlist;
     private int currentPosition;
 
     public Playlist() {
@@ -59,7 +59,6 @@ public class Playlist {
     /**
      * Sets current position in the playlist.
      *
-     * @param currentPosition
      */
     public void setCurrentPosition(int currentPosition) {
         this.currentPosition = currentPosition;

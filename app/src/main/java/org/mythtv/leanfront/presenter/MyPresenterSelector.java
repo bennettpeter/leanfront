@@ -30,11 +30,11 @@ import org.mythtv.leanfront.model.RecRuleSlot;
 
 public class MyPresenterSelector extends PresenterSelector {
 
-    private IconCardPresenter mIconCardPresenter;
-    private IconCardPresenter mIconCardPresenterSmall;
-    private GuideCardPresenter mGuideCardPresenter;
-    private RecRuleCardPresenter mRecRuleCardPresenter;
-    private IconCardPresenter mCheckboxCardPresenter;
+    private final IconCardPresenter mIconCardPresenter;
+    private final IconCardPresenter mIconCardPresenterSmall;
+    private final GuideCardPresenter mGuideCardPresenter;
+    private final RecRuleCardPresenter mRecRuleCardPresenter;
+    private final IconCardPresenter mCheckboxCardPresenter;
 
     public MyPresenterSelector(Context context)
     {

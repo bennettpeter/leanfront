@@ -1,5 +1,6 @@
 package org.mythtv.leanfront.model;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import org.mythtv.leanfront.data.XmlNode;
@@ -17,6 +18,7 @@ public class Program {
     public int episode;
     public String recordingStatus;
     public int recType;
+    @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
     private static final String TAG = "lfe";
     private static final String CLASS = "Program";

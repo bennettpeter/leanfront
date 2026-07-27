@@ -25,6 +25,8 @@
 package org.mythtv.leanfront.ui;
 
 import android.app.ActivityManager;
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -39,6 +41,7 @@ import androidx.fragment.app.Fragment;
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
+import org.mythtv.leanfront.mobile.MobileWelcomeActivity;
 
 import java.util.Locale;
 
@@ -55,13 +58,23 @@ public class MainActivity extends LeanbackActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int type = getIntent().getIntExtra(MainFragment.KEY_TYPE, -1);
+        if (type == -1) { // This means launched from android launcher
+            UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+            boolean isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+            if (!isTV) {
+                Intent intent = new Intent(this, MobileWelcomeActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
+        }
         setContentView(R.layout.main);
         Fragment fragment =
                 getSupportFragmentManager().findFragmentByTag("main");
         if (fragment instanceof MainFragment) {
             mainFragment = (MainFragment) fragment;
         }
-
         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         int memoryClass = am.getMemoryClass();
         int lMemoryClass = am.getLargeMemoryClass();
@@ -71,10 +84,9 @@ public class MainActivity extends LeanbackActivity {
         if (savedInstanceState != null) {
             settingsReq = savedInstanceState.getBoolean("settingsReq");
         }
-
         // to test another language uncomment this
         //        setAppLocale("es");
-        if (settingsReq || !XmlNode.isSetupDone()) {
+        if (settingsReq || XmlNode.isSetupNotDone()) {
             // This is the first time running the app, let's go to onboarding
             startActivity(new Intent(this, SettingsActivity.class));
         }
@@ -116,6 +128,7 @@ public class MainActivity extends LeanbackActivity {
     }
 
 
+    @SuppressWarnings("unused")
     public static void setAppLocale(String localeCode){
         Resources resources = MyApplication.getAppContext().getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();

@@ -39,11 +39,13 @@ import org.mythtv.leanfront.presenter.RecRuleCardView;
 
 public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.OnBackendCallListener {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_XSMALL;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final int PAGING_ROWS = 9;
 
     private boolean mLoadInProgress;
     private boolean mDoingUpdate;
-    private final int PAGING_ROWS = 9;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.
         if (savedInstanceState != null) {
             mDoingUpdate = savedInstanceState.getBoolean("mDoingUpdate", mDoingUpdate);
         }
-        boolean isTelevision = getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
+        boolean isTelevision = requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
         if (isTelevision)
             numberColumns = 3;
         else
@@ -154,7 +156,7 @@ public class RecRulesFragment  extends GridFragment implements AsyncBackendCall.
             mGridAdapter.add(new RecRuleSlot(RowSlot.CELL_RULE, rule));
         }
         while (mGridAdapter.size() % numberColumns != 0)
-            mGridAdapter.add(null);
+            mGridAdapter.add(new RecRuleSlot(0));
         updateAdapter();
     }
 

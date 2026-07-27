@@ -39,7 +39,7 @@
     <string name="resume_last_1">Play from Last</string>
     <string name="resume_last_2">Play Position</string>
     <string name="play_other_1">Play From</string>
-    <string name="play_other_2">Other...</string>
+    <string name="play_other_2">Other…</string>
     <string name="delete_1">Delete</string>
     <string name="delete_2">Recording</string>
     <string name="undelete_1">UnDelete</string>
@@ -61,10 +61,13 @@
     <string name="search_result_2_progs_500">First 500 Program Guide Full Search Results for \'%1$s\'</string>
     <string name="search_result_2_no_progs">No Program Guide Full Search Results found for \'%1$s\'</string>
 
-    <string name="mobile_welcome_title">Welcome to MythTV leanfront</string>
+    <string name="mobile_welcome_title">Welcome to MythTV Lean Frontend</string>
     <string name="mobile_welcome_description">
-        MythTV leanfront is designed for Android TV. Touch screen control is not optimal.
-        To proceed, tap the banner below.
+        This is the TV version of MythTV Lean Frontend.
+        It is designed for Android TV. Touch screen control is not optimal.
+        There is a mobile version available in the play store and online.
+        If you really want to use this version, tap the banner below,
+        otherwise install the mobile version of the app.
     </string>
 
     <string name="pref_title_settings">MythTV Settings</string>
@@ -139,8 +142,8 @@
     <string name="pref_autoplay">Autoplay</string>
     <string name="pref_autoplay_desc">At the end of playback automatically start the next video or episode.</string>
     <string name="pref_captions">Caption number to enable</string>
-    <string name="pref_speed">Playback speed as percentage (10-800). Default 100.</string>
-    <string name="pref_volume">Audio Volume as percentage (10-1000). Default 100.</string>
+    <string name="pref_speed">Playback speed as percentage (10–800). Default 100.</string>
+    <string name="pref_volume">Audio Volume as percentage (10–1000). Default 100.</string>
     <string name="pref_audio_sync">Audio Sync Adjustment in milliseconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
     <string name="pref_poss_empty_desc">Set this if you have recordings with malformed second audio track (e.g. UK FreeView).</string>
@@ -176,7 +179,7 @@
     <string name="msg_backend_login_req">Error: Backend Requires Valid User Name and Password.</string>
     <string name="all_title">All</string>
     <string name="recents_title">Recently Viewed</string>
-    <string name="lb_playback_controls_fast_forward">Jump Fwd</string>
+    <string name="lb_playback_controls_fast_forward" tools:ignore="PrivateResource">Jump Fwd</string>
     <string name="playback_zoom_size">Size</string>
     <string name="playback_aspect_stretch">Stretch</string>
     <string name="video_minutes">minutes</string>
@@ -202,6 +205,7 @@
     <string name="menu_dont_stop_livetv">Don\'t Stop Live TV</string>
     <string name="menu_remove_from_recent">Remove from Recently Viewed List</string>
     <string name="menu_update_recgrp">Update Recording Group</string>
+    <!--suppress CheckTagEmptyBody -->
     <string name="dummy_empty_string" translatable="false"></string>
     <string name="msg_wake_backend">No backend connection, sent wake-up message.</string>
 
@@ -461,7 +465,7 @@
     <!--  Release Notes  -->
     <string name="notes_title">What\'s New?</string>
     <string name="notes_seen">Do not show again</string>
-<!--    <string name="notes_paging">You can use the fast forward and rewind buttons to quickly page up and down in the left pane, and to scroll video icons in the right pane.</string>-->
+<!--    <string name="notes_paging">You can use the fast-forward and rewind buttons to quickly page up and down in the left pane, and to scroll video icons in the right pane.</string>-->
 
     <!--Fragment tag-->
     <string name="playback_tag" translatable="false">PLAYBACK_TAG</string>
@@ -520,6 +524,7 @@
     <string name="sdef_poss_empty" translatable="false">false</string>
     <string name="sdef_max_vids" translatable="false">20000</string>
     <string name="sdef_refresh_mins" translatable="false">60</string>
+    <!--suppress CheckTagEmptyBody -->
     <string name="sdef_chan_group" translatable="false"></string>
     <string name="sdef_idle_timeout" translatable="false">360</string>
     <string name="sdef_num_cc_chans" translatable="false">2</string>

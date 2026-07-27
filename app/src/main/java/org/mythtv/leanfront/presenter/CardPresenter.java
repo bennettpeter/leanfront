@@ -32,12 +32,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.BaseCardView;
 import androidx.leanback.widget.Presenter;
 import androidx.core.content.ContextCompat;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +72,9 @@ public class CardPresenter extends Presenter {
     private int mType = 0;
     public static final int TYPE_PLAYBACK = 1;
     private VideoAction videoAction;
-    private Fragment fragment;
+    private final Fragment fragment;
+    private static final String TAG = "lfe";
+    private static final String CLASS = "CardPresenter";
 
     public CardPresenter(Fragment fragment) {
         this.fragment = fragment;
@@ -80,6 +84,7 @@ public class CardPresenter extends Presenter {
         this.mType = mType;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =
@@ -142,7 +147,7 @@ public class CardPresenter extends Presenter {
                 if (video.chanid != null)
                     imageUrl = XmlNode.mythApiUrl(null,"/Guide/GetChannelIcon?ChanId=" + video.chanid);
             } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
             }
         }
         else {
@@ -173,12 +178,10 @@ public class CardPresenter extends Presenter {
                 defaultIcon = R.drawable.ic_guide;
                 break;
             default:
-                switch (video.rectype) {
-                    case VideoContract.VideoEntry.RECTYPE_CHANNEL:
-                        defaultIcon = R.drawable.im_live_tv;
-                        break;
-                    default:
-                        defaultIcon = R.drawable.im_movie;
+                if (video.rectype == VideoContract.VideoEntry.RECTYPE_CHANNEL) {
+                    defaultIcon = R.drawable.im_live_tv;
+                } else {
+                    defaultIcon = R.drawable.im_movie;
                 }
 
         }
@@ -220,35 +223,36 @@ public class CardPresenter extends Presenter {
         int height = res.getDimensionPixelSize(R.dimen.card_height);
         cardView.setMainImageDimensions(width, height);
         ImageView image = cardView.getMainImageView();
-        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        if (image != null) {
+            image.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        RequestOptions options = new RequestOptions()
-                .error(defaultIcon)
-                .timeout(5000);
+            RequestOptions options = new RequestOptions()
+                    .error(defaultIcon)
+                    .timeout(5000);
 
-        if (imageUrl == null) {
-            Glide.with(cardView.getContext())
-                    .load(defaultIcon)
-                    .apply(options)
-                    .into(image);
-        }
-        else {
+            if (imageUrl == null) {
+                Glide.with(cardView.getContext())
+                        .load(defaultIcon)
+                        .apply(options)
+                        .into(image);
+            } else {
 
-            String auth =  BackendCache.getInstance().authorization;
-            LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-            if (auth != null && auth.length() > 0)
-                lzhb.addHeader("Authorization", auth);
-            GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
+                String auth = BackendCache.getInstance().authorization;
+                LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
+                if (auth != null && !auth.isEmpty())
+                    lzhb.addHeader("Authorization", auth);
+                GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
 
-            Glide.with(cardView.getContext())
-                    .load(url)
-                    .apply(options)
-                    .into(image);
+                Glide.with(cardView.getContext())
+                        .load(url)
+                        .apply(options)
+                        .into(image);
+            }
         }
     }
 
     @Override
-    public void onUnbindViewHolder(Presenter.ViewHolder viewHolderIn) {
+    public void onUnbindViewHolder(@NonNull Presenter.ViewHolder viewHolderIn) {
         MyViewHolder viewHolder = (MyViewHolder) viewHolderIn;
         VideoCardView cardView = (VideoCardView) viewHolder.view;
 
@@ -265,7 +269,7 @@ public class CardPresenter extends Presenter {
             view.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN)
                     return false;
-                int liType = -1;
+                int liType;
                 switch (keyCode) {
                     // Support play from the card unless already playing
                     case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -305,6 +309,8 @@ public class CardPresenter extends Presenter {
                 return;
             int[] tasks = taskRunner.getTasks();
             Intent intent;
+            // Left as switch to conform with onPostExecute patterns
+            //noinspection SwitchStatementWithTooFewBranches
             switch (tasks[0]) {
                 case Video.ACTION_REFRESH:
                     if (context == null)

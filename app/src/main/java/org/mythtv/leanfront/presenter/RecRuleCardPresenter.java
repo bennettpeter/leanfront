@@ -22,30 +22,32 @@ package org.mythtv.leanfront.presenter;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.leanback.widget.Presenter;
 
 import org.mythtv.leanfront.model.RecRuleSlot;
 
 public class RecRuleCardPresenter extends Presenter {
-    private int mType;
+    private final int mType;
 
     public RecRuleCardPresenter(int type) {
         super();
         mType = type;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         return new ViewHolder(new RecRuleCardView(parent.getContext(), mType));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, Object item) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, Object item) {
     if (item instanceof RecRuleSlot)
         ((RecRuleCardView)viewHolder.view).updateUi(((RecRuleSlot) item).rule);
     }
 
     @Override
-    public void onUnbindViewHolder(ViewHolder viewHolder) {
+    public void onUnbindViewHolder(@NonNull ViewHolder viewHolder) {
     }
 }

@@ -52,15 +52,19 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.DetailsSupportFragment;
 import androidx.leanback.app.RowsSupportFragment;
@@ -107,13 +111,12 @@ import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /*
  * VideoDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
  * It shows a detailed view of video and its metadata plus related videos.
  */
-@SuppressLint("SimpleDateFormat")
+
 public class VideoDetailsFragment extends DetailsSupportFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -125,49 +128,42 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     // ID for loader that loads related videos.
     private static final int RELATED_VIDEO_LOADER = 1;
 
-    // Parsing results of GetRecorded
-    private static final String[] XMLTAGS_RECGROUP = {"Recording","RecGroup"};
-    private static final String[] XMLTAGS_PROGRAMFLAGS = {"ProgramFlags"};
-
-    // ID for loader that loads the video from global search.
-
     private Video mSelectedVideo;
     private ArrayObjectAdapter mAdapter;
-    private ClassPresenterSelector mPresenterSelector;
     private BackgroundManager mBackgroundManager;
     private Drawable mDefaultBackground;
     private DisplayMetrics mMetrics;
     private CursorObjectAdapter mVideoCursorAdapter;
-    private FullWidthDetailsOverviewSharedElementHelper mHelper;
     private final VideoCursorMapper mVideoCursorMapper = new VideoCursorMapper();
-    private SparseArrayObjectAdapter mActionsAdapter = null;
     private DetailsOverviewRow mDetailsOverviewRow = null;
-    private boolean mWatched;
-    private DetailsDescriptionPresenter mDetailsDescriptionPresenter;
-    private ItemViewClickedListener itemViewClickedListener = new ItemViewClickedListener();
-    private ItemViewSelectedListener itemViewSelectedListener = new ItemViewSelectedListener();
+    private final ItemViewClickedListener itemViewClickedListener = new ItemViewClickedListener();
+    private final ItemViewSelectedListener itemViewSelectedListener = new ItemViewSelectedListener();
     private VideoAction videoAction;
     private ScrollSupport scrollSupport;
     private boolean isTV;
     private boolean actionInitialSelect;
-    private ArrayList<String> mRecGroupList;
-    private String mNewValueText;
-//    private boolean canUpdateRecGroup = false;
-    private int actionClicked;
+    ActivityResultLauncher<Intent> startPlayForResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        UiModeManager uiModeManager = (UiModeManager)getContext().getSystemService(Context.UI_MODE_SERVICE);
+        startPlayForResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (mSelectedVideo.rectype != RECTYPE_CHANNEL) {
+                        onActionClicked(new Action(Video.ACTION_REFRESH));
+                    }
+                }
+        );
+        UiModeManager uiModeManager = (UiModeManager)requireContext().getSystemService(Context.UI_MODE_SERVICE);
         isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
-        scrollSupport = new ScrollSupport((getContext()));
+        scrollSupport = new ScrollSupport((requireContext()));
         prepareBackgroundManager();
         mVideoCursorAdapter = new CursorObjectAdapter(new CardPresenter(this));
         mVideoCursorAdapter.setMapper(mVideoCursorMapper);
 
-        mSelectedVideo = getActivity().getIntent()
+        mSelectedVideo = requireActivity().getIntent()
                 .getParcelableExtra(PlaybackActivity.VIDEO);
 
         videoAction = new VideoAction(this, mSelectedVideo);
@@ -178,14 +174,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         }
 
         if (mSelectedVideo != null) {
-            removeNotification(getActivity().getIntent()
+            removeNotification(requireActivity().getIntent()
                     .getIntExtra(PlaybackActivity.NOTIFICATION_ID, NO_NOTIFICATION));
             setupAdapter();
             setupDetailsOverviewRow();
             setupMovieListRow();
             updateBackground(mSelectedVideo.bgImageUrl);
-            int progflags = Integer.parseInt(mSelectedVideo.progflags);
-            mWatched = ((progflags & Video.FL_WATCHED) != 0);
             if (mSelectedVideo.rectype != RECTYPE_CHANNEL) {
                 videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
             }
@@ -204,7 +198,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
     private void removeNotification(int notificationId) {
         if (notificationId != NO_NOTIFICATION) {
-            NotificationManager notificationManager = (NotificationManager) getActivity()
+            NotificationManager notificationManager = (NotificationManager) requireActivity()
                     .getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(notificationId);
         }
@@ -230,11 +224,11 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     }
 
     private void prepareBackgroundManager() {
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
-        mDefaultBackground = getResources().getDrawable(R.drawable.background, null);
+        mBackgroundManager = BackgroundManager.getInstance(requireActivity());
+        mBackgroundManager.attach(requireActivity().getWindow());
+        mDefaultBackground = ResourcesCompat.getDrawable(getResources(), R.drawable.background, null);
         mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        requireActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     private void updateBackground(String uri) {
@@ -244,7 +238,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 .error(mDefaultBackground)
                 .timeout(5000);
 
-       RequestBuilder bld =  Glide.with(this)
+       RequestBuilder<Bitmap> bld =  Glide.with(this)
                 .asBitmap();
         if (uri == null)
             bld = bld.load(R.drawable.background);
@@ -252,7 +246,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         else {
             String auth = BackendCache.getInstance().authorization;
             LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
-            if (auth != null && auth.length() > 0)
+            if (auth != null && !auth.isEmpty())
                 lzhb.addHeader("Authorization", auth);
             bld = bld.load(new GlideUrl(uri, lzhb.build()));
         }
@@ -273,31 +267,31 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     }
 
     private void setupAdapter() {
-        mDetailsDescriptionPresenter = new DetailsDescriptionPresenter();
-        videoAction.setDetailsDescriptionPresenter(mDetailsDescriptionPresenter);
+        DetailsDescriptionPresenter detailsDescriptionPresenter = new DetailsDescriptionPresenter();
+        videoAction.setDetailsDescriptionPresenter(detailsDescriptionPresenter);
         // Set detail background and style.
         FullWidthDetailsOverviewRowPresenter detailsPresenter =
-                new FullWidthDetailsOverviewRowPresenter(mDetailsDescriptionPresenter,
+                new FullWidthDetailsOverviewRowPresenter(detailsDescriptionPresenter,
                         new MovieDetailsOverviewLogoPresenter());
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
         detailsPresenter.setBackgroundColor(
                 ContextCompat.getColor(activity, R.color.selected_background));
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.
-        mHelper = new FullWidthDetailsOverviewSharedElementHelper();
-        mHelper.setSharedElementEnterTransition(activity,
+        FullWidthDetailsOverviewSharedElementHelper helper = new FullWidthDetailsOverviewSharedElementHelper();
+        helper.setSharedElementEnterTransition(activity,
                 PlaybackActivity.SHARED_ELEMENT_NAME);
-        detailsPresenter.setListener(mHelper);
+        detailsPresenter.setListener(helper);
         detailsPresenter.setParticipatingEntranceTransition(false);
         prepareEntranceTransition();
 
         detailsPresenter.setOnActionClickedListener(videoAction);
 
-        mPresenterSelector = new ClassPresenterSelector();
-        mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
-        mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
-        mAdapter = new ArrayObjectAdapter(mPresenterSelector);
+        ClassPresenterSelector presenterSelector = new ClassPresenterSelector();
+        presenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
+        presenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
+        mAdapter = new ArrayObjectAdapter(presenterSelector);
         setAdapter(mAdapter);
     }
 
@@ -324,15 +318,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         videoAction.onActionClicked(action);
     }
 
-    public void onActivityResult (int requestCode,
-                                  int resultCode,
-                                  Intent intent) {
-        if (requestCode == Video.ACTION_PLAY
-                && mSelectedVideo.rectype != RECTYPE_CHANNEL) {
-            videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
-        }
-    }
-
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -343,138 +328,125 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         String seq = Settings.getString("pref_seq");
         String ascdesc = Settings.getString("pref_seq_ascdesc");
 
-        switch (id) {
+        if (id == RELATED_VIDEO_LOADER) {// When loading related videos or videos for the playlist, query by category.
+            int rectype = args.getInt(COLUMN_RECTYPE, -1);
+            String filename = args.getString(COLUMN_FILENAME);
+            if (filename == null)
+                filename = "";
+            StringBuilder orderby;
+            if (rectype == RECTYPE_VIDEO) {
+                // Videos
+                int pos = filename.lastIndexOf('/');
+                String dirname = "";
+                if (pos >= 0)
+                    dirname = filename.substring(0, pos + 1);
+                dirname = dirname + "%";
+                String subdirname = dirname + "%/%";
 
-            case RELATED_VIDEO_LOADER: {
-                // When loading related videos or videos for the playlist, query by category.
-                int rectype = args.getInt(COLUMN_RECTYPE, -1);
-                String recgroup = args.getString(COLUMN_RECGROUP);
-                String filename = args.getString(COLUMN_FILENAME);
-                StringBuilder orderby;
-                if (rectype == RECTYPE_VIDEO) {
-                    // Videos
-                    int pos = filename.lastIndexOf('/');
-                    String dirname = "";
-                    if (pos >= 0)
-                        dirname = filename.substring(0, pos + 1);
-                    dirname = dirname + "%";
-                    String subdirname = dirname + "%/%";
+                orderby = MainFragment.makeTitleSort
+                        (COLUMN_FILENAME, '/');
+                StringBuilder where = new StringBuilder();
+                where.append(COLUMN_RECTYPE)
+                        .append(" = ").append(RECTYPE_VIDEO)
+                        .append(" and ")
+                        .append(COLUMN_FILENAME)
+                        .append(" like ? and ")
+                        .append(COLUMN_FILENAME)
+                        .append(" not like ? ");
+                if (!showWatched)
+                    where.append(" and ")
+                            .append(COLUMN_PROGFLAGS)
+                            .append(" & ").append(Video.FL_WATCHED)
+                            .append(" == 0");
+                where.append(" or ")
+                        .append(COLUMN_VIDEO_URL)
+                        .append(" = ? ");
 
-                    orderby = MainFragment.makeTitleSort
-                            (COLUMN_FILENAME, '/');
-                    StringBuilder where = new StringBuilder();
-                    where   .append(COLUMN_RECTYPE)
-                            .append(" = ").append(RECTYPE_VIDEO)
-                            .append(" and ")
-                            .append(COLUMN_FILENAME)
-                            .append(" like ? and ")
-                            .append(COLUMN_FILENAME)
-                            .append(" not like ? ");
-                    if (!showWatched)
-                        where.append(" and ")
-                             .append(COLUMN_PROGFLAGS)
-                             .append(" & ").append(Video.FL_WATCHED)
-                             .append(" == 0");
-                    where.append(" or ")
-                            .append(COLUMN_VIDEO_URL)
-                            .append(" = ? ");
-
-                    return new CursorLoader(
-                            getActivity(),
-                            CONTENT_URI,
-                            null,
-                            where.toString(),
-                            new String[]{dirname, subdirname, args.getString(COLUMN_VIDEO_URL)},
-                            orderby.toString());
-                } else {
-                    // Recordings, LiveTV or videos that are part of a series
-                    String category = args.getString(COLUMN_TITLEMATCH);
-                    StringBuilder where = new StringBuilder();
-                    where.append(COLUMN_TITLEMATCH).append(" = ? ")
-                            .append(" AND ( ").append(COLUMN_RECGROUP)
-                            .append(" IS NULL OR ( ")
-                            .append(COLUMN_RECGROUP)
-                            .append(" != 'LiveTV' ");
-                    if (!showDeleted) {
-                        where.append(" AND ").append(COLUMN_RECGROUP)
-                            .append(" != 'Deleted' ");
-                    }
-                    where.append(" ) ) ");
-                    if (!showWatched)
-                        where.append(" AND ")
-                                .append(COLUMN_PROGFLAGS)
-                                .append(" & ").append(Video.FL_WATCHED)
-                                .append(" == 0 ");
-                    where.append(" or ")
-                            .append(COLUMN_VIDEO_URL)
-                            .append(" = ? ");
-
-                    orderby = new StringBuilder();
-                    if ("airdate".equals(seq)) {
-                        // +0 is used to convert the value to a number
-                        orderby.append(COLUMN_SEASON).append("+0 ")
-                                .append(ascdesc).append(", ");
-                        orderby.append(COLUMN_EPISODE).append("+0 ")
-                                .append(ascdesc).append(", ");
-                        orderby.append(COLUMN_AIRDATE).append(" ")
-                                .append(ascdesc).append(", ");
-                        orderby.append(COLUMN_STARTTIME).append(" ")
-                                .append(ascdesc);
-                    }
-                    else {
-                        orderby.append(COLUMN_STARTTIME).append(" ")
-                                .append(ascdesc).append(", ");
-                        orderby.append(COLUMN_AIRDATE).append(" ")
-                                .append(ascdesc);
-                    }
-                    String [] selectionArgs;
-                    selectionArgs = new String[]{category, args.getString(COLUMN_VIDEO_URL)};
-                    return new CursorLoader(
-                            getActivity(),
-                            CONTENT_URI,
-                            null,
-                            where.toString(),
-                            selectionArgs,
-                            orderby.toString());
-                }
-            }
-            default: {
-                // Loading video from global search.
-                String videoId = args.getString(VideoContract.VideoEntry._ID);
                 return new CursorLoader(
-                        getActivity(),
+                        requireActivity(),
                         CONTENT_URI,
                         null,
-                        VideoContract.VideoEntry._ID + " = ?",
-                        new String[]{videoId},
-                        null);
+                        where.toString(),
+                        new String[]{dirname, subdirname, args.getString(COLUMN_VIDEO_URL)},
+                        orderby.toString());
+            } else {
+                // Recordings, LiveTV or videos that are part of a series
+                String category = args.getString(COLUMN_TITLEMATCH);
+                StringBuilder where = new StringBuilder();
+                where.append(COLUMN_TITLEMATCH).append(" = ? ")
+                        .append(" AND ( ").append(COLUMN_RECGROUP)
+                        .append(" IS NULL OR ( ")
+                        .append(COLUMN_RECGROUP)
+                        .append(" != 'LiveTV' ");
+                if (!showDeleted) {
+                    where.append(" AND ").append(COLUMN_RECGROUP)
+                            .append(" != 'Deleted' ");
+                }
+                where.append(" ) ) ");
+                if (!showWatched)
+                    where.append(" AND ")
+                            .append(COLUMN_PROGFLAGS)
+                            .append(" & ").append(Video.FL_WATCHED)
+                            .append(" == 0 ");
+                where.append(" or ")
+                        .append(COLUMN_VIDEO_URL)
+                        .append(" = ? ");
+
+                orderby = new StringBuilder();
+                if ("airdate".equals(seq)) {
+                    // +0 is used to convert the value to a number
+                    orderby.append(COLUMN_SEASON).append("+0 ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(COLUMN_EPISODE).append("+0 ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(COLUMN_AIRDATE).append(" ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(COLUMN_STARTTIME).append(" ")
+                            .append(ascdesc);
+                } else {
+                    orderby.append(COLUMN_STARTTIME).append(" ")
+                            .append(ascdesc).append(", ");
+                    orderby.append(COLUMN_AIRDATE).append(" ")
+                            .append(ascdesc);
+                }
+                String[] selectionArgs;
+                selectionArgs = new String[]{category, args.getString(COLUMN_VIDEO_URL)};
+                return new CursorLoader(
+                        requireActivity(),
+                        CONTENT_URI,
+                        null,
+                        where.toString(),
+                        selectionArgs,
+                        orderby.toString());
             }
-        }
+        }// Loading video from global search.
+        String videoId = args.getString(VideoContract.VideoEntry._ID);
+        return new CursorLoader(
+                requireActivity(),
+                CONTENT_URI,
+                null,
+                VideoContract.VideoEntry._ID + " = ?",
+                new String[]{videoId},
+                null);
 
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.moveToNext()) {
-            switch (loader.getId()) {
-                case RELATED_VIDEO_LOADER: {
-                    mVideoCursorAdapter.changeCursor(cursor);
-                    break;
-                }
-                default: {
-                    // Loading video from global search.
-                    mSelectedVideo = (Video) mVideoCursorMapper.convert(cursor);
-                    videoAction.setSelectedVideo(mSelectedVideo);
-
-                    setupAdapter();
-                    setupDetailsOverviewRow();
-                    setupMovieListRow();
-                    updateBackground(mSelectedVideo.bgImageUrl);
-                    videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
-                    // When a Related Video item is clicked.
-                    setOnItemViewClickedListener(itemViewClickedListener);
-                    setOnItemViewSelectedListener(itemViewSelectedListener);
-                }
+            if (loader.getId() == RELATED_VIDEO_LOADER) {
+                mVideoCursorAdapter.changeCursor(cursor);
+            } else {// Loading video from global search.
+                mSelectedVideo = (Video) mVideoCursorMapper.convert(cursor);
+                videoAction.setSelectedVideo(mSelectedVideo);
+                setupAdapter();
+                setupDetailsOverviewRow();
+                setupMovieListRow();
+                updateBackground(mSelectedVideo.bgImageUrl);
+                videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
+                // When a Related Video item is clicked.
+                setOnItemViewClickedListener(itemViewClickedListener);
+                setOnItemViewSelectedListener(itemViewSelectedListener);
             }
         }
     }
@@ -491,17 +463,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 super(view);
             }
 
-            public FullWidthDetailsOverviewRowPresenter getParentPresenter() {
-                return mParentPresenter;
-            }
-
-            public FullWidthDetailsOverviewRowPresenter.ViewHolder getParentViewHolder() {
-                return mParentViewHolder;
-            }
         }
 
+        @NonNull
         @Override
         public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
+            @SuppressLint("PrivateResource")
             ImageView imageView = (ImageView) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.lb_fullwidth_details_overview_logo, parent, false);
 
@@ -522,14 +489,17 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             if (isBoundToImage((ViewHolder) viewHolder, row)) {
                 MovieDetailsOverviewLogoPresenter.ViewHolder vh =
                         (MovieDetailsOverviewLogoPresenter.ViewHolder) viewHolder;
-                vh.getParentPresenter().notifyOnBindLogo(vh.getParentViewHolder());
+                FullWidthDetailsOverviewRowPresenter pr = vh.getParentPresenter();
+                FullWidthDetailsOverviewRowPresenter.ViewHolder pvh = vh.getParentViewHolder();
+                if (pr != null && pvh != null)
+                    pr.notifyOnBindLogo(pvh);
             }
         }
     }
 
     private void setupDetailsOverviewRow() {
         mDetailsOverviewRow = new DetailsOverviewRow(mSelectedVideo);
-        Drawable defaultImage = getResources().getDrawable(R.drawable.im_movie, null);
+        Drawable defaultImage = ResourcesCompat.getDrawable(getResources(), R.drawable.im_movie, null);
 
         int defaultIcon = R.drawable.im_movie;
         String imageUrl = mSelectedVideo.cardImageUrl;
@@ -538,22 +508,22 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             try {
                 imageUrl = XmlNode.mythApiUrl(null, "/Guide/GetChannelIcon?ChanId=" + mSelectedVideo.chanid);
             } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
             }
         }
 
         RequestOptions options = new RequestOptions()
                 .error(defaultIcon)
                 .fallback(defaultIcon)
-                .dontAnimate();
-        options.timeout(5000);
+                .dontAnimate()
+                .timeout(5000);
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(
                             @NonNull Bitmap resource,
                             Transition<? super Bitmap> transition) {
-                        mDetailsOverviewRow.setImageBitmap(getActivity(), resource);
+                        mDetailsOverviewRow.setImageBitmap(requireActivity(), resource);
                         startEntranceTransition();
                     }
 
@@ -577,7 +547,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
             String auth =  BackendCache.getInstance().authorization;
             LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-            if (auth != null && auth.length() > 0)
+            if (auth != null && !auth.isEmpty())
                 lzhb.addHeader("Authorization", auth);
             GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
 
@@ -587,14 +557,14 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                     .apply(options)
                     .into(target);
         }
-        mActionsAdapter = new SparseArrayObjectAdapter();
+        SparseArrayObjectAdapter actionsAdapter = new SparseArrayObjectAdapter();
         if (mSelectedVideo.rectype == RECTYPE_CHANNEL) {
-            mActionsAdapter.set(0, new Action(Video.ACTION_LIVETV, getResources()
+            actionsAdapter.set(0, new Action(Video.ACTION_LIVETV, getResources()
                     .getString(R.string.play_livetv_1),
                     getResources().getString(R.string.play_livetv_2)));
         }
-        videoAction.setActionsAdapter(mActionsAdapter);
-        mDetailsOverviewRow.setActionsAdapter(mActionsAdapter);
+        videoAction.setActionsAdapter(actionsAdapter);
+        mDetailsOverviewRow.setActionsAdapter(actionsAdapter);
         actionInitialSelect = true;
 
         mAdapter.add(mDetailsOverviewRow);
@@ -604,7 +574,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         String[] subcategories = {getString(R.string.related_movies)};
         Bundle args = new Bundle();
         // related videos only display directory list in this case
-        // otherwise treated as tv series
+        // otherwise treated as TV series
         if (mSelectedVideo.rectype == RECTYPE_VIDEO
                 && (mSelectedVideo.season == null || mSelectedVideo.season.equals("0"))
                 && (mSelectedVideo.episode == null || mSelectedVideo.episode.equals("0"))
@@ -622,6 +592,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         HeaderItem header = new HeaderItem(0, subcategories[0]);
         mAdapter.add(new ListRow(header, mVideoCursorAdapter));
         // ⬆ Extra rows so you can scroll down to see the picture
+        //noinspection UnnecessaryUnicodeEscape
         mAdapter.add(new ListRow(new HeaderItem(0, "\u2B06"), new ArrayObjectAdapter()));
         mAdapter.add(new ListRow(new HeaderItem(0, ""), new ArrayObjectAdapter()));
         mAdapter.add(new ListRow(new HeaderItem(0, ""), new ArrayObjectAdapter()));
@@ -637,11 +608,16 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                 intent.putExtra(PlaybackActivity.VIDEO, video);
 
-                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        PlaybackActivity.SHARED_ELEMENT_NAME).toBundle();
-                getActivity().startActivity(intent, bundle);
+                View mainView = ((ImageCardView) itemViewHolder.view).getMainImageView();
+                Bundle bundle;
+                if (mainView == null)
+                    bundle = null;
+                else
+                    bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            requireActivity(),
+                            ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                            PlaybackActivity.SHARED_ELEMENT_NAME).toBundle();
+                requireActivity().startActivity(intent, bundle);
             }
         }
     }

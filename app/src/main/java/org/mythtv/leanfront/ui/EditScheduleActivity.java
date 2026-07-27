@@ -42,7 +42,6 @@ import java.util.Date;
 public class EditScheduleActivity extends FragmentActivity implements AsyncBackendCall.OnBackendCallListener {
 
     EditScheduleFragment mEditFragment;
-    private CreateManualSchedule manualFragment;
     private int mRecordId;
     private int searchType;
     private boolean isOverride;
@@ -103,25 +102,22 @@ public class EditScheduleActivity extends FragmentActivity implements AsyncBacke
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
         FragmentManager fm = getSupportFragmentManager();
-        if (fm == null || fm.isDestroyed())
+        if (fm.isDestroyed())
             return;
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
             case Video.ACTION_GETPROGRAMDETAILS:
             case Video.ACTION_DUMMY:
                 ArrayList<XmlNode> resultsList = taskRunner.getXmlResults();
-                switch (searchType) {
-                    case SEARCH_MANUAL:
-                        GuidedStepSupportFragment.addAsRoot(this,
-                                manualFragment = new CreateManualSchedule(resultsList, mRecordId, searchType),
-                                android.R.id.content);
-                        break;
-                    default:
-                        GuidedStepSupportFragment.addAsRoot(this,
-                                mEditFragment = new EditScheduleFragment(resultsList, mRecordId,
-                                searchType, null, isOverride),
-                                android.R.id.content);
-                        break;
+                if (searchType == SEARCH_MANUAL) {
+                    GuidedStepSupportFragment.addAsRoot(this,
+                            new CreateManualSchedule(resultsList, mRecordId, searchType),
+                            android.R.id.content);
+                } else {
+                    GuidedStepSupportFragment.addAsRoot(this,
+                            mEditFragment = new EditScheduleFragment(resultsList, mRecordId,
+                                    searchType, null, isOverride),
+                            android.R.id.content);
                 }
                 break;
         }

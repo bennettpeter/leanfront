@@ -9,7 +9,6 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_CHANNEL
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.VIEW_NAME;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,6 +18,7 @@ import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
@@ -43,17 +43,15 @@ import java.util.List;
 
 @SuppressLint("SimpleDateFormat")
 public class CreateManualSchedule  extends GuidedStepSupportFragment {
-    private static final String TAG = "lfe";
-    private static final String CLASS = "CreateManualSchedule";
-    private ArrayList<XmlNode> mDetailsList;
-    private int mRecordId;
-    private int searchType;
+    private final ArrayList<XmlNode> mDetailsList;
+    private final int mRecordId;
+    private final int searchType;
     private int chanid;
     private String chanName;
     private String station;
-    private ArrayList<String> names = new ArrayList<>();
-    private ArrayList<Integer> chanids = new ArrayList<>();
-    private ArrayList<String> callSigns = new ArrayList<>();
+    private final ArrayList<String> names = new ArrayList<>();
+    private final ArrayList<Integer> chanids = new ArrayList<>();
+    private final ArrayList<String> callSigns = new ArrayList<>();
     private int selection = -1;
     private GuidedAction actionTitle;
     private GuidedAction actionSubtitle;
@@ -90,14 +88,15 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
     @NonNull
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
-        Activity activity = getActivity();
-        String title = getContext().getString(R.string.sched_manual_srch);
-        Drawable icon = activity.getDrawable(R.drawable.ic_voicemail);
+        String title = requireContext().getString(R.string.sched_manual_srch);
+        Drawable icon = ContextCompat.getDrawable(requireContext(),R.drawable.ic_voicemail);
         return new GuidanceStylist.Guidance(title, null, null, icon);
     }
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> mainActions, Bundle savedInstanceState) {
+        if (getActivity() == null)
+            return;
         mainActions.add(actionTitle = new GuidedAction.Builder(getActivity())
                 .id(ID_TITLE)
                 .title(R.string.sched_title)
@@ -150,6 +149,7 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
 
     }
 
+    @NonNull
     @Override
     public GuidedActionsStylist onCreateActionsStylist() {
         return new GuidedActionsStylistExtended();
@@ -163,7 +163,7 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
                 showChannelSelector();
                 break;
             case ID_NEXT:
-                FragmentManager fm = getFragmentManager();
+                FragmentManager fm = getParentFragmentManager();
                 GuidedStepSupportFragment.add(fm,
                         new EditScheduleFragment(mDetailsList, mRecordId, searchType, this, false));
         }
@@ -171,7 +171,7 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
     }
 
     void showChannelSelector() {
-        if (names.size() == 0) {
+        if (names.isEmpty()) {
             // Get list of channels
             Context context = getContext();
             VideoDbHelper dbh = VideoDbHelper.getInstance(context);
@@ -198,7 +198,7 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
         }
 
         // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         AlertDialog dlg = builder
                 .setTitle(R.string.sched_channel)
@@ -224,16 +224,14 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
     @Override
     public long onGuidedActionEditedAndProceed(GuidedAction action) {
         int id = (int) action.getId();
-        switch (id) {
-            case ID_DURATION:
-                validateNumber(action, 5, 360, 60);
-                break;
+        if (id == ID_DURATION) {
+            validateNumber(action, 5, 360, 60);
         }
         return GuidedAction.ACTION_ID_CURRENT;
     }
 
     @Override
-    public void onGuidedActionEditCanceled(GuidedAction action) {
+    public void onGuidedActionEditCanceled(@NonNull GuidedAction action) {
         onGuidedActionEditedAndProceed(action);
     }
 
@@ -257,32 +255,42 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
         rule.startTime = calStart.getTime();
         // 60000 is number of milliseconds in a minute
         rule.endTime = new Date(rule.startTime.getTime()
-                + Long.parseLong((actionDuration.getDescription().toString())) * 60000);
-        rule.title = actionTitle.getDescription().toString() + " (" + getContext().getString(R.string.sched_manual_srch) + ")";
-        if (rule.title.length() == 0) {
+                + Long.parseLong(getActionDesc(actionDuration)) * 60000);
+        String title = getActionDesc(actionTitle);
+        rule.title = title + " (" + requireContext().getString(R.string.sched_manual_srch) + ")";
+        if (title.isEmpty()) {
             java.text.DateFormat timeFormatter = android.text.format.DateFormat.getTimeFormat(getContext());
             java.text.DateFormat dateFormatter = android.text.format.DateFormat.getLongDateFormat(getContext());
             java.text.DateFormat dayFormatter = new SimpleDateFormat("EEE ");
-            StringBuilder title = new StringBuilder(chanName).append(' ')
-                .append(dayFormatter.format(rule.startTime))
-                .append(dateFormatter.format(rule.startTime)).append(' ')
-                .append(timeFormatter.format(rule.startTime));
-            rule.title = title.toString();
+            rule.title = chanName + ' ' +
+                    dayFormatter.format(rule.startTime) +
+                    dateFormatter.format(rule.startTime) + ' ' +
+                    timeFormatter.format(rule.startTime) +
+                    " (" + requireContext().getString(R.string.sched_manual_srch) + ")";
         }
-        rule.subtitle = actionSubtitle.getDescription().toString();
+        rule.subtitle = getActionDesc(actionSubtitle);
         Calendar cal = Calendar.getInstance();
         cal.setTime(rule.startTime);
-        // findday: Saturday = 0 , Sunday = 1, etc
+        // findday: Saturday = 0 , Sunday = 1, etc.
         // java DAY_OF_WEEK Saturday = 7, Sunday = 1
         rule.findDay = cal.get(Calendar.DAY_OF_WEEK) % 7;
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss.SSS");
         rule.findTime = sdfTime.format(rule.startTime);
     }
 
-    private String validateNumber(GuidedAction action, int min, int max, int defValue) {
+    private static String getActionDesc(GuidedAction action) {
+        CharSequence desc = action.getDescription();
+        if (desc == null)
+            desc = "";
+        return desc.toString();
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void validateNumber(@NonNull GuidedAction action, int min, int max, int defValue) {
         String s;
         int i;
-        s = action.getDescription().toString();
+//        s = action.getDescription().toString();
+        s = getActionDesc(action);
         try {
             i = Integer.parseInt(s);
         } catch (Exception e) {
@@ -295,6 +303,5 @@ public class CreateManualSchedule  extends GuidedStepSupportFragment {
         s = String.valueOf(i);
         action.setDescription(s);
         notifyActionChanged(findActionPositionById(action.getId()));
-        return s;
     }
 }

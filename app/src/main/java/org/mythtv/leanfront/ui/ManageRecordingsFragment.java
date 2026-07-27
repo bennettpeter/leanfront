@@ -8,9 +8,7 @@ import android.os.Bundle;
 
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
-import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.PageRow;
 import androidx.leanback.widget.Row;
@@ -26,21 +24,20 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     private static final int HEADER_ID_NEWTITLES = 4;
 
     private ArrayObjectAdapter mRowsAdapter;
-    private BackgroundManager mBackgroundManager;
     private boolean isGuide;
-    private GuideFragment guideFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Intent intent = getActivity().getIntent();
-        isGuide = "GUIDE".equals(intent.getCharSequenceExtra("TYPE"));
+        Intent intent = requireActivity().getIntent();
+        String type = String.valueOf(intent.getCharSequenceExtra("TYPE"));
+        isGuide = "GUIDE".equals(type);
         super.onCreate(savedInstanceState);
         setupUi();
         loadData();
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
+        BackgroundManager backgroundManager = BackgroundManager.getInstance(requireActivity());
+        backgroundManager.attach(requireActivity().getWindow());
         getMainFragmentRegistry().registerFragment(PageRow.class,
-                new PageRowFragmentFactory(mBackgroundManager));
+                new PageRowFragmentFactory(backgroundManager));
 
     }
 
@@ -55,15 +52,15 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     private void setupUi() {
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
-        setBrandColor(getResources().getColor(R.color.fastlane_background));
+        setBrandColor(ContextCompat.getColor(requireActivity(),  R.color.fastlane_background));
         // Set search icon color.
-        setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.search_opaque));
+        setSearchAffordanceColor(ContextCompat.getColor(requireActivity(), R.color.search_opaque));
         if (isGuide)
             setTitle(getString(R.string.title_program_guide));
         else
             setTitle(getString(R.string.title_manage_recordings));
         setOnSearchClickedListener(view -> {
-            Intent intent = new Intent(getActivity(), SearchActivity.class);
+            Intent intent = new Intent(requireActivity(), SearchActivity.class);
             startActivity(intent);
         });
 
@@ -106,12 +103,15 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
             return;
         if (isShowingHeaders())
             return;
-        MyHeaderItem header = (MyHeaderItem) ((PageRow)mRowsAdapter.get(selectedRowNum)).getHeaderItem();
-        Paging gfrag = (Paging)header.getFragment();
-        gfrag.pageDown(direction);
+        PageRow row = (PageRow)mRowsAdapter.get(selectedRowNum);
+        if (row != null) {
+            MyHeaderItem header = (MyHeaderItem) row.getHeaderItem();
+            Paging gfrag = (Paging) header.getFragment();
+            gfrag.pageDown(direction);
+        }
     }
 
-    private static class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory {
+    private static class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory<Fragment> {
         private final BackgroundManager mBackgroundManager;
 
         PageRowFragmentFactory(BackgroundManager backgroundManager) {

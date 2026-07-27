@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +42,8 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.util.Pair;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.app.HeadersSupportFragment;
@@ -74,6 +77,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowMetrics;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextClock;
@@ -112,6 +116,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -129,7 +134,9 @@ public class MainFragment extends BrowseSupportFragment
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private ArrayObjectAdapter mCategoryRowAdapter;
     private Drawable mDefaultBgDrawable;
-    private DisplayMetrics mMetrics;
+//    private DisplayMetrics mMetrics;
+    private int width;
+    private int height;
     private Runnable mBackgroundTask;
     private String mBackgroundUrl;
     private BackgroundManager mBackgroundManager;
@@ -169,7 +176,6 @@ public class MainFragment extends BrowseSupportFragment
     public static final int FILTER_NONE = 3;
     public static final String KEY_BASENAME = "LEANFRONT_BASENAME";
     public static final String KEY_ROWNAME = "LEANFRONT_ROWNAME";
-    public static final String KEY_ITEMNAME = "LEANFRONT_ITEMNAME";
     // mBase is the current recgroup or directory being displayed.
     String mBaseName;
     String mRowName;
@@ -177,15 +183,14 @@ public class MainFragment extends BrowseSupportFragment
     private int[] mSavedSelection = null;
 
     private static ScheduledExecutorService executor = null;
-    private static MythTask mythTask = new MythTask();
-    private static boolean scheduledTaskRunning;
+    private static final MythTask mythTask = new MythTask();
+    private static volatile boolean scheduledTaskRunning;
     public static volatile long mFetchTime = 0;
     // Keep track of the fragment currently showing, if any.
     private static MainFragment mActiveFragment = null;
     private static boolean mWasInBackground = true;
-    // Not final so I can change it during debug
-    private static int TASK_INTERVAL = 240;
-    private ItemViewClickedListener mItemViewClickedListener;
+    private static final int TASK_INTERVAL = 240;
+//    private ItemViewClickedListener mItemViewClickedListener;
     private ScrollSupport scrollSupport;
     volatile boolean isLoaderRunning;
     private ArrayList<String> mRecGroupList;
@@ -199,8 +204,8 @@ public class MainFragment extends BrowseSupportFragment
             mSavedSelection = null;
         else
             mSavedSelection = savedInstanceState.getIntArray("selection");
-        scrollSupport = new ScrollSupport((getContext()));
-        Intent intent = getActivity().getIntent();
+        scrollSupport = new ScrollSupport((requireContext()));
+        Intent intent = requireActivity().getIntent();
         mType = intent.getIntExtra(KEY_TYPE, TYPE_TOPLEVEL);
         if (mType == TYPE_TOPLEVEL) {
             // Clear ip address cache
@@ -220,7 +225,7 @@ public class MainFragment extends BrowseSupportFragment
             mFetchTime = 0;
             mActiveFragment = null;
             showNotes();
-            mythTask.context = getContext();
+//            mythTask.context = getContext();
         } else {
             mBaseName = intent.getStringExtra(KEY_BASENAME);
             mRowName = intent.getStringExtra(KEY_ROWNAME);
@@ -231,15 +236,13 @@ public class MainFragment extends BrowseSupportFragment
     public void initFilterType() {
         String tempFType = Settings.getString("pref_filter");
         switch (tempFType) {
-            case "recgrp":
-                filterType = FILTER_RECGRP;
-                break;
             case "category":
                 filterType = FILTER_CATEGORY;
                 break;
             case "none":
                 filterType = FILTER_NONE;
                 break;
+            case "recgrp":
             default:
                 filterType = FILTER_RECGRP;
         }
@@ -318,15 +321,15 @@ public class MainFragment extends BrowseSupportFragment
         }
         else {
             initFilterType();
-            new AsyncMainLoader(getActivity(), isProgressBar).execute(this);
+            new AsyncMainLoader(requireActivity(), isProgressBar).execute(this);
             isLoaderRunning = true;
         }
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // Final initialization, modifying UI elements.
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
 
         // Prepare the manager that maintains the same background image between activities.
         prepareBackgroundManager();
@@ -359,7 +362,7 @@ public class MainFragment extends BrowseSupportFragment
         mWasInBackground = false;
         // If it's been more than an hour, refresh
         if (mFetchTime > 0 && mFetchTime < System.currentTimeMillis()
-                - Settings.getInt("pref_refresh_mins") * 60 * 1000 + 100)
+                - (long)Settings.getInt("pref_refresh_mins") * 60 * 1000 + 100)
             startFetch(-1, null, null, false);
         else
             startAsyncLoader(false);
@@ -367,10 +370,12 @@ public class MainFragment extends BrowseSupportFragment
 
     // Notes dialog that comes up when you start for the first time.
     // To advise users of new features etc.
-    // Currently no messages are displayed but an array of strings can be provided
+    // Currently, no messages are displayed but an array of strings can be provided
     // in sNotes in the parens, e.g. {R.string.notes_audio}
+    @SuppressWarnings("ConstantConditions")
     void showNotes() {
         // deleted: R.string.notes_paging
+        //noinspection MismatchedReadAndWriteOfArray
         final int[] sNotes = {};
         int deletedNotes = 1;
         int notesVersion = Settings.getInt("pref_notes_version");
@@ -461,11 +466,10 @@ public class MainFragment extends BrowseSupportFragment
 
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
-        Context context = getContext();
+        Context context = requireContext();
         if (taskRunner == null)
             return;
         int [] tasks = taskRunner.getTasks();
-        Intent intent;
         switch (tasks[0]) {
             case Video.ACTION_BACKEND_INFO_HTML:
                 String result = taskRunner.getStringResult();
@@ -474,7 +478,7 @@ public class MainFragment extends BrowseSupportFragment
                 // Get rid of span elements, which are pop=ups and should not be displayed here
                 String fix = result.replaceAll("<span>.+</span>","");
                 Spanned spanned;
-                if (android.os.Build.VERSION.SDK_INT >= 24)
+                if (Build.VERSION.SDK_INT >= 24)
                     spanned = Html.fromHtml(fix,Html.FROM_HTML_MODE_COMPACT);
                 else
                     spanned =  Html.fromHtml(fix);
@@ -492,7 +496,7 @@ public class MainFragment extends BrowseSupportFragment
                     XmlNode stg = mach.getNode("Storage");
                     if (stg == null)
                         break;
-                    XmlNode grp = null;
+                    XmlNode grp;
                     for (int ix = 0;;ix++) {
                         grp = stg.getNode("Group",ix);
                         if (grp == null)
@@ -524,33 +528,40 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     private void prepareBackgroundManager() {
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
+        mBackgroundManager = BackgroundManager.getInstance(requireActivity());
+        mBackgroundManager.attach(requireActivity().getWindow());
         Resources resources = getResources();
-        mDefaultBgDrawable = resources.getDrawable(R.drawable.background, null);
+        mDefaultBgDrawable = ResourcesCompat.getDrawable(resources, R.drawable.background, null);
         mBackgroundTask = new UpdateBackgroundTask();
-        mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            getActivity().getDisplay().getMetrics(mMetrics);
-        else
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        Activity activity = requireActivity();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics metrics = activity.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = metrics.getBounds();
+            width = bounds.width();
+            height = bounds.height();
+        }
+        else {
+            DisplayMetrics metrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            width = metrics.widthPixels;
+            height = metrics.heightPixels;
+        }
     }
 
     private void setupUIElements() {
         if (mType == TYPE_TOPLEVEL)
             setBadgeDrawable(
-                    getActivity().getResources().getDrawable(R.drawable.mythtv_320x180_icon, null));
+                    ResourcesCompat.getDrawable(requireActivity().getResources(), R.drawable.mythtv_320x180_icon, null));
         setTitle(mBaseName);
         showTitle(TitleViewAdapter.FULL_VIEW_VISIBLE);
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // Set fastLane (or headers) background color
-        setBrandColor(ContextCompat.getColor(getActivity(), R.color.fastlane_background));
+        setBrandColor(ContextCompat.getColor(requireActivity(), R.color.fastlane_background));
 
         // Set search icon color.
-        setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.search_opaque));
+        setSearchAffordanceColor(ContextCompat.getColor(requireActivity(), R.color.search_opaque));
 
         setHeaderPresenterSelector(new PresenterSelector() {
             @Override
@@ -566,7 +577,7 @@ public class MainFragment extends BrowseSupportFragment
             startActivity(intent);
         });
 
-        setOnItemViewClickedListener(mItemViewClickedListener = new ItemViewClickedListener());
+        setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
         HeadersSupportFragment header = getHeadersSupportFragment();
         if (header != null)
@@ -574,16 +585,14 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     public void pageDown(int direction) {
+        RowsSupportFragment frag = getRowsSupportFragment();
+        int selectedRowNum = frag.getSelectedPosition();
         if (isShowingHeaders()) {
-            RowsSupportFragment frag = getRowsSupportFragment();
-            int selectedRowNum = frag.getSelectedPosition();
             int newPos = selectedRowNum + 7 * direction;
             if (newPos < 0)
                 newPos = 0;
             frag.setSelectedPosition(newPos, false);
         } else {
-            RowsSupportFragment frag = getRowsSupportFragment();
-            int selectedRowNum = frag.getSelectedPosition();
             ListRowPresenter.ViewHolder selectedViewHolder
                     = (ListRowPresenter.ViewHolder) getRowsSupportFragment()
                     .getRowViewHolder(selectedRowNum);
@@ -601,22 +610,19 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     private void updateBackground(String uri) {
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
-
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .error(mDefaultBgDrawable)
                 .timeout(5000);
 
-        RequestBuilder bld =  Glide.with(this)
+        RequestBuilder<Bitmap> bld =  Glide.with(this)
                 .asBitmap();
         if (uri == null)
             bld = bld.load(R.drawable.background);
         else {
             String auth =  BackendCache.getInstance().authorization;
             LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-            if (auth != null && auth.length() > 0)
+            if (auth != null && !auth.isEmpty())
                 lzhb.addHeader("Authorization", auth);
             bld = bld.load(new GlideUrl(uri, lzhb.build()));
         }
@@ -642,7 +648,7 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     /**
-     * Create the Sql to sort with excluding articles "the" "a" etc at the front
+     * Create the SQL to sort with excluding articles "the" "a" etc. at the front
      * or at the front of directory names
      * @param columnName Column for sorting on
      * @param delim Delimiter to use - ^ for title and / for directory
@@ -659,7 +665,7 @@ public class MainFragment extends BrowseSupportFragment
         for (String article : articles) {
             // Empty entries may be a single space
             article = article.trim();
-            if (article != null && article.length() > 0) {
+            if (!article.isEmpty()) {
                 titleSort.insert(0, "REPLACE(");
                 titleSort.append(",'").append(delim).append(article)
                         .append(" ','").append(delim).append("')");
@@ -697,7 +703,7 @@ public class MainFragment extends BrowseSupportFragment
                 selection[0] = rownum;
             ArrayObjectAdapter rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter(this));
             rowList.remove(0);
-            if (rowList.size() > 0)
+            if (!rowList.isEmpty())
                 rowObjectAdapter.addAll(0, rowList);
             row = new ListRow(header, rowObjectAdapter);
             mCategoryRowAdapter.add(row);
@@ -778,44 +784,46 @@ public class MainFragment extends BrowseSupportFragment
 
             ListItem li = (ListItem) item;
             int liType = li.getItemType();
-            Activity context = getActivity();
+            Activity activity = requireActivity();
             Bundle bundle;
             MyHeaderItem headerItem = (MyHeaderItem) row.getHeaderItem();
             if (headerItem.getItemType() == TYPE_RECENTS)
                 liType = TYPE_EPISODE;
+            Intent intent;
             switch (liType) {
                 case TYPE_EPISODE:
                 case TYPE_VIDEO:
                 case TYPE_CHANNEL:
                     Video video = (Video) item;
-                    Intent intent = new Intent(context, VideoDetailsActivity.class);
+                    intent = new Intent(activity, VideoDetailsActivity.class);
                     intent.putExtra(PlaybackActivity.VIDEO, video);
 
                     bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            context,
-                            ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                            activity,
+                            Objects.requireNonNull(((ImageCardView) itemViewHolder.view).getMainImageView()),
                             PlaybackActivity.SHARED_ELEMENT_NAME).toBundle();
-                    context.startActivity(intent, bundle);
+                    activity.startActivity(intent, bundle);
                     break;
                 case TYPE_SERIES:
                 case TYPE_CHANNEL_ALL:
-                    intent = new Intent(context, MainActivity.class);
+                    intent = new Intent(activity, MainActivity.class);
                     intent.putExtra(KEY_TYPE,MainFragment.TYPE_RECGROUP);
                     intent.putExtra(KEY_BASENAME,headerItem.getName());
                     intent.putExtra(KEY_ROWNAME,((Video)li).title);
                     bundle =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(context)
+                            ActivityOptionsCompat.makeSceneTransitionAnimation
+                                (activity, (Pair<View, String>[]) null)
                                     .toBundle();
-                    context.startActivity(intent, bundle);
+                    activity.startActivity(intent, bundle);
                     break;
                 case TYPE_VIDEODIR:
-                    intent = new Intent(context, MainActivity.class);
+                    intent = new Intent(activity, MainActivity.class);
                     intent.putExtra(KEY_TYPE,MainFragment.TYPE_VIDEODIR);
                     String baseName = mBaseName;
                     if (mType == TYPE_TOPLEVEL)
                         baseName = "";
                     else {
-                        if (baseName != null && baseName.length() > 0)
+                        if (baseName != null && !baseName.isEmpty())
                             baseName = baseName + "/" + headerItem.getName();
                         else
                             baseName = headerItem.getName();
@@ -823,12 +831,13 @@ public class MainFragment extends BrowseSupportFragment
                     intent.putExtra(KEY_BASENAME,baseName);
                     intent.putExtra(KEY_ROWNAME,((Video)li).title);
                     bundle =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(context)
+                            ActivityOptionsCompat.makeSceneTransitionAnimation
+                                (activity, (Pair<View, String>[]) null)
                                     .toBundle();
-                    context.startActivity(intent, bundle);
+                    activity.startActivity(intent, bundle);
                     break;
                 case TYPE_SETTINGS:
-                    intent = new Intent(context, SettingsActivity.class);
+                    intent = new Intent(activity, SettingsActivity.class);
                     startActivity(intent);
                     if (executor != null)
                         executor.shutdown();
@@ -848,7 +857,7 @@ public class MainFragment extends BrowseSupportFragment
                     startFetch(recType, null, recGroup, true);
                     break;
                 case TYPE_INFO:
-                    if (!XmlNode.isSetupDone()) {
+                    if (XmlNode.isSetupNotDone()) {
                         Toast.makeText(getContext(),
                                 R.string.msg_need_ipaddress,
                                 Toast.LENGTH_LONG).show();
@@ -858,11 +867,11 @@ public class MainFragment extends BrowseSupportFragment
                             MainFragment.this).execute(Video.ACTION_BACKEND_INFO_HTML);
                     break;
                 case TYPE_MANAGE:
-                    intent = new Intent(context, ManageRecordingsActivity.class);
+                    intent = new Intent(activity, ManageRecordingsActivity.class);
                     startActivity(intent);
                     break;
                 case TYPE_GUIDE:
-                    intent = new Intent(context, ManageRecordingsActivity.class);
+                    intent = new Intent(activity, ManageRecordingsActivity.class);
                     intent.putExtra("TYPE","GUIDE");
                     startActivity(intent);
                     break;
@@ -884,7 +893,7 @@ public class MainFragment extends BrowseSupportFragment
     private final class HeaderClickedListener implements HeadersSupportFragment.OnHeaderClickedListener {
         @Override
         public void onHeaderClicked(RowHeaderPresenter.ViewHolder viewHolder, Row row) {
-            Activity context = getActivity();
+            Activity activity = requireActivity();
             MyHeaderItem headerItem = (MyHeaderItem) row.getHeaderItem();
 
             Intent intent;
@@ -892,12 +901,12 @@ public class MainFragment extends BrowseSupportFragment
             switch (type) {
                 case MainFragment.TYPE_RECGROUP:
                 case MainFragment.TYPE_TOP_ALL:
-                    intent = new Intent(context, MainActivity.class);
+                    intent = new Intent(activity, MainActivity.class);
                     intent.putExtra(MainFragment.KEY_TYPE,MainFragment.TYPE_RECGROUP);
                     intent.putExtra(MainFragment.KEY_BASENAME,headerItem.getName());
                     break;
                 case MainFragment.TYPE_VIDEODIR_ALL:
-                    intent = new Intent(context, MainActivity.class);
+                    intent = new Intent(activity, MainActivity.class);
                     intent.putExtra(MainFragment.KEY_TYPE,MainFragment.TYPE_VIDEODIR);
                     intent.putExtra(MainFragment.KEY_BASENAME,"");
                     break;
@@ -914,10 +923,10 @@ public class MainFragment extends BrowseSupportFragment
                             setSelectedPosition(rownum, false);
                         return;
                     }
-                    intent = new Intent(context, MainActivity.class);
+                    intent = new Intent(activity, MainActivity.class);
                     intent.putExtra(MainFragment.KEY_TYPE,MainFragment.TYPE_VIDEODIR);
                     String baseName = headerItem.getBaseName();
-                    if (baseName != null && baseName.length() > 0)
+                    if (baseName != null && !baseName.isEmpty())
                         baseName = baseName + "/" + name;
                     else
                         baseName = name;
@@ -934,9 +943,10 @@ public class MainFragment extends BrowseSupportFragment
                     return;
             }
             Bundle bundle =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(context)
+                    ActivityOptionsCompat.makeSceneTransitionAnimation
+                        (activity, (Pair<View, String>[]) null)
                             .toBundle();
-            context.startActivity(intent, bundle);
+            activity.startActivity(intent, bundle);
 
         }
     }
@@ -953,7 +963,7 @@ public class MainFragment extends BrowseSupportFragment
                 int size = rowsAdapter.size();
                 for (int ix = 0 ; ix < size ; ix++) {
                     row = (Row)rowsAdapter.get(ix);
-                    if (row.getHeaderItem() == headerItem)
+                    if ((row != null ? row.getHeaderItem() : null) == headerItem)
                         break;
                 }
                 Row selectedRow = row;
@@ -961,7 +971,7 @@ public class MainFragment extends BrowseSupportFragment
                     break;
                 String alertTitle;
                 if (type == MainFragment.TYPE_SERIES) {
-                    alertTitle = getContext().getString(R.string.title_menu_series,
+                    alertTitle = requireContext().getString(R.string.title_menu_series,
                             headerItem.getName(),headerItem.getBaseName());
                     if (!"LiveTV".equals(headerItem.getBaseName())) {
                         if ("Deleted".equals(headerItem.getBaseName())) {
@@ -983,9 +993,9 @@ public class MainFragment extends BrowseSupportFragment
                 }
                 else {
                     String baseName = headerItem.getBaseName();
-                    if (baseName.length() > 0)
+                    if (!baseName.isEmpty())
                         baseName = baseName + "/";
-                    alertTitle = getContext().getString(R.string.title_menu_videodir,
+                    alertTitle = requireContext().getString(R.string.title_menu_videodir,
                             baseName + headerItem.getName());
                 }
                 prompts.add(getString(R.string.menu_mark_unwatched));
@@ -1001,17 +1011,17 @@ public class MainFragment extends BrowseSupportFragment
                 prompts.add(getString(R.string.menu_remove_from_recent));
                 actions.add(new Action(Video.ACTION_REMOVE_RECENT));
 
-                if (prompts != null && actions != null) {
+                if (!prompts.isEmpty()) {
                     final ArrayList<Action> finalActions = actions; // needed because used in inner class
                     // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
                             R.style.Theme_AppCompat_Dialog_Alert);
                     builder
                             .setTitle(alertTitle)
                             .setItems(prompts.toArray(new String[0]),
                                     new DialogInterface.OnClickListener() {
-                                        ArrayList<Action> mActions = finalActions;
-                                        MainFragment mParent = MainFragment.this;
+                                        final ArrayList<Action> mActions = finalActions;
+                                        final MainFragment mParent = MainFragment.this;
 
                                         public void onClick(DialogInterface dialog, int which) {
                                             // The 'which' argument contains the index position
@@ -1029,7 +1039,7 @@ public class MainFragment extends BrowseSupportFragment
             case MainFragment.TYPE_RECENTS:
                 Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
                 intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_PROG_LIST_OPTIONS);
-                getContext().startActivity(intent);
+                requireContext().startActivity(intent);
                 break;
         }
         return true; // Do not treat long press as a short press
@@ -1047,11 +1057,9 @@ public class MainFragment extends BrowseSupportFragment
                                 return;
                             int[] tasks = taskRunner.getTasks();
                             ArrayList<XmlNode> results = taskRunner.getXmlResults();
-                            switch (tasks[0]) {
-                                case Video.ACTION_GETRECGROUPLIST:
-                                    mRecGroupList = XmlNode.getStringList(results.get(0)); // ACTION_GETRECGROUPLIST
-                                    onMenuClicked(new Action(Video.ACTION_QUERY_UPDATE_RECGROUP), row);
-                                    break;
+                            if (tasks[0] == Video.ACTION_GETRECGROUPLIST) {
+                                mRecGroupList = XmlNode.getStringList(results.get(0)); // ACTION_GETRECGROUPLIST
+                                onMenuClicked(new Action(Video.ACTION_QUERY_UPDATE_RECGROUP), row);
                             }
                         });
                 call.execute(task);
@@ -1059,11 +1067,12 @@ public class MainFragment extends BrowseSupportFragment
 
             case Video.ACTION_QUERY_UPDATE_RECGROUP:
                 String alertTitle = getString(R.string.menu_update_recgrp);
+                @SuppressWarnings("unchecked")
                 ArrayList<String> prompts = (ArrayList<String>) mRecGroupList.clone();
                 prompts.remove("LiveTV");
                 prompts.add(getString(R.string.sched_new_entry));
                 final ArrayList<String> groups = prompts;
-                AlertDialog.Builder listBbuilder = new AlertDialog.Builder(getActivity(),
+                AlertDialog.Builder listBbuilder = new AlertDialog.Builder(requireActivity(),
                         R.style.Theme_AppCompat_Dialog_Alert);
                 listBbuilder
                         .setTitle(alertTitle)
@@ -1090,7 +1099,6 @@ public class MainFragment extends BrowseSupportFragment
                 taskRunner -> {
                     if (getContext() == null)
                         return;
-                    int [] tasks = taskRunner.getTasks();
                     ArrayList<XmlNode> results = taskRunner.getXmlResults();
                     int nSuccess = 0;
                     int nFail = 0;
@@ -1141,9 +1149,10 @@ public class MainFragment extends BrowseSupportFragment
         call.execute(tasks);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void promptForNewValue(int msgid, int nextId, Row row) {
         mNewValueText = null;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(),
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle(msgid);
         EditText input = new EditText(getContext());
@@ -1161,7 +1170,7 @@ public class MainFragment extends BrowseSupportFragment
     private static final String KEY_EXPAND = "EXPAND";
     private static class MythTask implements Runnable {
         boolean mVersionMessageShown = false;
-        Context context;
+//        Context context;
 
         @Override
         public synchronized void run() {
@@ -1172,7 +1181,7 @@ public class MainFragment extends BrowseSupportFragment
                 boolean connection = false;
                 String backendIP = Settings.getString("pref_backend");
                 backendIP = XmlNode.fixIpAddress(backendIP);
-                if (backendIP.length() == 0)
+                if (backendIP.isEmpty())
                     return;
                 while (!connection) {
                     boolean connectionfail = false;
@@ -1198,17 +1207,16 @@ public class MainFragment extends BrowseSupportFragment
                     if (loginNeededNow) {
                         BackendCache.getInstance().loginNeeded = true;
                         try {
-                            String result = null;
-                            StringBuilder urlBuilder = new StringBuilder
-                                    (XmlNode.mythApiUrl(null,
-                                            "/Myth/LoginUser"))
-                                    .append("?UserName=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8"))
-                                    .append("&Password=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8"));
-                            XmlNode loginXml = XmlNode.fetch(urlBuilder.toString(), "POST");
+                            String result;
+                            String url = XmlNode.mythApiUrl(null,
+                                    "/Myth/LoginUser") +
+                                    "?UserName=" +
+                                    URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8") +
+                                    "&Password=" +
+                                    URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8");
+                            XmlNode loginXml = XmlNode.fetch(url, "POST");
                             result = loginXml.getString();connection = true;
-                            if (result.length() == 0) {
+                            if (result.isEmpty()) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
                                 BackendCache.getInstance().authorization = null;
                             }
@@ -1221,7 +1229,7 @@ public class MainFragment extends BrowseSupportFragment
                         loginTried = true;
                     }
                     try {
-                        String result = null;
+                        String result;
                         String url = XmlNode.mythApiUrl(null,
                                 "/Myth/DelayShutdown");
                         if (url == null)
@@ -1241,14 +1249,14 @@ public class MainFragment extends BrowseSupportFragment
                         Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", ex);
                     } catch (IOException e) {
                         if ("Unauthorized: 401".equals(e.getMessage())) {
-                            if (Settings.getString("pref_backend_userid").length() == 0
-                                || Settings.getString("pref_backend_passwd").length() == 0
+                            if (Settings.getString("pref_backend_userid").isEmpty()
+                                || Settings.getString("pref_backend_passwd").isEmpty()
                                 || loginTried) {
                                 BackendCache.getInstance().loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
                                 Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
                                 intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_BACKEND);
-                                context.startActivity(intent);
+                                MyApplication.getAppContext().startActivity(intent);
                             }
                             else
                                 loginNeededNow = true;
@@ -1277,7 +1285,7 @@ public class MainFragment extends BrowseSupportFragment
                     }
                 }
                 if (mFetchTime <= System.currentTimeMillis()
-                        - Settings.getInt("pref_refresh_mins") * 60 * 1000 + 100) {
+                        - (long) Settings.getInt("pref_refresh_mins") * 60 * 1000 + 100) {
                     MainFragment.startFetch(-1, null, null, false);
                 }
             } catch (Exception ex) {
@@ -1292,11 +1300,11 @@ public class MainFragment extends BrowseSupportFragment
             if (context == null)
                 return false;
             String backendMac = Settings.getString("pref_backend_mac");
-            if (backendMac.length() == 0)
+            if (backendMac.isEmpty())
                 return false;
 
             // The magic packet is a broadcast frame containing anywhere within its payload
-            // 6 bytes of all 255 (FF FF FF FF FF FF in hexadecimal), followed by sixteen
+            // 6 bytes of all 255 (FF_FF_FF_FF_FF_FF in hexadecimal), followed by sixteen
             // repetitions of the target computer's 48-bit MAC address, for a total of 102 bytes.
 
             byte [] msg = new byte[102];
@@ -1330,12 +1338,12 @@ public class MainFragment extends BrowseSupportFragment
 
             Log.i(TAG, CLASS + " wakeBackend WakeOnLan(): Sending WOL packet to "+backendMac);
 
-            try {
+            try (DatagramSocket ds = new DatagramSocket()){
                 DatagramPacket DpSend = new DatagramPacket(msg, msg.length, InetAddress.getByName("255.255.255.255"), 9);
-                DatagramSocket ds = new DatagramSocket();
+//                DatagramSocket ds = new DatagramSocket();
                 ds.send(DpSend);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
                 return false;
             }
             return true;
@@ -1344,9 +1352,9 @@ public class MainFragment extends BrowseSupportFragment
 
     public static class ToastShower implements Runnable {
 
-        private Context context;
-        private int toastMsg;
-        private int toastLeng;
+        private final Context context;
+        private final int toastMsg;
+        private final int toastLeng;
         private static Toast mToast;
 
         public ToastShower(Context context, int toastMsg, int toastLeng) {
@@ -1366,8 +1374,8 @@ public class MainFragment extends BrowseSupportFragment
 
     private class SelectionSetter implements Runnable {
 
-        private int selectedRowNum;
-        private int selectedItemNum;
+        private final int selectedRowNum;
+        private final int selectedItemNum;
 
         public SelectionSetter(int selectedRowNum, int selectedItemNum) {
             this.selectedRowNum = selectedRowNum;
@@ -1384,7 +1392,9 @@ public class MainFragment extends BrowseSupportFragment
                 task.setSmoothScroll(false);
                 frag.setSelectedPosition(selectedRowNum, false, task);
                 if (selectedItemNum == -1)
-                    getHeadersSupportFragment().getView().requestFocus();
+                    if (getHeadersSupportFragment().getView() != null) {
+                        getHeadersSupportFragment().getView().requestFocus();
+                    }
             }
         }
     }

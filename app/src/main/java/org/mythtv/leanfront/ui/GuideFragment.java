@@ -19,8 +19,6 @@
 
 package org.mythtv.leanfront.ui;
 
-import static android.app.ProgressDialog.show;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +37,6 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.leanback.app.ProgressBarManager;
-import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
 import androidx.leanback.widget.VerticalGridPresenter;
@@ -74,7 +71,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     private Date mGridStartTime;
     private long mPriorGridStartTime;
     // map chanid to position in object adapter
-    private SparseIntArray mChanArray = new SparseIntArray();
+    private final SparseIntArray mChanArray = new SparseIntArray();
     private GuideSlot [] mTimeRow;
     private static DateFormat mTimeFormatter;
     private static DateFormat mDateFormatter;
@@ -173,12 +170,12 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         int[] actions = new int[10];
         int counter = 0;
         if (card.program != null) {
-            prompts[counter] = getContext().getString(R.string.msg_edit_schedule, card.program.title);
+            prompts[counter] = requireContext().getString(R.string.msg_edit_schedule, card.program.title);
             actions[counter] = ACTION_EDIT_1;
             ++counter;
         }
         if (card.program2 != null) {
-            prompts[counter] = getContext().getString(R.string.msg_edit_schedule2, card.program2.title);
+            prompts[counter] = requireContext().getString(R.string.msg_edit_schedule2, card.program2.title);
             actions[counter] = ACTION_EDIT_2;
             ++counter;
         }
@@ -192,9 +189,9 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                 finalPrompts[i] = prompts[i];
                 finalActions[i] = actions[i];
             }
-            String alertTitle = getContext().getString(R.string.title_program_guide);
+            String alertTitle = requireContext().getString(R.string.title_program_guide);
             // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
                     R.style.Theme_AppCompat_Dialog_Alert);
             builder .setTitle(alertTitle)
                     .setItems(finalPrompts,
@@ -230,7 +227,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
 
     @SuppressLint("SimpleDateFormat")
     private void showTimeSelector() {
-        Context context = getContext();
+        Context context = requireContext();
         if (mTimeFormatter == null) {
             mTimeFormatter = android.text.format.DateFormat.getTimeFormat(context);
             mDateFormatter = android.text.format.DateFormat.getLongDateFormat(context);
@@ -246,11 +243,13 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                 Spinner dateSpin = mDialog.findViewById(R.id.date_select);
                 Spinner timeSpin = mDialog.findViewById(R.id.time_select);
                 long newStartTime = mTimeSelectCalendar.getTimeInMillis()
-                        + (long) dateSpin.getSelectedItemPosition() * 24*60*60*1000
-                        + (long) timeSpin.getSelectedItemPosition() * TIMESLOT_SIZE * 60 * 1000;
+                        + (long) (dateSpin != null ? dateSpin.getSelectedItemPosition() : 0)
+                            * 24*60*60*1000
+                        + (long) (timeSpin != null ? timeSpin.getSelectedItemPosition() : 0)
+                            * TIMESLOT_SIZE * 60 * 1000;
                 mGridStartTime = new Date(newStartTime);
                 Spinner groupSpin = mDialog.findViewById(R.id.group_select);
-                int newIx = groupSpin.getSelectedItemPosition();
+                int newIx = groupSpin != null ? groupSpin.getSelectedItemPosition() : 0;
                 if (newIx != mChanGroupIx) {
                     // Clear this to make sure grid is rebuilt
                     mPriorGridStartTime = 0;
@@ -266,57 +265,63 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         mDialog = builder.create();
         mDialog.show();
         Spinner groupSpin=mDialog.findViewById(R.id.group_select);
-        ArrayAdapter<String> adapter =new ArrayAdapter<>(context,android.R.layout.simple_spinner_item );
-        adapter.addAll(mChanGroupNames);
-        groupSpin.setAdapter(adapter);
-        if (mChanGroupIx > -1)
-            groupSpin.setSelection(mChanGroupIx,false);
+        if (groupSpin != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item );
+            adapter.addAll(mChanGroupNames);
+            groupSpin.setAdapter(adapter);
+            if (mChanGroupIx > -1)
+                groupSpin.setSelection(mChanGroupIx,false);
+        }
         Spinner dateSpin=mDialog.findViewById(R.id.date_select);
-        adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item );
-        mTimeSelectCalendar = new GregorianCalendar();
-        mTimeSelectCalendar.set(GregorianCalendar.HOUR_OF_DAY,0);
-        mTimeSelectCalendar.set(GregorianCalendar.MINUTE,0);
-        mTimeSelectCalendar.set(GregorianCalendar.SECOND,0);
-        mTimeSelectCalendar.set(GregorianCalendar.MILLISECOND,0);
-        // 1 second after midnight this morning real time.
-        long millis = mTimeSelectCalendar.getTimeInMillis() + 1000;
-        long startTimeMillis = mGridStartTime.getTime();
-        int dateSelection = -1;
-        for (int i = 0; i < DATE_RANGE; i++) {
-            Date date = new Date(millis);
-            adapter.add(mDayFormatter.format(date) + mDateFormatter.format(date));
-            long timediff = startTimeMillis - millis;
-            if (dateSelection == -1 && timediff < 24*60*60000)
-                dateSelection = i;
-            millis += (long)(24*60*60*1000);
+        if (dateSpin != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+            mTimeSelectCalendar = new GregorianCalendar();
+            mTimeSelectCalendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
+            mTimeSelectCalendar.set(GregorianCalendar.MINUTE, 0);
+            mTimeSelectCalendar.set(GregorianCalendar.SECOND, 0);
+            mTimeSelectCalendar.set(GregorianCalendar.MILLISECOND, 0);
+            // 1 second after midnight this morning real time.
+            long millis = mTimeSelectCalendar.getTimeInMillis() + 1000;
+            long startTimeMillis = mGridStartTime.getTime();
+            int dateSelection = -1;
+            for (int i = 0; i < DATE_RANGE; i++) {
+                Date date = new Date(millis);
+                adapter.add(mDayFormatter.format(date) + mDateFormatter.format(date));
+                long timediff = startTimeMillis - millis;
+                if (dateSelection == -1 && timediff < 24 * 60 * 60000)
+                    dateSelection = i;
+                millis += 24 * 60 * 60 * 1000;
+            }
+            dateSpin.setAdapter(adapter);
+            dateSpin.setSelection(dateSelection);
         }
-        dateSpin.setAdapter(adapter);
         Spinner timeSpin=mDialog.findViewById(R.id.time_select);
-        adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item );
-        millis = mTimeSelectCalendar.getTimeInMillis(); // midnight last night real time
-        GregorianCalendar cal2 = new GregorianCalendar();
-        cal2.setTime(mGridStartTime);
-        int hour = cal2.get(Calendar.HOUR_OF_DAY);
-        int min = cal2.get(Calendar.MINUTE);
-        cal2.setTimeInMillis(mTimeSelectCalendar.getTimeInMillis());
-        cal2.set(Calendar.HOUR_OF_DAY,hour);
-        cal2.set(Calendar.MINUTE,min);
-        startTimeMillis = cal2.getTimeInMillis();
-        int timeSelection = -1;
-        for (int i = 0; i < 24*60/TIMESLOT_SIZE; i++) {
-            adapter.add(mTimeFormatter.format(new Date(millis)));
-            long timediff = startTimeMillis - millis;
-            if (timeSelection == -1 && timediff < TIMESLOT_SIZE*60000)
-                timeSelection = i;
-            millis += (long)(TIMESLOT_SIZE*60*1000);
+        if (timeSpin != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+            long millis = mTimeSelectCalendar.getTimeInMillis(); // midnight last night real time
+            GregorianCalendar cal2 = new GregorianCalendar();
+            cal2.setTime(mGridStartTime);
+            int hour = cal2.get(Calendar.HOUR_OF_DAY);
+            int min = cal2.get(Calendar.MINUTE);
+            cal2.setTimeInMillis(mTimeSelectCalendar.getTimeInMillis());
+            cal2.set(Calendar.HOUR_OF_DAY, hour);
+            cal2.set(Calendar.MINUTE, min);
+            long startTimeMillis = cal2.getTimeInMillis();
+            int timeSelection = -1;
+            for (int i = 0; i < 24 * 60 / TIMESLOT_SIZE; i++) {
+                adapter.add(mTimeFormatter.format(new Date(millis)));
+                long timediff = startTimeMillis - millis;
+                if (timeSelection == -1 && timediff < TIMESLOT_SIZE * 60000)
+                    timeSelection = i;
+                millis += TIMESLOT_SIZE * 60 * 1000;
+            }
+            timeSpin.setAdapter(adapter);
+            timeSpin.setSelection(timeSelection);
         }
-        timeSpin.setAdapter(adapter);
-        dateSpin.setSelection(dateSelection);
-        timeSpin.setSelection(timeSelection);
     }
 
     private void showChannelSelector(GuideSlot card) {
-        Context context = getContext();
+        Context context = requireContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(context,
                 R.style.Theme_AppCompat_Dialog_Alert);
         builder.setView(R.layout.guide_channel_select_layout);
@@ -326,19 +331,21 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         mDialog.show();
         RadioButton bnJump = mDialog.findViewById(R.id.jump_button);
         EditText textChan = mDialog.findViewById(R.id.chan_num);
-        bnJump.setOnCheckedChangeListener( (buttonView, isChecked) -> {
-            textChan.setEnabled(isChecked);
-            textChan.setText("");
-        });
+        if (bnJump != null && textChan != null) {
+            bnJump.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                textChan.setEnabled(isChecked);
+                textChan.setText("");
+            });
+        }
     }
 
     private void goToChannel(GuideSlot card) {
         RadioButton bnJump = mDialog.findViewById(R.id.jump_button);
         RadioButton bnPlay = mDialog.findViewById(R.id.play_button);
-        if (bnJump.isChecked()) {
-            EditText textChan = mDialog.findViewById(R.id.chan_num);
+        EditText textChan = mDialog.findViewById(R.id.chan_num);
+        if (bnJump != null && textChan != null && bnJump.isChecked()) {
             String text = textChan.getText().toString();
-            int chanNum = 0;
+            int chanNum;
             try {
                 chanNum = Integer.parseInt(text);
             } catch (NumberFormatException e) {
@@ -348,7 +355,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             boolean found = false;
             for (int ix = 0; ix < size; ix += COLUMNS) {
                 GuideSlot slot = (GuideSlot) mGridAdapter.get(ix);
-                if (slot.chanNum >= chanNum) {
+                if (slot != null && slot.chanNum >= chanNum) {
                     setSelectedPosition(ix, false);
                     found = true;
                     break;
@@ -357,7 +364,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             if (!found)
                 setSelectedPosition(size - COLUMNS, false);
         }
-        else if (bnPlay.isChecked()) {
+        else if (bnPlay != null && bnPlay.isChecked()) {
             setProgressBar(true);
             AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
             // null StartTime means start now
@@ -431,7 +438,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             if (chanNumStr != null) {
                 String[] chanNumSplit = chanNumStr.split("[^0123456789]");
                 if (chanNumSplit.length > 0 && chanNumSplit[0] != null
-                  && chanNumSplit[0].length() > 0)
+                  && !chanNumSplit[0].isEmpty())
                     chanNum = Integer.parseInt(chanNumSplit[0]);
             }
             // channel slot at front
@@ -472,7 +479,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         for (int ix = 0; ix < mGridAdapter.size(); ix++) {
             GuideSlot slot = (GuideSlot) mGridAdapter.get(ix);
             int iPos = ix % (TIMESLOTS + 3);
-            if (slot.cellType == GuideSlot.CELL_PROGRAM) {
+            if (slot != null && slot.cellType == GuideSlot.CELL_PROGRAM) {
                 slot.program = null;
                 slot.program2 = null;
                 slot.timeSlot = mTimeRow[iPos].timeSlot;
@@ -547,7 +554,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                         AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
                         call.setVideo(video);
                         call.setRecordId(recordId);
-                        call.setRecordedId(Integer.parseInt(video.recordedid));
+                        call.setRecordedId(Integer.parseInt
+                                (video.recordedid != null ? video.recordedid : "0"));
                         call.execute(
                                 Video.ACTION_STOP_RECORDING,
                                 Video.ACTION_REMOVE_RECORD_RULE);
@@ -578,7 +586,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         mChanGroupIDs = new ArrayList<>();
         mChanGroupIDs.add(0);
         mChanGroupNames = new ArrayList<>();
-        mChanGroupNames.add(getContext().getString(R.string.all_title) + "\t");
+        mChanGroupNames.add(requireContext().getString(R.string.all_title) + "\t");
         XmlNode groupNode = null;
         for (; ; ) {
             if (groupNode == null)
@@ -658,14 +666,16 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
 
                 for (int ix = adapterPos + startPos; ix < adapterPos + endPos; ix++) {
                     GuideSlot slot = (GuideSlot) mGridAdapter.get(ix);
-                    if (slot.program == null)
-                        slot.program = program;
-                    else if (slot.program2 == null) {
-                        if (program.startTime.after(slot.program.startTime))
-                            slot.program2 = program;
-                        else {
-                            slot.program2 = slot.program;
+                    if (slot != null) {
+                        if (slot.program == null)
                             slot.program = program;
+                        else if (slot.program2 == null) {
+                            if (program.startTime.after(slot.program.startTime))
+                                slot.program2 = program;
+                            else {
+                                slot.program2 = slot.program;
+                                slot.program = program;
+                            }
                         }
                     }
                     mGridAdapter.notifyArrayItemRangeChanged(ix, 1);
@@ -675,18 +685,12 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             if (++start % pageSize == 0) {
                 final int nextstart = start;
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        GuideFragment.this.loadGuideData(result, nextstart);
-                    }
-                }, pauseTime);
+                handler.postDelayed(
+                        () -> GuideFragment.this.loadGuideData(result, nextstart), pauseTime);
                 return;
             }
         }
         mLoadInProcess = null;
     }
-
-
 
 }

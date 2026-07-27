@@ -71,8 +71,6 @@ public class RecordRule {
     public boolean isFromProgram;
     public boolean isFromSchedule;
 
-    private static final String TAG = "lfe";
-    private static final String CLASS = "RecordSchedule";
     private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
 
     private static DateFormat timeFormatter;
@@ -194,11 +192,11 @@ public class RecordRule {
         return this;
     }
 
-    public RecordRule mergeProgram(RecordRule program) {
+    public void mergeProgram(RecordRule program) {
         if (program != null) {
             // In searches, these fields contain search and additional tables
             // so do not fill in the subtitle and description
-            if ("None".equals(searchType)) {
+            if ("None".equals(searchType) || "Manual Search".equals(searchType)) {
                 title = program.title;
                 subtitle = program.subtitle;
                 description = program.description;
@@ -217,7 +215,6 @@ public class RecordRule {
             season = program.season;
             episode = program.episode;
         }
-        return this;
     }
 
     public RecordRule mergeTemplate(RecordRule template) {
