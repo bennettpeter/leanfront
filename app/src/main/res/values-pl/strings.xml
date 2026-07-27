@@ -14,7 +14,7 @@
   <string name="resume_last_1">Graj od ostatniego</string>
   <string name="resume_last_2">Pozycja do gry</string>
   <string name="play_other_1">Odtwórz z</string>
-  <string name="play_other_2">Inny...</string>
+  <string name="play_other_2">Inny…</string>
   <string name="delete_1">Usuwać</string>
   <string name="delete_2">Nagranie</string>
   <string name="undelete_1">Cofnij usunięcie</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Przewodnik po programie Pełne wyniki wyszukiwania dla „%1$s”</string>
   <string name="search_result_2_progs_500">Przewodnik po programach First 500 Pełne wyniki wyszukiwania dla „%1$s”</string>
   <string name="search_result_2_no_progs">Nie znaleziono przewodnika po programach. Znaleziono pełne wyniki wyszukiwania dla „%1$s”</string>
-  <string name="mobile_welcome_title">Witamy w MythTV Leanfront</string>
-  <string name="mobile_welcome_description">MythTV Leanfront jest przeznaczony dla Android TV. Sterowanie za pomocą ekranu dotykowego nie jest optymalne.
-        Aby kontynuować, kliknij poniższy baner.</string>
+  <string name="mobile_welcome_title">Witamy w MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">To jest telewizyjna wersja MythTV Lean Frontend.
+        Jest przeznaczony dla Android TV. Sterowanie za pomocą ekranu dotykowego nie jest optymalne.
+        Dostępna jest wersja mobilna w sklepie Play oraz online.
+        Jeśli naprawdę chcesz korzystać z tej wersji, kliknij poniższy baner,
+        w przeciwnym razie zainstaluj mobilną wersję aplikacji.</string>
   <string name="pref_title_settings">Ustawienia MythTV</string>
   <string name="pref_title_backend_ip">Adres IP lub nazwa DNS</string>
   <string name="pref_title_backend">Backend MythTV</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Automatyczne odtwarzanie</string>
   <string name="pref_autoplay_desc">Po zakończeniu odtwarzania automatycznie rozpocznie się następny film lub odcinek.</string>
   <string name="pref_captions">Numer podpisu do włączenia</string>
-  <string name="pref_speed">Szybkość odtwarzania w procentach (10-800). Domyślnie 100.</string>
-  <string name="pref_volume">Głośność dźwięku w procentach (10-1000). Domyślnie 100.</string>
+  <string name="pref_speed">Szybkość odtwarzania w procentach (10–800). Domyślnie 100.</string>
+  <string name="pref_volume">Głośność dźwięku w procentach (10–1000). Domyślnie 100.</string>
   <string name="pref_audio_sync">Regulacja synchronizacji dźwięku w milisekundach</string>
   <string name="pref_poss_empty">Zignoruj ​​dodatkowy utwór</string>
   <string name="pref_poss_empty_desc">Ustaw to, jeśli masz nagrania z zniekształconą drugą ścieżką audio (np. UK FreeView).</string>

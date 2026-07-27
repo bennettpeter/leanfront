@@ -14,7 +14,7 @@
   <string name="resume_last_1">Riproduci dall\'ultimo</string>
   <string name="resume_last_2">Gioca posizione</string>
   <string name="play_other_1">Riproduci da</string>
-  <string name="play_other_2">Altro...</string>
+  <string name="play_other_2">Altro…</string>
   <string name="delete_1">Eliminare</string>
   <string name="delete_2">Registrazione</string>
   <string name="undelete_1">Annulla eliminazione</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Guida al programma Risultati di ricerca completi per \'%1$s\'</string>
   <string name="search_result_2_progs_500">Primi 500 risultati della ricerca completa della guida ai programmi per \'%1$s\'</string>
   <string name="search_result_2_no_progs">Nessun risultato completo della ricerca della guida del programma trovato per \'%1$s\'</string>
-  <string name="mobile_welcome_title">Benvenuti a MythTV Leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront è progettato per Android TV. Il controllo del touch screen non è ottimale.
-        Per procedere, tocca il banner qui sotto.</string>
+  <string name="mobile_welcome_title">Benvenuti nel frontend snello di MythTV</string>
+  <string name="mobile_welcome_description">Questa è la versione TV di MythTV Lean Frontend.
+        È progettato per Android TV. Il controllo del touch screen non è ottimale.
+        C\'è una versione mobile disponibile nel Play Store e online.
+        Se vuoi davvero utilizzare questa versione, tocca il banner qui sotto,
+        altrimenti installa la versione mobile dell\'app.</string>
   <string name="pref_title_settings">Impostazioni di MythTV</string>
   <string name="pref_title_backend_ip">Indirizzo IP o nome DNS</string>
   <string name="pref_title_backend">Backend di MythTV</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Riproduzione automatica</string>
   <string name="pref_autoplay_desc">Al termine della riproduzione avvia automaticamente il video o l\'episodio successivo.</string>
   <string name="pref_captions">Numero della didascalia da abilitare</string>
-  <string name="pref_speed">Velocità di riproduzione in percentuale (10-800). Predefinito 100.</string>
-  <string name="pref_volume">Volume audio come percentuale (10-1000). Predefinito 100.</string>
+  <string name="pref_speed">Velocità di riproduzione in percentuale (10–800). Predefinito 100.</string>
+  <string name="pref_volume">Volume audio come percentuale (10–1000). Predefinito 100.</string>
   <string name="pref_audio_sync">Regolazione della sincronizzazione audio in millisecondi</string>
   <string name="pref_poss_empty">Ignora traccia extra</string>
   <string name="pref_poss_empty_desc">Imposta questo se si dispone di registrazioni con la seconda traccia audio malformata (ad esempio UK Freeview).</string>

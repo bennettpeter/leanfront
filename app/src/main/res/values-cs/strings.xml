@@ -14,7 +14,7 @@
   <string name="resume_last_1">Hrát od poslední</string>
   <string name="resume_last_2">Play Position</string>
   <string name="play_other_1">Přehrát od</string>
-  <string name="play_other_2">Jiný...</string>
+  <string name="play_other_2">Ostatní…</string>
   <string name="delete_1">Vymazat</string>
   <string name="delete_2">Záznam</string>
   <string name="undelete_1">Zrušit smazání</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Programový průvodce Úplné výsledky vyhledávání pro „%1$s“</string>
   <string name="search_result_2_progs_500">Prvních 500 programového průvodce Úplné výsledky hledání pro \'%1$s\'</string>
   <string name="search_result_2_no_progs">Nebyl nalezen žádný programový průvodce Kompletní výsledky vyhledávání pro \'%1$s\'</string>
-  <string name="mobile_welcome_title">Vítejte v MythTV leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront je navržen pro Android TV. Ovládání dotykovou obrazovkou není optimální.
-        Chcete-li pokračovat, klepněte na banner níže.</string>
+  <string name="mobile_welcome_title">Vítejte v MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Toto je televizní verze MythTV Lean Frontend.
+        Je určen pro Android TV. Ovládání dotykovou obrazovkou není optimální.
+        V obchodě Play a online je k dispozici mobilní verze.
+        Pokud opravdu chcete používat tuto verzi, klepněte na banner níže,
+        jinak nainstalujte mobilní verzi aplikace.</string>
   <string name="pref_title_settings">Nastavení MythTV</string>
   <string name="pref_title_backend_ip">IP adresa nebo název DNS</string>
   <string name="pref_title_backend">Backend MythTV</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Automatické přehrávání</string>
   <string name="pref_autoplay_desc">Na konci přehrávání se automaticky spustí další video nebo epizoda.</string>
   <string name="pref_captions">Číslo titulku, které chcete povolit</string>
-  <string name="pref_speed">Rychlost přehrávání v procentech (10-800). Výchozí 100.</string>
-  <string name="pref_volume">Hlasitost zvuku v procentech (10-1000). Výchozí 100.</string>
+  <string name="pref_speed">Rychlost přehrávání v procentech (10–800). Výchozí 100.</string>
+  <string name="pref_volume">Hlasitost zvuku v procentech (10–1000). Výchozí 100.</string>
   <string name="pref_audio_sync">Nastavení synchronizace zvuku v milisekundách</string>
   <string name="pref_poss_empty">Ignorujte další skladbu</string>
   <string name="pref_poss_empty_desc">Nastavte to, pokud máte nahrávky s malformovanou druhou zvukovou stopou (např. UK Freeview).</string>
@@ -140,7 +143,7 @@
   <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné uživatelské jméno a heslo.</string>
   <string name="all_title">Všechno</string>
   <string name="recents_title">nedávno shlédnutý</string>
-  <string name="lb_playback_controls_fast_forward">Skok vpřed</string>
+  <string name="lb_playback_controls_fast_forward">Skok Fwd</string>
   <string name="playback_zoom_size">Velikost</string>
   <string name="playback_aspect_stretch">Protáhnout se</string>
   <string name="video_minutes">minut</string>

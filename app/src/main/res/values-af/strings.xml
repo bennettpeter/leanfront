@@ -14,7 +14,7 @@
   <string name="resume_last_1">Speel van Laaste</string>
   <string name="resume_last_2">Speel posisie</string>
   <string name="play_other_1">Speel Van</string>
-  <string name="play_other_2">Ander...</string>
+  <string name="play_other_2">Ander…</string>
   <string name="delete_1">Vee uit</string>
   <string name="delete_2">Opname</string>
   <string name="undelete_1">Ontvee</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Programgids Volledige soekresultate vir \'%1$s\'</string>
   <string name="search_result_2_progs_500">Eerste 500 Programgids Volledige soekresultate vir \'%1$s\'</string>
   <string name="search_result_2_no_progs">Geen programgids volledige soekresultate gevind vir \'%1$s\'</string>
-  <string name="mobile_welcome_title">Welkom by MythTV leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront is ontwerp vir Android TV. Raakskermbeheer is nie optimaal nie.
-        Tik op die banier hieronder om voort te gaan.</string>
+  <string name="mobile_welcome_title">Welkom by MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Dit is die TV-weergawe van MythTV Lean Frontend.
+        Dit is ontwerp vir Android TV. Raakskermbeheer is nie optimaal nie.
+        Daar is \'n mobiele weergawe beskikbaar in die speelwinkel en aanlyn.
+        As jy regtig hierdie weergawe wil gebruik, tik die banier hieronder,
+        andersins installeer die mobiele weergawe van die toepassing.</string>
   <string name="pref_title_settings">MythTV-instellings</string>
   <string name="pref_title_backend_ip">IP-adres of DNS-naam</string>
   <string name="pref_title_backend">MythTV Backend</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Outospeel</string>
   <string name="pref_autoplay_desc">Begin die volgende video of episode outomaties aan die einde van die afspeel.</string>
   <string name="pref_captions">Onderskrifnommer om te aktiveer</string>
-  <string name="pref_speed">Terugspeelspoed as persentasie (10-800). Verstek 100.</string>
-  <string name="pref_volume">Oudiovolume as persentasie (10-1000). Verstek 100.</string>
+  <string name="pref_speed">Terugspeelspoed as persentasie (10–800). Verstek 100.</string>
+  <string name="pref_volume">Oudiovolume as persentasie (10–1000). Verstek 100.</string>
   <string name="pref_audio_sync">Oudio-sinkronisering aanpassing in millisekondes</string>
   <string name="pref_poss_empty">Ignoreer ekstra snit</string>
   <string name="pref_poss_empty_desc">Stel dit in as u opnames het met misvormde tweede klankbaan (bv. UK Freeview).</string>

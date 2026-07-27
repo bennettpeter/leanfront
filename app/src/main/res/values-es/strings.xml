@@ -14,7 +14,7 @@
   <string name="resume_last_1">Jugar desde el último</string>
   <string name="resume_last_2">Posición de juego</string>
   <string name="play_other_1">Reproducir desde</string>
-  <string name="play_other_2">Otro...</string>
+  <string name="play_other_2">Otro…</string>
   <string name="delete_1">Borrar</string>
   <string name="delete_2">Grabación</string>
   <string name="undelete_1">Recuperar</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Guía de programas Resultados completos de la búsqueda para \'%1$s\'</string>
   <string name="search_result_2_progs_500">Resultados completos de la búsqueda de la guía del programa First 500 para \'%1$s\'</string>
   <string name="search_result_2_no_progs">No se encontraron resultados de búsqueda completos en la guía de programas para \'%1$s\'</string>
-  <string name="mobile_welcome_title">Bienvenido a MythTV leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront está diseñado para Android TV. El control de la pantalla táctil no es óptimo.
-        Para continuar, toque el banner a continuación.</string>
+  <string name="mobile_welcome_title">Bienvenido a MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Esta es la versión para televisión de MythTV Lean Frontend.
+        Está diseñado para Android TV. El control de la pantalla táctil no es óptimo.
+        Hay una versión móvil disponible en Play Store y en línea.
+        Si realmente desea utilizar esta versión, toque el banner a continuación,
+        de lo contrario, instale la versión móvil de la aplicación.</string>
   <string name="pref_title_settings">Configuración de MyTV</string>
   <string name="pref_title_backend_ip">Dirección IP o nombre DNS</string>
   <string name="pref_title_backend">Backend de MyTV</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Auto-reproducción</string>
   <string name="pref_autoplay_desc">Al final de la reproducción, se inicia automáticamente el siguiente vídeo o episodio.</string>
   <string name="pref_captions">Número de título para habilitar</string>
-  <string name="pref_speed">Velocidad de reproducción como porcentaje (10-800). Por defecto 100.</string>
-  <string name="pref_volume">Volumen de audio como porcentaje (10-1000). Por defecto 100.</string>
+  <string name="pref_speed">Velocidad de reproducción como porcentaje (10–800). Por defecto 100.</string>
+  <string name="pref_volume">Volumen de audio como porcentaje (10–1000). Por defecto 100.</string>
   <string name="pref_audio_sync">Ajuste de sincronización de audio en milisegundos</string>
   <string name="pref_poss_empty">Ignorar Track Extra</string>
   <string name="pref_poss_empty_desc">Establezca esto si tiene grabaciones con la segunda pista de audio malformada (por ejemplo, el Reino Unido Freeview).</string>

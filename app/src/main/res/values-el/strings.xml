@@ -14,7 +14,7 @@
   <string name="resume_last_1">Παίξτε από το τελευταίο</string>
   <string name="resume_last_2">Θέση αναπαραγωγής</string>
   <string name="play_other_1">Παίξτε από</string>
-  <string name="play_other_2">Αλλα...</string>
+  <string name="play_other_2">Αλλος…</string>
   <string name="delete_1">Διαγράφω</string>
   <string name="delete_2">Εγγραφή</string>
   <string name="undelete_1">Κατάργηση Διαγραφής</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Οδηγός προγράμματος Πλήρη αποτελέσματα αναζήτησης για \'%1$s\'</string>
   <string name="search_result_2_progs_500">Οδηγός για τα πρώτα 500 προγράμματα Πλήρη αποτελέσματα αναζήτησης για \'%1$s\'</string>
   <string name="search_result_2_no_progs">Δεν βρέθηκαν Οδηγός προγράμματος Πλήρη αποτελέσματα αναζήτησης για το \'%1$s\'</string>
-  <string name="mobile_welcome_title">Καλώς ήρθατε στο MythTV leanfront</string>
-  <string name="mobile_welcome_description">Το MythTV leanfront έχει σχεδιαστεί για Android TV. Ο έλεγχος της οθόνης αφής δεν είναι ο βέλτιστος.
-        Για να προχωρήσετε, πατήστε το banner παρακάτω.</string>
+  <string name="mobile_welcome_title">Καλώς ήρθατε στο MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Αυτή είναι η τηλεοπτική έκδοση του MythTV Lean Frontend.
+        Έχει σχεδιαστεί για Android TV. Ο έλεγχος της οθόνης αφής δεν είναι ο βέλτιστος.
+        Υπάρχει διαθέσιμη έκδοση για κινητά στο play store και online.
+        Εάν θέλετε πραγματικά να χρησιμοποιήσετε αυτήν την έκδοση, πατήστε το banner παρακάτω,
+        διαφορετικά εγκαταστήστε την έκδοση της εφαρμογής για κινητά.</string>
   <string name="pref_title_settings">Ρυθμίσεις MythTV</string>
   <string name="pref_title_backend_ip">Διεύθυνση IP ή όνομα DNS</string>
   <string name="pref_title_backend">MythTV Backend</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Αυτόματη αναπαραγωγή</string>
   <string name="pref_autoplay_desc">Στο τέλος της αναπαραγωγής ξεκινά αυτόματα το επόμενο βίντεο ή επεισόδιο.</string>
   <string name="pref_captions">Αριθμός λεζάντας για ενεργοποίηση</string>
-  <string name="pref_speed">Ταχύτητα αναπαραγωγής ως ποσοστό (10-800). Προεπιλογή 100.</string>
-  <string name="pref_volume">Ένταση ήχου ως ποσοστό (10-1000). Προεπιλογή 100.</string>
+  <string name="pref_speed">Ταχύτητα αναπαραγωγής ως ποσοστό (10–800). Προεπιλογή 100.</string>
+  <string name="pref_volume">Ένταση ήχου ως ποσοστό (10–1000). Προεπιλογή 100.</string>
   <string name="pref_audio_sync">Ρύθμιση συγχρονισμού ήχου σε χιλιοστά του δευτερολέπτου</string>
   <string name="pref_poss_empty">Αγνοήστε επιπλέον κομμάτι</string>
   <string name="pref_poss_empty_desc">Ρυθμίστε αυτό εάν έχετε εγγραφές με δυσμορφωμένο δεύτερο κομμάτι ήχου (π.χ. UK FreeView).</string>

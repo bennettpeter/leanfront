@@ -14,7 +14,7 @@
   <string name="resume_last_1">Jouer depuis le dernier</string>
   <string name="resume_last_2">Position de jeu</string>
   <string name="play_other_1">Jouer à partir de</string>
-  <string name="play_other_2">Autre...</string>
+  <string name="play_other_2">Autre…</string>
   <string name="delete_1">Supprimer</string>
   <string name="delete_2">Enregistrement</string>
   <string name="undelete_1">Annuler la suppression</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Résultats de recherche complets du guide du programme pour \'%1$s\'</string>
   <string name="search_result_2_progs_500">Résultats de recherche complets du guide des 500 premiers programmes pour \'%1$s\'</string>
   <string name="search_result_2_no_progs">Aucun résultat de recherche complet du guide des programmes trouvé pour \'%1$s\'</string>
-  <string name="mobile_welcome_title">Bienvenue sur MythTV Leanfront</string>
-  <string name="mobile_welcome_description">MythTV Leanfront est conçu pour Android TV. Le contrôle par écran tactile n’est pas optimal.
-        Pour continuer, appuyez sur la bannière ci-dessous.</string>
+  <string name="mobile_welcome_title">Bienvenue sur MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Il s\'agit de la version TV de MythTV Lean Frontend.
+        Il est conçu pour Android TV. Le contrôle par écran tactile n’est pas optimal.
+        Il existe une version mobile disponible dans le Play Store et en ligne.
+        Si vous souhaitez vraiment utiliser cette version, appuyez sur la bannière ci-dessous,
+        sinon installez la version mobile de l\'application.</string>
   <string name="pref_title_settings">Paramètres de MythTV</string>
   <string name="pref_title_backend_ip">Adresse IP ou nom DNS</string>
   <string name="pref_title_backend">Back-end MythTV</string>
@@ -104,7 +107,7 @@
   <string name="pref_autoplay">Lecture automatique</string>
   <string name="pref_autoplay_desc">À la fin de la lecture, démarrez automatiquement la vidéo ou l\'épisode suivant.</string>
   <string name="pref_captions">Numéro de légende à activer</string>
-  <string name="pref_speed">Vitesse de lecture en pourcentage (10-800). Par défaut 100.</string>
+  <string name="pref_speed">Vitesse de lecture en pourcentage (10–800). Par défaut 100.</string>
   <string name="pref_volume">Volume audio en pourcentage (10-1000). Par défaut 100.</string>
   <string name="pref_audio_sync">Ajustement de la synchronisation audio en millisecondes</string>
   <string name="pref_poss_empty">Ignorez la piste supplémentaire</string>

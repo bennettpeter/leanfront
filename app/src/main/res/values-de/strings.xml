@@ -14,7 +14,7 @@
   <string name="resume_last_1">Spielen Sie vom Letzten</string>
   <string name="resume_last_2">Spielposition</string>
   <string name="play_other_1">Abspielen von</string>
-  <string name="play_other_2">Andere...</string>
+  <string name="play_other_2">Andere…</string>
   <string name="delete_1">Löschen</string>
   <string name="delete_2">Aufzeichnung</string>
   <string name="undelete_1">Löschen rückgängig machen</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Vollständige Suchergebnisse für „%1$s“ im Programmführer</string>
   <string name="search_result_2_progs_500">First 500 Program Guide Vollständige Suchergebnisse für „%1$s“</string>
   <string name="search_result_2_no_progs">Für „%1$s“ wurden keine vollständigen Suchergebnisse zum Programmführer gefunden.</string>
-  <string name="mobile_welcome_title">Willkommen bei MythTV Leanfront</string>
-  <string name="mobile_welcome_description">MythTV Leanfront wurde für Android TV entwickelt. Die Touchscreen-Steuerung ist nicht optimal.
-        Um fortzufahren, tippen Sie auf das Banner unten.</string>
+  <string name="mobile_welcome_title">Willkommen beim MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Dies ist die TV-Version von MythTV Lean Frontend.
+        Es ist für Android TV konzipiert. Die Touchscreen-Steuerung ist nicht optimal.
+        Es gibt eine mobile Version im Play Store und online.
+        Wenn Sie diese Version wirklich verwenden möchten, tippen Sie auf das Banner unten.
+        Andernfalls installieren Sie die mobile Version der App.</string>
   <string name="pref_title_settings">MythTV-Einstellungen</string>
   <string name="pref_title_backend_ip">IP-Adresse oder DNS-Name</string>
   <string name="pref_title_backend">MythTV-Backend</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Automatisches Abspielen</string>
   <string name="pref_autoplay_desc">Am Ende der Wiedergabe startet automatisch das nächste Video oder die nächste Folge.</string>
   <string name="pref_captions">Zu aktivierende Untertitelnummer</string>
-  <string name="pref_speed">Wiedergabegeschwindigkeit in Prozent (10-800). Standard 100.</string>
-  <string name="pref_volume">Audiolautstärke in Prozent (10-1000). Standard 100.</string>
+  <string name="pref_speed">Wiedergabegeschwindigkeit in Prozent (10–800). Standard 100.</string>
+  <string name="pref_volume">Audiolautstärke in Prozent (10–1000). Standard 100.</string>
   <string name="pref_audio_sync">Audio-Sync-Anpassung in Millisekunden</string>
   <string name="pref_poss_empty">Ignorieren Sie zusätzliche Strecke</string>
   <string name="pref_poss_empty_desc">Legen Sie dies fest, wenn Sie Aufnahmen mit missgebildeten zweiten Audiospur (z. B. UK Freeview) haben.</string>

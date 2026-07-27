@@ -14,7 +14,7 @@
   <string name="resume_last_1">Speel vanaf de laatste</string>
   <string name="resume_last_2">Speel positie</string>
   <string name="play_other_1">Speel vanaf</string>
-  <string name="play_other_2">Ander...</string>
+  <string name="play_other_2">Ander…</string>
   <string name="delete_1">Verwijderen</string>
   <string name="delete_2">Opname</string>
   <string name="undelete_1">Verwijderen ongedaan maken</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Programmagids Volledige zoekresultaten voor \'%1$s\'</string>
   <string name="search_result_2_progs_500">Eerste 500 Programmagids Volledige zoekresultaten voor \'%1$s\'</string>
   <string name="search_result_2_no_progs">Geen programmagids volledige zoekresultaten gevonden voor \'%1$s\'</string>
-  <string name="mobile_welcome_title">Welkom bij MythTV leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront is ontworpen voor Android TV. Bediening via touchscreen is niet optimaal.
-        Tik op de onderstaande banner om door te gaan.</string>
+  <string name="mobile_welcome_title">Welkom bij MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Dit is de tv-versie van MythTV Lean Frontend.
+        Het is ontworpen voor Android TV. Bediening via touchscreen is niet optimaal.
+        Er is een mobiele versie beschikbaar in de Play Store en online.
+        Als je deze versie echt wilt gebruiken, tik dan op de banner hieronder,
+        installeer anders de mobiele versie van de app.</string>
   <string name="pref_title_settings">MythTV-instellingen</string>
   <string name="pref_title_backend_ip">IP-adres of DNS-naam</string>
   <string name="pref_title_backend">MythTV-backend</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Automatisch afspelen</string>
   <string name="pref_autoplay_desc">Aan het einde van het afspelen start automatisch de volgende video of aflevering.</string>
   <string name="pref_captions">Onderschriftnummer dat moet worden ingeschakeld</string>
-  <string name="pref_speed">Afspeelsnelheid als percentage (10-800). Standaard 100.</string>
-  <string name="pref_volume">Audiovolume als percentage (10-1000). Standaard 100.</string>
+  <string name="pref_speed">Afspeelsnelheid als percentage (10–800). Standaard 100.</string>
+  <string name="pref_volume">Audiovolume als percentage (10–1000). Standaard 100.</string>
   <string name="pref_audio_sync">Aanpassing van audiosynchronisatie in milliseconden</string>
   <string name="pref_poss_empty">Negeer extra nummer</string>
   <string name="pref_poss_empty_desc">Stel dit in als u opnames hebt met een misvormde tweede audiotrack (bijv. UK Freeview).</string>

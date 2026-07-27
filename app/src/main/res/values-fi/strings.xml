@@ -14,7 +14,7 @@
   <string name="resume_last_1">Jatka</string>
   <string name="resume_last_2">katselua</string>
   <string name="play_other_1">Toista alkaen</string>
-  <string name="play_other_2">Muut...</string>
+  <string name="play_other_2">Muut…</string>
   <string name="delete_1">Poista</string>
   <string name="delete_2">Tallenne</string>
   <string name="undelete_1">Palauta</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Ohjelmaoppaan täydelliset hakutulokset haulle \'%1$s\'</string>
   <string name="search_result_2_progs_500">Ensimmäiset 500 ohjelmaoppaan täydellistä hakutulosta haulle \'%1$s\'</string>
   <string name="search_result_2_no_progs">Ohjelmaoppaan täydellisiä hakutuloksia ei löytynyt haulle \'%1$s\'</string>
-  <string name="mobile_welcome_title">Tervetuloa MythTV leanfronttiin</string>
-  <string name="mobile_welcome_description">MythTV leanfront on suunniteltu Android TV:lle. Kosketusnäytön ohjaus ei ole optimaalinen.
-        Jatka napauttamalla alla olevaa banneria.</string>
+  <string name="mobile_welcome_title">Tervetuloa MythTV Lean Frontendiin</string>
+  <string name="mobile_welcome_description">Tämä on MythTV Lean Frontendin TV-versio.
+        Se on suunniteltu Android TV:lle. Kosketusnäytön ohjaus ei ole optimaalinen.
+        Mobiiliversio on saatavilla Play-kaupasta ja verkossa.
+        Jos todella haluat käyttää tätä versiota, napauta alla olevaa banneria,
+        muussa tapauksessa asenna sovelluksen mobiiliversio.</string>
   <string name="pref_title_settings">MythTV asetukset</string>
   <string name="pref_title_backend_ip">IP-osoite tai DNS-nimi</string>
   <string name="pref_title_backend">MythTV taustaohjelma</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Automaattinen toisto</string>
   <string name="pref_autoplay_desc">Toiston lopussa aloita automaattisesti seuraava video tai jakso.</string>
   <string name="pref_captions">Ota käyttöön kuvatekstinumero</string>
-  <string name="pref_speed">Toistonopeus prosentteina (10-800). Oletusarvo 100.</string>
-  <string name="pref_volume">Äänenvoimakkuus prosentteina (10-1000). Oletusarvo 100.</string>
+  <string name="pref_speed">Toistonopeus prosentteina (10–800). Oletusarvo 100.</string>
+  <string name="pref_volume">Äänenvoimakkuus prosentteina (10–1000). Oletusarvo 100.</string>
   <string name="pref_audio_sync">Äänen u säätö millisekunteina</string>
   <string name="pref_poss_empty">Ohita ylimääräinen kappale</string>
   <string name="pref_poss_empty_desc">Aseta tämä, jos sinulla on nauhoituksia epämuodollisella toisella ääniradalla (esim. UK Freeview).</string>

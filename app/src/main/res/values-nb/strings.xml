@@ -14,7 +14,7 @@
   <string name="resume_last_1">Spill fra Last</string>
   <string name="resume_last_2">Spilleposisjon</string>
   <string name="play_other_1">Spill fra</string>
-  <string name="play_other_2">Annen...</string>
+  <string name="play_other_2">Annen…</string>
   <string name="delete_1">Slett</string>
   <string name="delete_2">Innspilling</string>
   <string name="undelete_1">Angre sletting</string>
@@ -33,9 +33,12 @@
   <string name="search_result_2_progs">Programguide Fullstendige søkeresultater for \'%1$s\'</string>
   <string name="search_result_2_progs_500">Første 500 programguide fullstendige søkeresultater for \'%1$s\'</string>
   <string name="search_result_2_no_progs">Ingen programguide fullstendige søkeresultater funnet for \'%1$s\'</string>
-  <string name="mobile_welcome_title">Velkommen til MythTV leanfront</string>
-  <string name="mobile_welcome_description">MythTV leanfront er designet for Android TV. Berøringsskjermkontroll er ikke optimal.
-        For å fortsette, trykk på banneret nedenfor.</string>
+  <string name="mobile_welcome_title">Velkommen til MythTV Lean Frontend</string>
+  <string name="mobile_welcome_description">Dette er TV-versjonen av MythTV Lean Frontend.
+        Den er designet for Android TV. Berøringsskjermkontroll er ikke optimal.
+        Det er en mobilversjon tilgjengelig i play-butikken og på nett.
+        Hvis du virkelig vil bruke denne versjonen, trykk på banneret nedenfor,
+        ellers installer mobilversjonen av appen.</string>
   <string name="pref_title_settings">MythTV-innstillinger</string>
   <string name="pref_title_backend_ip">IP-adresse eller DNS-navn</string>
   <string name="pref_title_backend">MythTV Backend</string>
@@ -104,8 +107,8 @@
   <string name="pref_autoplay">Auto spill</string>
   <string name="pref_autoplay_desc">På slutten av avspillingen starter automatisk neste video eller episode.</string>
   <string name="pref_captions">Bildetekstnummer for å aktivere</string>
-  <string name="pref_speed">Avspillingshastighet i prosent (10-800). Standard 100.</string>
-  <string name="pref_volume">Lydvolum i prosent (10-1000). Standard 100.</string>
+  <string name="pref_speed">Avspillingshastighet i prosent (10–800). Standard 100.</string>
+  <string name="pref_volume">Lydvolum i prosent (10–1000). Standard 100.</string>
   <string name="pref_audio_sync">Justering av lydsynkronisering i millisekunder</string>
   <string name="pref_poss_empty">Ignorer ekstra spor</string>
   <string name="pref_poss_empty_desc">Angi dette hvis du har innspillinger med misdannet Second Audio Track (f.eks. UK Freeview).</string>
