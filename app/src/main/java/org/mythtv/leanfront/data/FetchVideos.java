@@ -25,9 +25,8 @@
 package org.mythtv.leanfront.data;
 
 import android.app.Activity;
-import android.app.IntentService;
 import android.content.ContentValues;
-import android.content.Intent;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -40,35 +39,43 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.mythtv.leanfront.data.XmlNode.mythApiUrl;
 
 /**
- * FetchVideoService is responsible for fetching the videos from the Internet and inserting the
+ * FetchVideos is responsible for fetching the videos from the Internet and inserting the
  * results into a local SQLite database.
  */
-public class FetchVideoService extends IntentService {
-    private static final String TAG = "FetchVideoService";
-    public static final String RECORDEDID = "RecordedId";
-    public static final String RECTYPE = "RecType";
-    public static final String RECGROUP = "RecGroup";
-    public static final String ISPROGRESSBAR = "IsProgressBar";
+public class FetchVideos implements Runnable {
+
+    private static final String TAG = "FetchVideos";
     public static ReentrantLock fullRunLock = new ReentrantLock();
-    /**
-     * Creates an IntentService with a default name for the worker thread.
-     */
-    public FetchVideoService() {
-        super(TAG);
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private final int recType;
+    private final String recordedId;
+    private String recGroup;
+    private final Context  context;
+    private final boolean isProgressBar;
+    public boolean success = false;
+
+    public FetchVideos(Context context, int recType, String recordedId, String recGroup, boolean isProgressBar) {
+        this.context = context;
+        this.recType = recType;
+        this.recordedId = recordedId;
+        this.recGroup = recGroup;
+        this.isProgressBar = isProgressBar;
+    }
+
+    public void execute() {
+        executor.submit(this);
     }
 
     @Override
-    protected void onHandleIntent(Intent workIntent) {
-        int recType = workIntent.getIntExtra(RECTYPE, -1);
-        String recordedId = workIntent.getStringExtra(RECORDEDID);
-        String recGroup = workIntent.getStringExtra(RECGROUP);
-        boolean isProgressBar = workIntent.getBooleanExtra(ISPROGRESSBAR, false);
-
+    public void run() {
+        success = true;
         if (recType == -1 || recordedId == null) {
             // Do not allow two full downloads at the same time
             if (!fullRunLock.tryLock())
@@ -77,7 +84,7 @@ public class FetchVideoService extends IntentService {
         try {
             if (recType != VideoContract.VideoEntry.RECTYPE_RECORDING)
                 recGroup = null;
-            VideoDbBuilder builder = new VideoDbBuilder(getApplicationContext());
+            VideoDbBuilder builder = new VideoDbBuilder(context);
 
             // recordings are 0, videos are 1, channels are 2
             int [] start = {0,0,0};
@@ -123,26 +130,19 @@ public class FetchVideoService extends IntentService {
                         urls[1] = mythApiUrl(null,
                                 "/Video/GetVideoList?Descending=true&Count=" + pagesize + "&StartIndex=" + start[1]);
                 }
-                ContentValues[] downloadedVideoContentValues;
-                // This bracketed code is so that contentValuesList is released as soon
-                // as possible. Assigning null to it caused a warning of unused assignment
-                {
-                    List<ContentValues> contentValuesList = new ArrayList<>();
-                    for (int i = 0; i < urls.length; i++) {
-                        String url = urls[i];
-                        if (url != null && start[i] < maxAvailable[i]) {
-                            // This call expects recordings to be 0, videos to be 1, channels to be 2
-                            maxAvailable[i] = builder.fetch(url, i, contentValuesList);
-                            start[i] += pagesize;
-                        }
+                List<ContentValues> contentValuesList = new ArrayList<>();
+                for (int i = 0; i < urls.length; i++) {
+                    String url = urls[i];
+                    if (url != null && start[i] < maxAvailable[i]) {
+                        // This call expects recordings to be 0, videos to be 1, channels to be 2
+                        maxAvailable[i] = builder.fetch(url, i, contentValuesList);
+                        start[i] += pagesize;
                     }
-                    downloadedVideoContentValues =
-                            contentValuesList.toArray(new ContentValues[0]);
                 }
                 if (firstLoop) {
                     AsyncMainLoader.lock.lock();
                     try {
-                        VideoDbHelper dbh = VideoDbHelper.getInstance(this);
+                        VideoDbHelper dbh = VideoDbHelper.getInstance(context);
                         SQLiteDatabase db = dbh.getWritableDatabase();
                         if (db == null)
                             return;
@@ -170,9 +170,21 @@ public class FetchVideoService extends IntentService {
                         AsyncMainLoader.lock.unlock();
                     }
                 }
-                getApplicationContext().getContentResolver().bulkInsert(VideoContract.VideoEntry.CONTENT_URI,
-                        downloadedVideoContentValues);
-                actual += downloadedVideoContentValues.length;
+
+                VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+                SQLiteDatabase db = dbh.getWritableDatabase();
+                db.beginTransaction();
+                for (ContentValues row : contentValuesList) {
+                    db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
+                            null,row,SQLiteDatabase.CONFLICT_IGNORE);
+                }
+                if (success)
+                    db.setTransactionSuccessful();
+                db.endTransaction();
+                if (!success)
+                    break;
+                actual += contentValuesList.size();
+
                 Log.i(TAG, "Number of downloaded records: " + actual);
 
                 if (recordedId != null)

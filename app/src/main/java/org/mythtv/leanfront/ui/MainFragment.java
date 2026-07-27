@@ -96,7 +96,7 @@ import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.BackendCache;
-import org.mythtv.leanfront.data.FetchVideoService;
+import org.mythtv.leanfront.data.FetchVideos;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.VideoDbHelper;
 import org.mythtv.leanfront.data.XmlNode;
@@ -291,22 +291,10 @@ public class MainFragment extends BrowseSupportFragment
      * @param recGroup   Set to a recordimng group if only that one is to
      *                   be refreshed
      */
-    static public void startFetch(int rectype, String recordedId, String recGroup,
-              boolean isProgressBar) {
-        if (rectype == -1)
-            mFetchTime = System.currentTimeMillis();
-        if (isProgressBar && mActiveFragment != null)
-            mActiveFragment.setProgressBar(true);
-        // Clear ip address cache on a full refresh
-        if (recordedId == null)
-            BackendCache.flush();
-        // Start an Intent to fetch the videos.
-        Intent serviceIntent = new Intent(MyApplication.getAppContext(), FetchVideoService.class);
-        serviceIntent.putExtra(FetchVideoService.RECTYPE, rectype);
-        serviceIntent.putExtra(FetchVideoService.RECORDEDID, recordedId);
-        serviceIntent.putExtra(FetchVideoService.RECGROUP, recGroup);
-        serviceIntent.putExtra(FetchVideoService.ISPROGRESSBAR, isProgressBar);
-        MyApplication.getAppContext().startService(serviceIntent);
+
+    static public void startFetch(int rectype, String recordedId, String recGroup, boolean isProgressBar) {
+        FetchVideos fetchVideos = new FetchVideos(MyApplication.getAppContext(), rectype, recordedId, recGroup, isProgressBar);
+        fetchVideos.execute();
     }
 
     // Replacement for StartLoader. This needs to be called after any database update.
@@ -314,6 +302,7 @@ public class MainFragment extends BrowseSupportFragment
     public void fetchComplete(boolean isProgressBar) {
         startAsyncLoader(isProgressBar);
     }
+
     public void startAsyncLoader(boolean isProgressBar) {
         if (isLoaderRunning) {
             if (isProgressBar)

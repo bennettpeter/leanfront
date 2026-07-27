@@ -117,9 +117,6 @@
                 android:readPermission="android.permission.GLOBAL_SEARCH" />
         </provider>
 
-        <service
-            android:name="org.mythtv.leanfront.data.FetchVideoService"
-            android:exported="false" />
     </application>
 
 </manifest>
