@@ -1,6 +1,7 @@
 package org.mythtv.leanfront.ui.playback;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 
 /**
@@ -15,13 +16,14 @@ import android.view.MotionEvent;
  */
 public class RepeatListener {
 
-    private final Handler handler = new Handler();
 
     private final int initialInterval;
     private final int normalInterval;
     private final PlaybackFragment playbackFragment;
     private final int direction;
     private boolean active;
+    final Handler handler = new Handler(Looper.getMainLooper());
+
 
     private final Runnable handlerRunnable = new Runnable() {
         @Override
@@ -44,6 +46,10 @@ public class RepeatListener {
         this.normalInterval = normalInterval;
         this.playbackFragment = playbackFragment;
         this.direction = direction;
+    }
+
+    void stop() {
+        handler.removeCallbacksAndMessages(null);
     }
 
     public boolean onTouch(MotionEvent motionEvent) {

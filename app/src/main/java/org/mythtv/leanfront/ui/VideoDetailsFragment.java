@@ -51,6 +51,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -143,6 +145,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private boolean isTV;
     private boolean actionInitialSelect;
     ActivityResultLauncher<Intent> startPlayForResult;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean firstResume = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -151,7 +155,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (mSelectedVideo.rectype != RECTYPE_CHANNEL) {
-                        onActionClicked(new Action(Video.ACTION_REFRESH));
+                        handler.postDelayed( () ->
+                                onActionClicked(new Action(Video.ACTION_REFRESH)), 700);
                     }
                 }
         );
@@ -190,6 +195,13 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         }
     }
 
+    void reload() {
+        LoaderManager manager = LoaderManager.getInstance(this);
+        Loader<Cursor> l = manager.getLoader(RELATED_VIDEO_LOADER);
+        if (l != null)
+            l.forceLoad();
+    }
+
     public void onSaveInstanceState (Bundle outState) {
         outState.putLong("mBookmark", videoAction.mBookmark);
         outState.putLong("posBookmark", videoAction.mPosBookmark);
@@ -221,6 +233,16 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         updateBackground(mSelectedVideo.bgImageUrl);
         super.onResume();
         actionInitialSelect = true;
+        if (!firstResume)
+            reload();
+        firstResume = false;
+    }
+
+    @Override
+    public void onPause() {
+        scrollSupport.stop();
+        handler.removeCallbacksAndMessages(null);
+        super.onPause();
     }
 
     private void prepareBackgroundManager() {

@@ -234,7 +234,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private final boolean [] subtFound = new boolean[subtExtens.length];
     private int subtChecked = -1;
     private LoudnessEnhancer lEnh;
-    private final Handler myHandler = new Handler(Looper.getMainLooper());
+    final Handler handler = new Handler(Looper.getMainLooper());
     int statusCount;
 
     @Override
@@ -345,6 +345,7 @@ public class PlaybackFragment extends VideoSupportFragment
     @RequiresApi(Build.VERSION_CODES.N)
     @Override
     public void onPause() {
+        handler.removeCallbacksAndMessages(null);
         super.onPause();
         setBookmark(Video.ACTION_SET_LASTPLAYPOS);
         isIncreasing = false;
@@ -503,7 +504,6 @@ public class PlaybackFragment extends VideoSupportFragment
             }
         }
         if (subtChecked < subtExtens.length) {
-            Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed( () -> initializePlayer(enableControls), 100);
             return;
         }
@@ -583,7 +583,7 @@ public class PlaybackFragment extends VideoSupportFragment
 
     @SuppressWarnings("SameParameterValue")
     private void audioFix(int millis, boolean setTracks) {
-        myHandler.postDelayed( () -> {
+        handler.postDelayed( () -> {
             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                 return;
             if (mPlaybackActionListener == null)
@@ -627,7 +627,7 @@ public class PlaybackFragment extends VideoSupportFragment
 
     @SuppressWarnings("SameParameterValue")
     private void playWait(int delay, String msg) {
-        myHandler.postDelayed( () -> {
+        handler.postDelayed( () -> {
             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                 return;
             if (msg != null) {
@@ -731,7 +731,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private void startStatusMonitor() {
         // Periodically save the last play position in case of a network failure
         if (statusCount == 0) {
-            boolean ret = myHandler.postDelayed(() -> {
+            boolean ret = handler.postDelayed(() -> {
                 if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                     return;
                 if (statusCount == 0)
@@ -741,7 +741,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 if (isIncreasing) {
                     getFileLength(false);
                     if (isSpeededUp()) {
-                        myHandler.post(() -> {
+                        handler.post(() -> {
                             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                                 return;
                             if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - STATUS_MONITOR_INTERVAL - 5000)
@@ -1403,7 +1403,7 @@ public class PlaybackFragment extends VideoSupportFragment
                     mPlaybackActionListener.setNextCommBreak(-1);
                 if (!tablesFilled) {
                     tablesFilled = true;
-                    myHandler.postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         boolean olaySetupDone = false;
                         @Override
                         public void run() {
@@ -1421,7 +1421,7 @@ public class PlaybackFragment extends VideoSupportFragment
                                 }
                             }
                             if (!olaySetupDone)
-                                myHandler.postDelayed(this,500);
+                                handler.postDelayed(this,500);
                         }
                     },500);
                     play(null);
@@ -1991,7 +1991,7 @@ public class PlaybackFragment extends VideoSupportFragment
                 double audioPct = (double) volume / 100.0;
                 int gainmB = (int) Math.round(Math.log10(audioPct) * 2000.0);
                 lEnh.setTargetGain(gainmB);
-                myHandler.postDelayed(() -> {
+                handler.postDelayed(() -> {
                     if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                         return;
                     if (!lEnh.getEnabled())

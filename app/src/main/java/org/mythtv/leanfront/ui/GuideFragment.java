@@ -86,6 +86,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     private static final int ACTION_EDIT_1 = 1;
     private static final int ACTION_EDIT_2 = 2;
     private ProgressBarManager pbm;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -684,7 +686,6 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             }
             if (++start % pageSize == 0) {
                 final int nextstart = start;
-                Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(
                         () -> GuideFragment.this.loadGuideData(result, nextstart), pauseTime);
                 return;

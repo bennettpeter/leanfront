@@ -141,7 +141,8 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 intent.putExtra(PlaybackActivity.VIDEO, mSelectedVideo);
                 intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
                 intent.putExtra(PlaybackActivity.POSBOOKMARK, posbookmark);
-                ((VideoDetailsFragment)fragment).startPlayForResult.launch(intent);
+                if (fragment instanceof VideoDetailsFragment)
+                    ((VideoDetailsFragment)fragment).startPlayForResult.launch(intent);
                 break;
             case Video.ACTION_LIVETV:
                 setProgressBar(true);
@@ -532,6 +533,8 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                     mActionsAdapter.set(++i, new Action(Video.ACTION_OTHER, fragment.getResources()
                             .getString(R.string.button_other_1),
                             fragment.getResources().getString(R.string.button_other_2)));
+                    if (fragment instanceof VideoDetailsFragment)
+                        ((VideoDetailsFragment)fragment).reload();
                }
                 break;
         }

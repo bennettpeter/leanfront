@@ -131,10 +131,9 @@ public class MainFragment extends BrowseSupportFragment
     private static final String CLASS = "MainFragment";
 
     private static final int BACKGROUND_UPDATE_DELAY = 300;
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private ArrayObjectAdapter mCategoryRowAdapter;
     private Drawable mDefaultBgDrawable;
-//    private DisplayMetrics mMetrics;
     private int width;
     private int height;
     private Runnable mBackgroundTask;
@@ -335,7 +334,7 @@ public class MainFragment extends BrowseSupportFragment
 
     @Override
     public void onDestroy() {
-        mHandler.removeCallbacks(mBackgroundTask);
+        handler.removeCallbacksAndMessages(null);
         mBackgroundManager = null;
         super.onDestroy();
     }
@@ -407,6 +406,7 @@ public class MainFragment extends BrowseSupportFragment
     @Override
     public void onPause()
     {
+        scrollSupport.stop();
         super.onPause();
         mActiveFragment = null;
     }
@@ -632,8 +632,8 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     private void startBackgroundTimer() {
-        mHandler.removeCallbacks(mBackgroundTask);
-        mHandler.postDelayed(mBackgroundTask, BACKGROUND_UPDATE_DELAY);
+        handler.removeCallbacks(mBackgroundTask);
+        handler.postDelayed(mBackgroundTask, BACKGROUND_UPDATE_DELAY);
     }
 
     /**
@@ -748,7 +748,6 @@ public class MainFragment extends BrowseSupportFragment
         toolsRowAdapter.add(video);
 
         SelectionSetter setter = new SelectionSetter(selection[0], selection[1]);
-        Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(setter, 100);
     }
 
@@ -1159,7 +1158,7 @@ public class MainFragment extends BrowseSupportFragment
     private static final String KEY_EXPAND = "EXPAND";
     private static class MythTask implements Runnable {
         boolean mVersionMessageShown = false;
-//        Context context;
+        private final Handler taskHandler = new Handler(Looper.getMainLooper());
 
         @Override
         public synchronized void run() {
@@ -1184,6 +1183,7 @@ public class MainFragment extends BrowseSupportFragment
                     if (ProcessLifecycleOwner.get().getLifecycle().getCurrentState()
                             == Lifecycle.State.CREATED) {
                         // process is now in the background
+                        taskHandler.removeCallbacksAndMessages(null);
                         mWasInBackground = true;
                         if (executor != null)
                             executor.shutdown();
@@ -1265,8 +1265,7 @@ public class MainFragment extends BrowseSupportFragment
                         if (context == null)
                             return;
                         ToastShower toastShower = new ToastShower(context, toastMsg, toastLeng);
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(toastShower);
+                        taskHandler.post(toastShower);
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException ignored) {

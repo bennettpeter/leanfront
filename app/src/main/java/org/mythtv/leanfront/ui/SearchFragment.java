@@ -86,7 +86,7 @@ public class SearchFragment extends SearchSupportFragment
     private static final String CLASS = "SearchFragment";
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
-    private final Handler mHandler = new Handler();
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private ArrayObjectAdapter mRowsAdapter;
     private String mQuery;
     private final CursorObjectAdapter mVideoCursorAdapter =
@@ -128,7 +128,7 @@ public class SearchFragment extends SearchSupportFragment
     @Override
     public void onPause() {
         mSavedSelection  = getSelection();
-        mHandler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
         super.onPause();
     }
 
@@ -280,7 +280,6 @@ public class SearchFragment extends SearchSupportFragment
 
         if (mSavedSelection != null) {
             SelectionSetter setter = new SelectionSetter(mSavedSelection[0], mSavedSelection[1]);
-            Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(setter, 100);
         }
         searchGuide();

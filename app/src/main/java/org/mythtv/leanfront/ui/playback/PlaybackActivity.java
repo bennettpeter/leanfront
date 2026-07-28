@@ -32,6 +32,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.SeekBar;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -68,7 +70,6 @@ public class PlaybackActivity extends LeanbackActivity {
     private long touchTime;
     private OnBackPressedCallback bpCallback;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +94,13 @@ public class PlaybackActivity extends LeanbackActivity {
         rewindListener = new RepeatListener(400,100,mPlaybackFragment,-1);
         ffListener = new RepeatListener(400,100,mPlaybackFragment,1);
         detector = new GestureDetector(this, new GestureTap());
+    }
+
+    @Override
+    protected void onPause() {
+        rewindListener.stop();
+        ffListener.stop();
+        super.onPause();
     }
 
     @Override

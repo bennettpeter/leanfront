@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -1213,7 +1214,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
         lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
         mDialog.getWindow().setAttributes(lp);
-        new Handler().postDelayed( () -> {
+        playbackFragment.handler.postDelayed( () -> {
             if (mDialog != null)
                 mDialog.dismiss();
          }, 120000);

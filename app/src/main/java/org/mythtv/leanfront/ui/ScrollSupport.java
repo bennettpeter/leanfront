@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,7 @@ public class ScrollSupport {
     private ScrollTask scrollTask;
     static int SCROLL_UPDATE_DELAY = 50;
     private ScrollListener scrollListener;
-    private Handler mHandler;
+    final Handler handler = new Handler(Looper.getMainLooper());
     private RowsSupportFragment rowsSupportFragment;
 
     ScrollSupport(Context context) {
@@ -32,8 +33,11 @@ public class ScrollSupport {
         if (!isTV) {
             scrollTask = new ScrollTask();
             scrollListener = new ScrollListener();
-            mHandler = new Handler();
         }
+    }
+
+    void stop() {
+        handler.removeCallbacksAndMessages(null);
     }
 
     public void onItemSelected(Presenter.ViewHolder itemViewHolder,
@@ -60,11 +64,11 @@ public class ScrollSupport {
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState); // super does nothing
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                mHandler.removeCallbacks(scrollTask);
+                handler.removeCallbacks(scrollTask);
                 scrollTask.scrollSelected = -1;
                 scrollTask.direction = 0;
             } else {
-                mHandler.postDelayed(scrollTask, SCROLL_UPDATE_DELAY);
+                handler.postDelayed(scrollTask, SCROLL_UPDATE_DELAY);
             }
         }
     }
@@ -122,7 +126,7 @@ public class ScrollSupport {
                 }
             }
             if (tryAgain && scrollListener.view.getScrollState() != RecyclerView.SCROLL_STATE_IDLE)
-                mHandler.postDelayed(scrollTask, SCROLL_UPDATE_DELAY);
+                handler.postDelayed(scrollTask, SCROLL_UPDATE_DELAY);
         }
     }
 
