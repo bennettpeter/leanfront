@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Ημερομηνία/Ώρα Καταγραφής</string>
   <string name="pref_seq_descending">Ταξινόμηση Φθίνουσα</string>
   <string name="pref_seq_descending_desc">Όταν δεν είναι επιλεγμένο Ταξινόμηση Αύξουσα.</string>
+  <string name="pref_hide_watched">Απόκρυψη προβολών</string>
+  <string name="pref_hide_watched_desc">Απόκρυψη προβολών στις κύριες ηχογραφήσεις και λίστες βίντεο</string>
   <string name="pref_sort_order">Ακολουθία ταξινόμησης</string>
   <string name="pref_show_recents">Εμφάνιση λίστας που προβλήθηκαν πρόσφατα</string>
   <string name="pref_show_recents_desc">Αυτό εμφανίζεται μόνο στην οθόνη ανώτατου επιπέδου.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Εμφάνιση μιας σειράς στην κύρια οθόνη για κάθε κατηγορία</string>
   <string name="pref_filter_none">Χωρίς φίλτρο</string>
   <string name="pref_filter_none_desc">Εμφάνιση λίστας προγραμμάτων απευθείας στην κύρια οθόνη</string>
+  <string name="pref_guide_timeslots">Αριθμός χρονοθυρίδων μισής ώρας σε κάθε σελίδα οδηγού</string>
+  <string name="pref_title_guide">Οδηγός προγράμματος</string>
   <string name="msg_no_connection">Σφάλμα: Δεν υπάρχει σύνδεση στο MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Προειδοποίηση: Δεν είναι δυνατή η αποτροπή του τερματισμού αδράνειας του backend.</string>
   <string name="msg_backend_login_req">Σφάλμα: Το Backend απαιτεί έγκυρο όνομα χρήστη και κωδικό πρόσβασης.</string>

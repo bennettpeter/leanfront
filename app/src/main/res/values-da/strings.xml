@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Dato/klokkeslæt optaget</string>
   <string name="pref_seq_descending">Sorter faldende</string>
   <string name="pref_seq_descending_desc">Når det ikke er markeret, Sortér stigende.</string>
+  <string name="pref_hide_watched">Skjul overvågede udsendelser</string>
+  <string name="pref_hide_watched_desc">Skjul sete udsendelser i hovedoptagelser og videolister</string>
   <string name="pref_sort_order">Sorteringssekvens</string>
   <string name="pref_show_recents">Vis liste over nyligt set</string>
   <string name="pref_show_recents_desc">Dette vises kun på skærmen på øverste niveau.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Vis en række på hovedskærmen for hver kategori</string>
   <string name="pref_filter_none">Intet filter</string>
   <string name="pref_filter_none_desc">Vis programliste direkte på hovedskærmen</string>
+  <string name="pref_guide_timeslots">Antallet af halvtimes tidsrum på hver guideside</string>
+  <string name="pref_title_guide">Programguide</string>
   <string name="msg_no_connection">Fejl: Ingen forbindelse til MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Advarsel: Kan ikke forhindre nedlukning af inaktiv backend.</string>
   <string name="msg_backend_login_req">Fejl: Backend kræver gyldigt brugernavn og adgangskode.</string>

@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Tallennuspäivämäärä/aika</string>
   <string name="pref_seq_descending">Lajittele laskevasti</string>
   <string name="pref_seq_descending_desc">Ei valittuna Lajittele nousevasti.</string>
+  <string name="pref_hide_watched">Piilota katsotut ohjelmat</string>
+  <string name="pref_hide_watched_desc">Piilota katsotut ohjelmat päätallenteiden ja videoiden luetteloissa</string>
   <string name="pref_sort_order">Lajittelujärjestys</string>
   <string name="pref_show_recents">Näytä äskettäin katsotut lista</string>
   <string name="pref_show_recents_desc">Tämä näkyy vain ylätason näkymässä.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Näytä yksi rivi päänäytöllä jokaiselle kategorialle</string>
   <string name="pref_filter_none">Ei suodatinta</string>
   <string name="pref_filter_none_desc">Näytä ohjelmaluettelo suoraan päänäytöllä</string>
+  <string name="pref_guide_timeslots">Puolen tunnin aikavälit kullakin opassivulla</string>
+  <string name="pref_title_guide">Ohjelmaopas</string>
   <string name="msg_no_connection">Virhe: Ei yhteyttä MythTV-taustajärjestelmään.</string>
   <string name="msg_no_delayshutdown">Varoitus: Taustajärjestelmän automaattista sammuttamista ei voida estää.</string>
   <string name="msg_backend_login_req">VIRHE: Taustaohjelma vaatii kelvollisen käyttäjänimen ja salasanan.</string>

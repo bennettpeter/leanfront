@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Datum/tyd aangeteken</string>
   <string name="pref_seq_descending">Sorteer aflopend</string>
   <string name="pref_seq_descending_desc">Wanneer ongemerk Sorteer stygend.</string>
+  <string name="pref_hide_watched">Versteek gekykte programme</string>
+  <string name="pref_hide_watched_desc">Versteek gekykte programme in hoofopnames en videolyste</string>
   <string name="pref_sort_order">Sorteer volgorde</string>
   <string name="pref_show_recents">Wys lys wat onlangs bekyk is</string>
   <string name="pref_show_recents_desc">Dit verskyn slegs op die boonste vlak skerm.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Wys een ry op hoofskerm vir elke kategorie</string>
   <string name="pref_filter_none">Geen filter nie</string>
   <string name="pref_filter_none_desc">Wys programlys direk op hoofskerm</string>
+  <string name="pref_guide_timeslots">Aantal halfuur-tydgleuwe in elke gidsbladsy</string>
+  <string name="pref_title_guide">Programgids</string>
   <string name="msg_no_connection">Fout: Geen verbinding met MythTV Backend nie.</string>
   <string name="msg_no_delayshutdown">Waarskuwing: Kan nie die afskakeling van die agterkant nie verhoed nie.</string>
   <string name="msg_backend_login_req">Fout: Backend benodig geldige gebruikersnaam en wagwoord.</string>

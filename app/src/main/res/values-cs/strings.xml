@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Datum/čas záznamu</string>
   <string name="pref_seq_descending">Seřadit sestupně</string>
   <string name="pref_seq_descending_desc">Když není zaškrtnuto Seřadit vzestupně.</string>
+  <string name="pref_hide_watched">Skrýt sledované pořady</string>
+  <string name="pref_hide_watched_desc">Skrýt sledované pořady v hlavních seznamech nahrávek a videí</string>
   <string name="pref_sort_order">Sekvence řazení</string>
   <string name="pref_show_recents">Zobrazit naposledy zobrazený seznam</string>
   <string name="pref_show_recents_desc">Zobrazí se pouze na obrazovce nejvyšší úrovně.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Zobrazit jeden řádek na hlavní obrazovce pro každou kategorii</string>
   <string name="pref_filter_none">Žádný filtr</string>
   <string name="pref_filter_none_desc">Zobrazit seznam programů přímo na hlavní obrazovce</string>
+  <string name="pref_guide_timeslots">Počet půlhodinových časových úseků na každé stránce průvodce</string>
+  <string name="pref_title_guide">Programový průvodce</string>
   <string name="msg_no_connection">Chyba: Žádné připojení k MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varování: Nelze zabránit nečinnosti backendu.</string>
   <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné uživatelské jméno a heslo.</string>

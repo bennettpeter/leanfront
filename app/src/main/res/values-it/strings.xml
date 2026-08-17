@@ -63,6 +63,8 @@
   <string name="pref_seq_rec_time">Data/ora registrata</string>
   <string name="pref_seq_descending">Ordine decrescente</string>
   <string name="pref_seq_descending_desc">Quando deselezionato ordina in modo crescente.</string>
+  <string name="pref_hide_watched">Nascondi gli spettacoli guardati</string>
+  <string name="pref_hide_watched_desc">Nascondi gli spettacoli guardati nelle registrazioni principali e negli elenchi dei video</string>
   <string name="pref_sort_order">Ordina sequenza</string>
   <string name="pref_show_recents">Mostra l\'elenco visualizzato di recente</string>
   <string name="pref_show_recents_desc">Questo appare solo nella schermata di livello superiore.</string>
@@ -138,6 +140,8 @@
   <string name="pref_filter_category_desc">Mostra una riga nella schermata principale per ciascuna categoria</string>
   <string name="pref_filter_none">Nessun filtro</string>
   <string name="pref_filter_none_desc">Mostra l\'elenco dei programmi direttamente sulla schermata principale</string>
+  <string name="pref_guide_timeslots">Numero di fasce orarie di mezz\'ora in ciascuna pagina della guida</string>
+  <string name="pref_title_guide">Guida al programma</string>
   <string name="msg_no_connection">Errore: nessuna connessione al backend di MythTV.</string>
   <string name="msg_no_delayshutdown">Avviso: impossibile impedire l\'arresto del backend inattivo.</string>
   <string name="msg_backend_login_req">Errore: il backend richiede nome utente e password validi.</string>
