@@ -175,6 +175,8 @@
     <string name="pref_filter_category_desc">Show one row on main screen for each Category</string>
     <string name="pref_filter_none">No Filter</string>
     <string name="pref_filter_none_desc">Show program list directly on main screen</string>
+    <string name="pref_guide_timeslots">Number of half-hour time slots in each guide page</string>
+    <string name="pref_title_guide">Program Guide</string>
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
@@ -531,6 +533,7 @@
     <string name="sdef_idle_timeout" translatable="false">360</string>
     <string name="sdef_num_cc_chans" translatable="false">2</string>
     <string name="sdef_filter" translatable="false">recgrp</string>
+    <string name="sdef_guide_timeslots" translatable="false">8</string>
 <!--    Program Details-->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>

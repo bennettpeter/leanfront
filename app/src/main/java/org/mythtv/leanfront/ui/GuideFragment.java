@@ -60,14 +60,14 @@ import java.util.GregorianCalendar;
 
 public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBackendCallListener{
 
-    public static final int TIMESLOTS = 8;
-    // 1 cell per timeslot plus 1 for channel and two for arrows
-    public static final int COLUMNS = TIMESLOTS+3;
     public static final int TIMESLOT_SIZE = 30; //minutes
     public static final int TIME_ROW_INTERVAL = 8;
     public static final int DATE_RANGE = 21;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_XSMALL;
     private static final int PAGING_ROWS = 45;
+    private final int timeSlots = Settings.getInt("pref_guide_timeslots");
+    // 1 cell per timeslot plus 1 for channel and two for arrows
+    private final int columns = timeSlots + 3;
     private Date mGridStartTime;
     private long mPriorGridStartTime;
     // map chanid to position in object adapter
@@ -91,7 +91,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        numberColumns = COLUMNS;
+        numberColumns = columns;
         pagingRows = PAGING_ROWS;
         if (savedInstanceState != null) {
             long newTime = savedInstanceState.getLong("mGridStartTime", 0);
@@ -128,7 +128,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     private void setupAdapter() {
         VerticalGridPresenter presenter = new VerticalGridPresenter(ZOOM_FACTOR);
         // 1 cell per timeslot plus 1 for channel and two for arrows
-        presenter.setNumberOfColumns(COLUMNS);
+        presenter.setNumberOfColumns(columns);
         setGridPresenter(presenter);
 
         mGridAdapter = new ArrayObjectAdapter(new MyPresenterSelector(getContext()));
@@ -147,11 +147,11 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                     showChannelSelector(card);
                     break;
                 case GuideSlot.CELL_LEFTARROW:
-                    mGridStartTime = new Date(mGridStartTime.getTime() - TIMESLOTS * TIMESLOT_SIZE * 60000);
+                    mGridStartTime = new Date(mGridStartTime.getTime() - timeSlots * TIMESLOT_SIZE * 60000L);
                     setupGridData();
                     break;
                 case GuideSlot.CELL_RIGHTARROW:
-                    mGridStartTime = new Date(mGridStartTime.getTime() + TIMESLOTS * TIMESLOT_SIZE * 60000);
+                    mGridStartTime = new Date(mGridStartTime.getTime() + timeSlots * TIMESLOT_SIZE * 60000L);
                     setupGridData();
                     break;
                 case GuideSlot.CELL_PROGRAM:
@@ -355,7 +355,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             }
             int size = mGridAdapter.size();
             boolean found = false;
-            for (int ix = 0; ix < size; ix += COLUMNS) {
+            for (int ix = 0; ix < size; ix += columns) {
                 GuideSlot slot = (GuideSlot) mGridAdapter.get(ix);
                 if (slot != null && slot.chanNum >= chanNum) {
                     setSelectedPosition(ix, false);
@@ -364,7 +364,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                 }
             }
             if (!found)
-                setSelectedPosition(size - COLUMNS, false);
+                setSelectedPosition(size - columns, false);
         }
         else if (bnPlay != null && bnPlay.isChecked()) {
             setProgressBar(true);
@@ -378,7 +378,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     }
 
     private void setupGridData() {
-        Date gridEndTime = new Date(mGridStartTime.getTime() + TIMESLOT_SIZE * TIMESLOTS * 60000);
+        Date gridEndTime = new Date(mGridStartTime.getTime() + TIMESLOT_SIZE * timeSlots * 60000L);
         AsyncBackendCall call = new AsyncBackendCall(getActivity(),this);
         if (mChanGroupIDs == null)
             // Note that after ACTION_CHAN_GROUPS completes it will call ACTION_GUIDE
@@ -448,17 +448,14 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
             mGridAdapter.add(slot);
             mGridAdapter.add(leftArrowSlot);
             mChanArray.put(chanId,mGridAdapter.size());
-            for (int i = 0; i< TIMESLOTS; i++) {
+            for (int i = 0; i< timeSlots; i++) {
                 int position;
-                switch (i) {
-                    case 0:
-                        position = GuideSlot.POS_LEFT;
-                        break;
-                    case TIMESLOTS-1:
-                        position = GuideSlot.POS_RIGHT;
-                        break;
-                    default:
-                        position = GuideSlot.POS_MIDDLE;
+                if (i == 0) {
+                    position = GuideSlot.POS_LEFT;
+                } else if (i == timeSlots - 1) {
+                    position = GuideSlot.POS_RIGHT;
+                } else {
+                    position = GuideSlot.POS_MIDDLE;
                 }
                 slot = new GuideSlot(GuideSlot.CELL_PROGRAM, position, mTimeRow[i+2].timeSlot);
                 mGridAdapter.add(slot);
@@ -473,14 +470,14 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
         // Update Time row
         mTimeRow[0].timeSlot = mGridStartTime;
         mPriorGridStartTime = mGridStartTime.getTime();
-        for (int ix = 0; ix< TIMESLOTS; ix++) {
+        for (int ix = 0; ix< timeSlots; ix++) {
             mTimeRow[ix+2].timeSlot =
-                    new Date( mGridStartTime.getTime() + ix * TIMESLOT_SIZE * 60000);
+                    new Date( mGridStartTime.getTime() + ix * TIMESLOT_SIZE * 60000L);
         }
         // Clear out program cells
         for (int ix = 0; ix < mGridAdapter.size(); ix++) {
             GuideSlot slot = (GuideSlot) mGridAdapter.get(ix);
-            int iPos = ix % (TIMESLOTS + 3);
+            int iPos = ix % (timeSlots + 3);
             if (slot != null && slot.cellType == GuideSlot.CELL_PROGRAM) {
                 slot.program = null;
                 slot.program2 = null;
@@ -492,17 +489,17 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
     }
 
     private void setupTimeRow(GuideSlot leftArrowSlot, GuideSlot rightArrowSlot) {
-        mTimeRow = new GuideSlot[TIMESLOTS + 3];
+        mTimeRow = new GuideSlot[timeSlots + 3];
         // time selector slot at front
         mTimeRow[0] = new GuideSlot(GuideSlot.CELL_TIMESELECTOR);
         mTimeRow[0].timeSlot = mGridStartTime;
         mTimeRow[0].chanGroup = mChanGroupNames.get(mChanGroupIx);
         mTimeRow[1] = leftArrowSlot;
-        for (int ix = 0; ix< TIMESLOTS; ix++) {
+        for (int ix = 0; ix< timeSlots; ix++) {
             mTimeRow[ix+2] = new GuideSlot(GuideSlot.CELL_TIMESLOT,0,
-                    new Date( mGridStartTime.getTime() + ix * TIMESLOT_SIZE * 60000));
+                    new Date( mGridStartTime.getTime() + ix * TIMESLOT_SIZE * 60000L));
         }
-        mTimeRow[TIMESLOTS+2] = rightArrowSlot;
+        mTimeRow[timeSlots+2] = rightArrowSlot;
     }
 
     private void addTimeRow() {
@@ -648,7 +645,7 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                 float fPos = (float) lPos / 1000.0f;
                 // Start position is the slot wherein the show starts.
                 int startPos = (int) (fPos);
-                if (startPos >= TIMESLOTS)
+                if (startPos >= timeSlots)
                     continue;
                 if (startPos < 0)
                     startPos = 0;
@@ -661,8 +658,8 @@ public class GuideFragment extends GridFragment implements AsyncBackendCall.OnBa
                 int endPos = (int) (fPos);
                 if (endPos <= 0)
                     continue;
-                if (endPos >= TIMESLOTS)
-                    endPos = TIMESLOTS;
+                if (endPos >= timeSlots)
+                    endPos = timeSlots;
                 if (endPos == startPos)
                     ++endPos;
 

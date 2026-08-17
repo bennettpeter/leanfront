@@ -132,6 +132,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_FILTER_NONE = 76;
     private static final int ID_VOLUME = 77;
     private static final int ID_HIDE_WATCHED = 78;
+    private static final int ID_GUIDE_TIMESLOTS = 79;
+    private static final int ID_GUIDE_OPTIONS = 80;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -630,6 +632,23 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .subActions(subActions)
                 .build());
 
+        // Program Guide Options
+        subActions = new ArrayList<>();
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_GUIDE_TIMESLOTS)
+                .title(R.string.pref_guide_timeslots)
+                .description(Settings.getString("pref_guide_timeslots"))
+                .descriptionEditable(true)
+                .enabled(true)
+                .focusable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
+                .build());
+        actions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_GUIDE_OPTIONS)
+                .title(R.string.pref_title_guide)
+                .subActions(subActions)
+                .build());
+
         subActions = new ArrayList<>();
         str = Settings.getString("pref_audio");
         subActions.add(new GuidedAction.Builder(getActivity())
@@ -885,6 +904,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 Settings.putString(editor, "pref_video_parental",
                         validateNumber(action, 1, 4, 4));
                 break;
+            case ID_GUIDE_TIMESLOTS:
+                Settings.putString(editor, "pref_guide_timeslots",
+                        validateNumber(action, 1, 16, 8));
+                break;
             case ID_AUDIO_SYNC:
                 Settings.putString(editor, "pref_audio_sync",group,
                         validateNumber(action, -2500, 2500, 0));
@@ -999,6 +1022,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_VIDEO_PARENTAL:
                 action.setDescription(Settings.getString("pref_video_parental"));
+                break;
+            case ID_GUIDE_TIMESLOTS:
+                action.setDescription(Settings.getString("pref_guidde_timeslots"));
                 break;
             case ID_AUDIO_SYNC:
                 action.setDescription(Settings.getString("pref_audio_sync"));
