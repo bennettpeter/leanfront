@@ -162,6 +162,7 @@ public class AsyncMainLoader implements Runnable {
         String seq = Settings.getString("pref_seq");
         String ascdesc = Settings.getString("pref_seq_ascdesc");
         boolean mergevideos = "true".equals(Settings.getString("pref_merge_videos"));
+        boolean hideWatched = "true".equals(Settings.getString("pref_hide_watched"));
         StringBuilder orderby = new StringBuilder();
         StringBuilder selection = new StringBuilder();
         String[] selectionArgs = null;
@@ -260,6 +261,14 @@ public class AsyncMainLoader implements Runnable {
         if (mType == TYPE_VIDEODIR) {
             selection.append(COLUMN_RECTYPE).append(" = ");
             selection.append(RECTYPE_VIDEO);
+        }
+
+        if (hideWatched) {
+            if (selection.length() > 0) {
+                selection.insert(0,"( ");
+                selection.append(" ) AND ");
+            }
+            selection.append("progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
         }
 
         orderby.append(COLUMN_TITLEMATCH).append(", ");

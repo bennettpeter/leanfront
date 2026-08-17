@@ -131,6 +131,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_FILTER_CATEGORY = 75;
     private static final int ID_FILTER_NONE = 76;
     private static final int ID_VOLUME = 77;
+    private static final int ID_HIDE_WATCHED = 78;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -500,6 +501,14 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .title(R.string.pref_seq_descending)
                 .checked("desc".equals(str))
                 .description(R.string.pref_seq_descending_desc)
+                .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
+                .build());
+        str = Settings.getString("pref_hide_watched");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_HIDE_WATCHED)
+                .title(R.string.pref_hide_watched)
+                .checked("true".equals(str))
+                .description(R.string.pref_hide_watched_desc)
                 .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         str = Settings.getString("pref_merge_videos");
@@ -1100,6 +1109,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     Settings.putString(editor, "pref_merge_videos", "true");
                 else
                     Settings.putString(editor, "pref_merge_videos", "false");
+                break;
+            case ID_HIDE_WATCHED:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_hide_watched", "true");
+                else
+                    Settings.putString(editor, "pref_hide_watched", "false");
                 break;
             case ID_SHOW_RECENTS:
                 if (action.isChecked())

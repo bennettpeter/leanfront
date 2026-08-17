@@ -96,6 +96,8 @@
     <string name="pref_seq_rec_time">Date/Time Recorded</string>
     <string name="pref_seq_descending">Sort Descending</string>
     <string name="pref_seq_descending_desc">When Unchecked Sort Ascending.</string>
+    <string name="pref_hide_watched">Hide Watched Shows</string>
+    <string name="pref_hide_watched_desc">Hide Watched Shows in Main Recordings and Videos Lists</string>
     <string name="pref_sort_order">Sort Sequence</string>
     <string name="pref_show_recents">Show Recently Viewed List</string>
     <string name="pref_show_recents_desc">This appears on the top level screen only.</string>

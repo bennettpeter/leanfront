@@ -744,7 +744,8 @@ public class PlaybackFragment extends VideoSupportFragment
                         handler.post(() -> {
                             if (getLifecycle().getCurrentState() != Lifecycle.State.RESUMED)
                                 return;
-                            if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration() - STATUS_MONITOR_INTERVAL - 5000)
+                            if (mPlayerGlue.getCurrentPosition() > mPlayerGlue.myGetDuration()
+                                    - STATUS_MONITOR_INTERVAL - 5000)
                                 resetSpeed();
                         });
                     }
