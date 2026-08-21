@@ -109,6 +109,7 @@ import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
 import org.mythtv.leanfront.presenter.CardPresenter;
 import org.mythtv.leanfront.presenter.DetailsDescriptionPresenter;
+import org.mythtv.leanfront.presenter.ImageOverlay;
 import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -200,6 +201,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         Loader<Cursor> l = manager.getLoader(RELATED_VIDEO_LOADER);
         if (l != null)
             l.forceLoad();
+        View v = requireView().findViewById(R.id.details_overview_image);
+        handler.postDelayed( () -> CardPresenter.setupPlayPos(mSelectedVideo, v), 500 );
     }
 
     public void onSaveInstanceState (Bundle outState) {
@@ -506,7 +509,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         @Override
         public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
             DetailsOverviewRow row = (DetailsOverviewRow) item;
-            ImageView imageView = ((ImageView) viewHolder.view);
+            ImageOverlay imageView = ((ImageOverlay) viewHolder.view);
+            Video v = (Video)row.getItem();
+            imageView.setVideo(v);
             imageView.setImageDrawable(row.getImageDrawable());
             if (isBoundToImage((ViewHolder) viewHolder, row)) {
                 MovieDetailsOverviewLogoPresenter.ViewHolder vh =

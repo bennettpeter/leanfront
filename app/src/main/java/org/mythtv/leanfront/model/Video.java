@@ -61,7 +61,7 @@ public final class Video implements Parcelable, ListItem {
     // Format yyyy-mm-ddThh:mm:ssZ
     public final String starttime;
     public String endtime;
-    public final String duration;
+    public int duration;
     public final String prodyear;
     public final String filename;
     public final long filesize;
@@ -85,6 +85,10 @@ public final class Video implements Parcelable, ListItem {
     // From status table
     public final long lastUsed;
     public boolean showRecent;
+    // Not in DB
+    public float frameRate;
+    // last Play pos in seconds
+    public long lastPlay;
 
     // Actions used by multiple classes
     public static final int ACTION_PLAY                   =  1;
@@ -156,7 +160,8 @@ public final class Video implements Parcelable, ListItem {
     public static final int ACTION_FULL_MENU              = 68;
     public static final int ACTION_GET_STREAM_INFO        = 71;
     public static final int ACTION_SEARCHGUIDE_NEWTITLES  = 72;
-    public static final int ACTION_TESTURL = 73;
+    public static final int ACTION_TESTURL                = 73;
+    public static final int ACTION_LASTPLAYPOS            = 74;
 
 
 
@@ -180,7 +185,7 @@ public final class Video implements Parcelable, ListItem {
             final String airdate,
             final String starttime,
             final String endtime,
-            final String duration,
+            final int duration,
             final String prodyear,
             final String filename,
             final long   filesize,
@@ -194,7 +199,9 @@ public final class Video implements Parcelable, ListItem {
             final String category,
             final String storageGroup,
             final long lastUsed,
-            final boolean showRecent) {
+            final boolean showRecent,
+            final float frameRate,
+            final long lastPlay) {
         this.id = id;
         this.rectype = rectype;
         this.title = title;
@@ -229,6 +236,8 @@ public final class Video implements Parcelable, ListItem {
         this.storageGroup = storageGroup;
         this.lastUsed = lastUsed;
         this.showRecent = showRecent;
+        this.frameRate = frameRate;
+        this.lastPlay = lastPlay;
     }
 
     private Video(Parcel in) {
@@ -251,7 +260,7 @@ public final class Video implements Parcelable, ListItem {
         airdate = in.readString();
         starttime = in.readString();
         endtime = in.readString();
-        duration = in.readString();
+        duration = in.readInt();
         prodyear = in.readString();
         filename = in.readString();
         filesize = in.readLong();
@@ -266,6 +275,8 @@ public final class Video implements Parcelable, ListItem {
         storageGroup = in.readString();
         lastUsed = in.readLong();
         showRecent = in.readInt() != 0;
+        frameRate = in.readFloat();
+        lastPlay = in.readLong();
     }
 
     public static final Creator<Video> CREATOR = new Creator<Video>() {
@@ -310,7 +321,7 @@ public final class Video implements Parcelable, ListItem {
         dest.writeString(airdate);
         dest.writeString(starttime);
         dest.writeString(endtime);
-        dest.writeString(duration);
+        dest.writeInt(duration);
         dest.writeString(prodyear);
         dest.writeString(filename);
         dest.writeLong  (filesize);
@@ -328,6 +339,8 @@ public final class Video implements Parcelable, ListItem {
         if (showRecent)
             showRecentInt = 1;
         dest.writeInt(showRecentInt);
+        dest.writeFloat(frameRate);
+        dest.writeLong(lastPlay);
     }
 
     @NonNull
@@ -415,7 +428,7 @@ public final class Video implements Parcelable, ListItem {
         private String airdate;
         private String starttime;
         private String endtime;
-        private String duration;
+        private int duration;
         private String prodyear;
         private String filename;
         private long   filesize;
@@ -430,6 +443,8 @@ public final class Video implements Parcelable, ListItem {
         private String storageGroup;
         private long lastUsed;
         private boolean showRecent;
+        private float frameRate;
+        private long lastPlay;
 
         public VideoBuilder id(long id) {
             this.id = id;
@@ -526,7 +541,7 @@ public final class Video implements Parcelable, ListItem {
             return this;
         }
 
-        public VideoBuilder duration(String duration) {
+        public VideoBuilder duration(int duration) {
             this.duration = duration;
             return this;
         }
@@ -601,6 +616,15 @@ public final class Video implements Parcelable, ListItem {
             return this;
         }
 
+        public VideoBuilder frameRate(float frameRate) {
+            this.frameRate = frameRate;
+            return this;
+        }
+        public VideoBuilder lastPlayed(long lastPlay) {
+            this.lastPlay = lastPlay;
+            return this;
+        }
+
         public Video build() {
             return new Video(
                     id,
@@ -636,7 +660,9 @@ public final class Video implements Parcelable, ListItem {
                     category,
                     storageGroup,
                     lastUsed,
-                    showRecent
+                    showRecent,
+                    frameRate,
+                    lastPlay
             );
         }
     }

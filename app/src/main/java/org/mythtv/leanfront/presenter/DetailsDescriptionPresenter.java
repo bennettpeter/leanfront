@@ -101,10 +101,8 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                     description.append(recDate);
                 }
                 // Length of recording
-                long duration = 0;
-                if (mVideo.duration != null)
-                    duration = Long.parseLong(mVideo.duration, 10);
-                duration = duration / 60000;
+                int duration = Math.max(mVideo.duration, 0);
+                duration = duration / 60;
                 if (duration > 0) {
                     if (description.length() > 0)
                         description.append(", ");

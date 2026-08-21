@@ -352,6 +352,7 @@ public class AsyncBackendCall implements Runnable {
             switch (task) {
                 case Video.ACTION_REFRESH:
                 case Video.ACTION_VIEW_DESCRIPTION:
+                case Video.ACTION_LASTPLAYPOS:
                     mBookmark = 0;
                     mPosBookmark = -1;
                     mLastPlay = 0;
@@ -412,6 +413,8 @@ public class AsyncBackendCall implements Runnable {
                             mLastPlay = playNPos[0];
                             mPosLastPlay = playNPos[1];
                         }
+                        if (task == Video.ACTION_LASTPLAYPOS)
+                            break;
                         long[] bookNPos = fetchBookmark("GetSavedBookmark");
                         mBookmark = bookNPos[0];
                         mPosBookmark = bookNPos[1];

@@ -222,8 +222,12 @@ public class CardPresenter extends Presenter {
         int width = res.getDimensionPixelSize(R.dimen.card_width);
         int height = res.getDimensionPixelSize(R.dimen.card_height);
         cardView.setMainImageDimensions(width, height);
-        ImageView image = cardView.getMainImageView();
+        ImageOverlay image = (ImageOverlay) cardView.getMainImageView();
+        if (video.frameRate < 0 || video.lastPlay < 0) {
+            setupPlayPos(video, image);
+        }
         if (image != null) {
+            image.setVideo(video);
             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             RequestOptions options = new RequestOptions()
@@ -249,6 +253,53 @@ public class CardPresenter extends Presenter {
                         .into(image);
             }
         }
+    }
+
+    public static void setupPlayPos(Video video, View image) {
+        AsyncBackendCall call = new AsyncBackendCall(null, (taskRunner) -> {
+            if (video.frameRate <= 0 && taskRunner.getTasks()[0] == Video.ACTION_GET_STREAM_INFO) {
+                XmlNode streamInfo = taskRunner.getXmlResult();
+                float frameRate = 0.0f;
+                float avgFrameRate = 0.0f;
+                int duration = 0;
+                if (streamInfo != null) {
+                    try {
+                        XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
+                        vsi = vsi.getNode("VideoStreamInfo");
+                        while (vsi != null && !"V".equals(vsi.getString("CodecType")))
+                            vsi = vsi.getNextSibling();
+                        frameRate = Float.parseFloat(vsi != null ? vsi.getString("FrameRate") : "0");
+                        avgFrameRate = Float.parseFloat(vsi != null ? vsi.getString("AvgFrameRate") : "0");
+                        duration = Integer.parseInt(vsi != null ? vsi.getString("Duration") : "0");
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception", e);
+                    }
+                }
+                if (frameRate == 0.0)
+                    frameRate = avgFrameRate;
+                if (frameRate > 1.0)
+                    video.frameRate = frameRate;
+                if (duration > 0)
+                    video.duration = duration;
+            }
+            long lastPlay = taskRunner.getLastPlay();
+            long posLastPlayed = taskRunner.getPosLastPlay();
+            if (lastPlay <= 0 && posLastPlayed >= 0 && video.frameRate > 0.0f) {
+                lastPlay = posLastPlayed * 100000 / (long) (video.frameRate * 100.0f);
+            }
+            if (lastPlay >= 0)
+                // convert to seconds
+                video.lastPlay = lastPlay / 1000;
+            if (image != null)
+                image.invalidate();
+        });
+        call.setVideo(video);
+        int task0;
+        if (video.frameRate < 0)
+            task0 = Video.ACTION_GET_STREAM_INFO;
+        else
+            task0 = Video.ACTION_DUMMY;
+        call.execute(task0, Video.ACTION_LASTPLAYPOS);
     }
 
     @Override
