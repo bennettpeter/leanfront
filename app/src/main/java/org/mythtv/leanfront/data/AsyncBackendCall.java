@@ -694,6 +694,7 @@ public class AsyncBackendCall implements Runnable {
                             if (task == Video.ACTION_FILELENGTH) {
                                 Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
+                            break;
                         } finally {
                             if (response != null)
                                 response.close();
