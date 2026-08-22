@@ -257,7 +257,13 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     @SuppressLint("RtlHardcoded")
-    private void setUsage(int used) {
+    private void setUsage() {
+        BackendCache bCache = BackendCache.getInstance();
+        // Do this call once per hour at most
+        if (bCache.infoTime < System.currentTimeMillis() - 60*60*1000L)
+            new AsyncBackendCall(getActivity(), this).execute(Video.ACTION_BACKEND_INFO);
+        if (bCache.diskUsage < 0)
+            return;
         if (getContext() == null)
             return;
         if (mUsageView == null) {
@@ -277,7 +283,8 @@ public class MainFragment extends BrowseSupportFragment
             grp.addView(clock, new FrameLayout.LayoutParams(width / 10, height / 5,
                     Gravity.BOTTOM + Gravity.RIGHT));
         }
-        mUsageView.setText(getContext().getResources().getString(R.string.title_disk_usage, used));
+        mUsageView.setText(getContext().getResources().getString(R.string.title_disk_usage,
+                bCache.diskUsage));
     }
 
     /**
@@ -477,37 +484,8 @@ public class MainFragment extends BrowseSupportFragment
                 builder.show();
                 break;
             case Video.ACTION_BACKEND_INFO:
-                XmlNode xml = taskRunner.getXmlResult();
-                if (xml != null) {
-                    XmlNode mach = xml.getNode("MachineInfo");
-                    if (mach == null)
-                        break;
-                    XmlNode stg = mach.getNode("Storage");
-                    if (stg == null)
-                        break;
-                    XmlNode grp;
-                    for (int ix = 0;;ix++) {
-                        grp = stg.getNode("Group",ix);
-                        if (grp == null)
-                            break;
-                        String dir = grp.getAttribute("dir");
-                        if ("TotalDiskSpace".equals(dir))
-                            break;
-                    }
-                    if (grp == null)
-                        break;
-                    String usedStr = grp.getAttribute("used");
-                    String totalStr = grp.getAttribute("total");
-                    long used = Long.parseLong(usedStr);
-                    long total = Long.parseLong(totalStr);
-                    if (total > 0)
-                        setUsage((int)(used * 100 / total));
-                    else
-                        // If the total storage is 0 set usage as 100%
-                        setUsage(100);
-                }
+                setUsage();
                 break;
-
         }
     }
 
@@ -681,7 +659,7 @@ public class MainFragment extends BrowseSupportFragment
 
         int [] selection = getSelection();
         // Fill in disk usage
-        new AsyncBackendCall(getActivity(), this).execute(Video.ACTION_BACKEND_INFO);
+        setUsage();
         // Every time we have to re-get the category loader, we must re-create the sidebar.
         mCategoryRowAdapter.clear();
         ListRow row;

@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import org.mythtv.leanfront.model.Video;
-import org.mythtv.leanfront.ui.MainFragment;
 
 @SuppressLint("AppCompatCustomView")
 public class ImageOverlay extends ImageView {
@@ -30,11 +29,11 @@ public class ImageOverlay extends ImageView {
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        if (video != null && video.lastPlay > 0) {
+        if (video != null && video.lastPlay > 0 && video.duration > 0) {
             float width = getWidth();
             float height = getHeight();
             float thickness = 9;
-            float right = (width-thickness) * video.lastPlay / video.duration;
+            float right = (width - thickness) * video.lastPlay / video.duration;
             canvas.drawRect(thickness, height - thickness*2,
                     right, height - thickness, progPaint);
             canvas.drawRect(right, height-thickness*2,

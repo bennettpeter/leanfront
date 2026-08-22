@@ -34,6 +34,8 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     // Authorization token
     public String authorization;
     public boolean loginNeeded;
+    public long infoTime;
+    public int diskUsage;
 
     private BackendCache() {
         init();
@@ -45,6 +47,8 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         sMainPort = Settings.getString("pref_http_port");
         sHostMap = new HashMap<>();
         wsdlDone = false;
+        infoTime = 0;
+        diskUsage = -1;
         getWsdl();
     }
 

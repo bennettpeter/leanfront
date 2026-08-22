@@ -992,6 +992,33 @@ public class AsyncBackendCall implements Runnable {
                                 Log.e(TAG, CLASS + " Exception getting backend time " + urlString, e);
                             }
                         }
+                        XmlNode mach = xmlResult.getNode("MachineInfo");
+                        if (mach == null)
+                            break;
+                        XmlNode stg = mach.getNode("Storage");
+                        if (stg == null)
+                            break;
+                        XmlNode grp;
+                        for (int ix = 0;;ix++) {
+                            grp = stg.getNode("Group",ix);
+                            if (grp == null)
+                                break;
+                            String dir = grp.getAttribute("dir");
+                            if ("TotalDiskSpace".equals(dir))
+                                break;
+                        }
+                        if (grp == null)
+                            break;
+                        String usedStr = grp.getAttribute("used");
+                        String totalStr = grp.getAttribute("total");
+                        long used = Long.parseLong(usedStr);
+                        long total = Long.parseLong(totalStr);
+                        if (total > 0)
+                            bCache.diskUsage = (int)(used * 100 / total);
+                        else
+                            // If the total storage is 0 set usage as 100%
+                            bCache.diskUsage = 100;
+                        bCache.infoTime = System.currentTimeMillis();
                     }
                     // Find if we support the LastPlayPos API's
                     long tResult = 0;
