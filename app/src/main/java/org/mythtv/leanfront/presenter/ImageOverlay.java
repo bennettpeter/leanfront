@@ -33,7 +33,7 @@ public class ImageOverlay extends ImageView {
         if (video != null && video.lastPlay > 0) {
             float width = getWidth();
             float height = getHeight();
-            float thickness = height / 40;
+            float thickness = 9;
             float right = (width-thickness) * video.lastPlay / video.duration;
             canvas.drawRect(thickness, height - thickness*2,
                     right, height - thickness, progPaint);

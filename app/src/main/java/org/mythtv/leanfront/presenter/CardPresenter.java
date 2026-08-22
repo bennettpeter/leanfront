@@ -279,7 +279,7 @@ public class CardPresenter extends Presenter {
                     frameRate = avgFrameRate;
                 if (frameRate > 1.0)
                     video.frameRate = frameRate;
-                if (duration > 0)
+                if (duration > 0 && duration < 60*60*24)
                     video.duration = duration;
             }
             long lastPlay = taskRunner.getLastPlay();
@@ -291,7 +291,7 @@ public class CardPresenter extends Presenter {
                 // convert to seconds
                 video.lastPlay = lastPlay / 1000;
             if (image != null)
-                image.invalidate();
+                image.postInvalidate();
         });
         call.setVideo(video);
         int task0;
