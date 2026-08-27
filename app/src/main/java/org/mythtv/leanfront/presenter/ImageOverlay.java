@@ -17,10 +17,14 @@ public class ImageOverlay extends ImageView {
     Video video;
     Paint progPaint = new Paint();
     Paint bgPaint = new Paint();
+    float thickness;
+    float space;
     public ImageOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
         progPaint.setColor(Color.RED);
         bgPaint.setColor(Color.GRAY);
+        thickness = 9f;
+        space = 1f;
     }
 
     public void setVideo(Video video) {
@@ -32,12 +36,11 @@ public class ImageOverlay extends ImageView {
         if (video != null && video.lastPlay > 0 && video.duration > 0) {
             float width = getWidth();
             float height = getHeight();
-            float thickness = 9;
-            float right = (width - thickness) * video.lastPlay / video.duration;
-            canvas.drawRect(thickness, height - thickness*2,
+            float right = (width - space * 2) * video.lastPlay / video.duration + space;
+            canvas.drawRect(space, height - thickness * 2,
                     right, height - thickness, progPaint);
-            canvas.drawRect(right, height-thickness*2,
-                    width-thickness, height-thickness, bgPaint);
+            canvas.drawRect(right, height - thickness * 2,
+                    width-space, height-thickness, bgPaint);
 
         }
     }
