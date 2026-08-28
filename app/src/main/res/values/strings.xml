@@ -534,7 +534,7 @@
     <string name="sdef_num_cc_chans" translatable="false">2</string>
     <string name="sdef_filter" translatable="false">recgrp</string>
     <string name="sdef_guide_timeslots" translatable="false">8</string>
-<!--    Program Details-->
+    <!-- Program Details -->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>
     <string name="details_endtime">End Time</string>
@@ -548,4 +548,9 @@
     <string name="details_director">Director</string>
     <string name="details_studio">Studio</string>
     <string name="details_certification">Certification</string>
+    <!-- Values for Google and Amazon testing for play store-->
+    <string name="demo_name" translatable="false">demo</string>
+    <string name="demo_ip" translatable="false">73.17.82.146</string>
+    <string name="demo_user" translatable="false">VQKV14ZANH</string>
+    <string name="demo_pswd" translatable="false">I62HEZWFJH</string>
 </resources>

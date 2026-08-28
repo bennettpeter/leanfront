@@ -1,5 +1,9 @@
 package org.mythtv.leanfront.data;
 
+import android.content.SharedPreferences;
+
+import org.mythtv.leanfront.MyApplication;
+import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 
@@ -27,7 +31,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     // Values from XmlNode
     public HashMap<String, String> sHostMap;
     public boolean isConnected;
-    public boolean wsdlDone;
 
     // from GetHostName
     public String sHostName;
@@ -36,6 +39,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public boolean loginNeeded;
     public long infoTime;
     public int diskUsage;
+    private static final String demoName = MyApplication.getAppContext().getString(R.string.demo_name);
 
     private BackendCache() {
         init();
@@ -43,32 +47,46 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     private void init() {
         sBackendIP = Settings.getString("pref_backend");
-        sBackendIP = XmlNode.fixIpAddress((sBackendIP));
+        sBackendIP = fixIpAddress(sBackendIP);
         sMainPort = Settings.getString("pref_http_port");
         sHostMap = new HashMap<>();
-        wsdlDone = false;
         infoTime = 0;
         diskUsage = -1;
+        loginNeeded = false;
+        authorization = null;
         getWsdl();
     }
 
     private void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall(null, this);
         call.execute(Video.ACTION_DVR_WSDL, Video.ACTION_BACKEND_INFO, Video.ACTION_GET_HOSTNAME);
-        wsdlDone = true;
     }
 
     public static BackendCache getInstance() {
         if (singleton == null)
             singleton = new BackendCache();
-        else if (!singleton.wsdlDone)
-            singleton.getWsdl();
         return singleton;
     }
 
     public static void flush() {
         if (singleton != null)
             singleton.init();
+    }
+
+    public String fixIpAddress(String ipAddress) {
+        if (ipAddress != null) {
+            ipAddress = ipAddress.replace(" ","");
+            if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
+                ipAddress = "[" + ipAddress + "]";
+            if (ipAddress.equals(demoName)) {
+                ipAddress =  MyApplication.getAppContext().getString(R.string.demo_ip);
+                SharedPreferences.Editor editor = Settings.getEditor();
+                Settings.putString(editor,"pref_backend_userid", MyApplication.getAppContext().getString(R.string.demo_user));
+                Settings.putString(editor,"pref_backend_passwd", MyApplication.getAppContext().getString(R.string.demo_pswd));
+                editor.commit();
+            }
+        }
+        return ipAddress;
     }
 
     @Override
@@ -82,7 +100,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         //noinspection SwitchStatementWithTooFewBranches
         switch (tasks[0]) {
             case Video.ACTION_DVR_WSDL:
-                wsdlDone = false;
                 canUpdateRecGroup = false;
                 canForgetHistory = false;
                 if (xml == null)
@@ -90,7 +107,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                 XmlNode schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
                 XmlNode parameterNode;
                 if (schemaNode != null) {
-                    wsdlDone = true;
                     // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
                     parameterNode = schemaNode.getNode
                             (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"}, 0);

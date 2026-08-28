@@ -1145,8 +1145,8 @@ public class MainFragment extends BrowseSupportFragment
                 boolean loginNeededNow = false;
                 scheduledTaskRunning = true;
                 boolean connection = false;
-                String backendIP = Settings.getString("pref_backend");
-                backendIP = XmlNode.fixIpAddress(backendIP);
+                BackendCache bCache = BackendCache.getInstance();
+                String backendIP = bCache.sBackendIP;
                 if (backendIP.isEmpty())
                     return;
                 while (!connection) {
@@ -1172,7 +1172,7 @@ public class MainFragment extends BrowseSupportFragment
                     int toastMsg = 0;
                     int toastLeng = 0;
                     if (loginNeededNow) {
-                        BackendCache.getInstance().loginNeeded = true;
+                        bCache.loginNeeded = true;
                         try {
                             String result;
                             String url = XmlNode.mythApiUrl(null,
@@ -1185,13 +1185,13 @@ public class MainFragment extends BrowseSupportFragment
                             result = loginXml.getString();connection = true;
                             if (result.isEmpty()) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
-                                BackendCache.getInstance().authorization = null;
+                                bCache.authorization = null;
                             }
                             else
-                                BackendCache.getInstance().authorization = result;
+                                bCache.authorization = result;
                         } catch (Exception e) {
                             Log.e(TAG, CLASS + " Exception in LoginUser.", e);
-                            BackendCache.getInstance().authorization = null;
+                            bCache.authorization = null;
                         }
                         loginTried = true;
                     }
@@ -1219,11 +1219,11 @@ public class MainFragment extends BrowseSupportFragment
                             if (Settings.getString("pref_backend_userid").isEmpty()
                                 || Settings.getString("pref_backend_passwd").isEmpty()
                                 || loginTried) {
-                                BackendCache.getInstance().loginNeeded = true;
+                                bCache.loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
-                                Intent intent = new Intent(MyApplication.getAppContext(), SettingsActivity.class);
+                                Intent intent = new Intent(MainFragment.mActiveFragment.getActivity(), SettingsActivity.class);
                                 intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_BACKEND);
-                                MyApplication.getAppContext().startActivity(intent);
+                                MainFragment.mActiveFragment.requireActivity().startActivity(intent);
                             }
                             else
                                 loginNeededNow = true;
@@ -1252,6 +1252,7 @@ public class MainFragment extends BrowseSupportFragment
                 }
                 if (mFetchTime <= System.currentTimeMillis()
                         - (long) Settings.getInt("pref_refresh_mins") * 60 * 1000 + 100) {
+                    BackendCache.flush();
                     MainFragment.startFetch(-1, null, null, false);
                 }
             } catch (Exception ex) {
@@ -1306,7 +1307,6 @@ public class MainFragment extends BrowseSupportFragment
 
             try (DatagramSocket ds = new DatagramSocket()){
                 DatagramPacket DpSend = new DatagramPacket(msg, msg.length, InetAddress.getByName("255.255.255.255"), 9);
-//                DatagramSocket ds = new DatagramSocket();
                 ds.send(DpSend);
             } catch (IOException e) {
                 Log.e(TAG, CLASS + " Exception ", e);

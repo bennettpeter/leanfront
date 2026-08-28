@@ -52,15 +52,16 @@ public class XmlNode {
     private String text = null;
     private XmlNode nextSibling;
 
+    @SuppressWarnings("CommentedOutCode")
     public static String getIpAndPort(String hostname) throws IOException, XmlPullParserException {
+        BackendCache bCache = BackendCache.getInstance();
         String backendIP = Settings.getString("pref_backend");
-        backendIP = fixIpAddress(backendIP);
+        backendIP = bCache.fixIpAddress(backendIP);
         String mainPort = Settings.getString("pref_http_port");
         if (backendIP.isEmpty() || mainPort.isEmpty()) {
             Log.e(TAG, CLASS + " Backend port or IP address not specified");
             return null;
         }
-        BackendCache bCache = BackendCache.getInstance();
         if (!backendIP.equals(bCache.sBackendIP) || !mainPort.equals(bCache.sMainPort)) {
             BackendCache.flush();
         }
@@ -77,7 +78,7 @@ public class XmlNode {
             // no setting for BackendServerAddr
             if (hostIp == null || hostIp.startsWith("127.") || hostIp.equalsIgnoreCase("localhost"))
                 hostIp = backendIP;
-            hostIp = fixIpAddress(hostIp);
+            hostIp = bCache.fixIpAddress(hostIp);
 
             // This removed because the system may use 6744 when 6544 is the status port
             // If your slave backend has a different port you are out of luck.
@@ -103,17 +104,6 @@ public class XmlNode {
             return true;
         }
         return false;
-    }
-
-    public static String fixIpAddress(String ipAddress) {
-        if (ipAddress != null) {
-            ipAddress = ipAddress.replace(" ","");
-            if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
-                ipAddress = "[" + ipAddress + "]";
-            if ("demo".equalsIgnoreCase(ipAddress))
-                ipAddress = "73.17.82.146";
-        }
-        return ipAddress;
     }
 
     public static XmlNode parseStream(InputStream in) throws XmlPullParserException, IOException {
@@ -180,7 +170,7 @@ public class XmlNode {
             Request.Builder builder = new Request.Builder()
                     .url(urlString);
             builder.header("Cache-Control", "no-cache");
-            String auth = BackendCache.getInstance().authorization;
+            String auth = bCache.authorization;
             if (auth != null && !auth.isEmpty())
                 builder.header("Authorization", auth);
             if (requestMethod != null) {

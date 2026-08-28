@@ -214,12 +214,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
 
-        String str;
+        String str = Settings.getString("pref_backend");
         List<GuidedAction> subActions = new ArrayList<>();
         subActions.add(new GuidedAction.Builder(getActivity())
                 .id(ID_BACKEND_IP)
                 .title(R.string.pref_title_backend_ip)
-                .description(Settings.getString("pref_backend"))
+                .description(str)
                 .descriptionEditable(true)
                 .build());
         subActions.add(new GuidedAction.Builder(getActivity())
@@ -229,11 +229,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .descriptionEditable(true)
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
-        if (BackendCache.getInstance().loginNeeded) {
+        str = Settings.getString("pref_backend_userid");
+        if (BackendCache.getInstance().loginNeeded && !str.equals(getString(R.string.demo_user))) {
             subActions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_BACKEND_USERID)
                     .title(R.string.pref_title_backend_userid)
-                    .description(Settings.getString("pref_backend_userid"))
+                    .description(str)
                     .descriptionEditable(true)
                     .build());
             subActions.add(new GuidedAction.Builder(getActivity())
@@ -848,6 +849,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 mBackendAction.setDescription(newVal);
                 notifyActionChanged(findActionPositionById(ID_BACKEND));
                 BackendCache.getInstance().authorization = null;
+                BackendCache.flush();
                 break;
             case ID_HTTP_PORT:
                 Settings.putString(editor, "pref_http_port",
@@ -1433,6 +1435,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     @Override
     public void onPause() {
         super.onPause();
+        BackendCache.flush();
         if (!Objects.equals(mPriorBackend, Settings.getString("pref_backend"))
             || !Objects.equals(mPriorHttpPort, Settings.getString("pref_http_port"))
             || !Objects.equals(mPriorRowsize, Settings.getString("pref_livetv_rowsize"))
