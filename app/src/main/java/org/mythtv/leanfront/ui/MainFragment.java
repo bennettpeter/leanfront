@@ -257,10 +257,10 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     @SuppressLint("RtlHardcoded")
-    private void setUsage() {
+    private void setUsage(boolean call) {
         BackendCache bCache = BackendCache.getInstance();
         // Do this call once per hour at most
-        if (bCache.infoTime < System.currentTimeMillis() - 60*60*1000L)
+        if (call && bCache.infoTime < System.currentTimeMillis() - 60*60*1000L)
             new AsyncBackendCall(getActivity(), this).execute(Video.ACTION_BACKEND_INFO);
         if (bCache.diskUsage < 0)
             return;
@@ -484,7 +484,7 @@ public class MainFragment extends BrowseSupportFragment
                 builder.show();
                 break;
             case Video.ACTION_BACKEND_INFO:
-                setUsage();
+                setUsage(false);
                 break;
         }
     }
@@ -659,7 +659,7 @@ public class MainFragment extends BrowseSupportFragment
 
         int [] selection = getSelection();
         // Fill in disk usage
-        setUsage();
+        setUsage(true);
         // Every time we have to re-get the category loader, we must re-create the sidebar.
         mCategoryRowAdapter.clear();
         ListRow row;

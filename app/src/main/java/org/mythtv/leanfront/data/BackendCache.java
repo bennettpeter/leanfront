@@ -61,7 +61,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public static BackendCache getInstance() {
         if (singleton == null)
             singleton = new BackendCache();
-        if (!singleton.wsdlDone)
+        else if (!singleton.wsdlDone)
             singleton.getWsdl();
         return singleton;
     }
