@@ -52,8 +52,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         sHostMap = new HashMap<>();
         infoTime = 0;
         diskUsage = -1;
-        loginNeeded = false;
-        authorization = null;
         getWsdl();
     }
 

@@ -837,9 +837,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         int groupId = id / 100;
         String group = mPlayGroupList.get(groupId);
         String newVal = String.valueOf(action.getDescription()).trim();
+        BackendCache bCache = BackendCache.getInstance();
         switch(actualId) {
             case ID_BACKEND_IP:
-//                newVal = action.getDescription().toString();
                 // strip any '[' or ']' characters, which are invalid and will
                 // be used for identifying an IPV6
                 newVal = newVal.replace("[","");
@@ -848,24 +848,27 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 action.setDescription(newVal);
                 mBackendAction.setDescription(newVal);
                 notifyActionChanged(findActionPositionById(ID_BACKEND));
-                BackendCache.getInstance().authorization = null;
+                bCache.authorization = null;
+                bCache.loginNeeded = false;
                 BackendCache.flush();
                 break;
             case ID_HTTP_PORT:
                 Settings.putString(editor, "pref_http_port",
                     validateNumber(action, 1, 65535, 6544));
+                bCache.authorization = null;
+                bCache.loginNeeded = false;
                 break;
             case ID_BACKEND_USERID:
-//                newVal = action.getDescription().toString().trim();
                 Settings.putString(editor, "pref_backend_userid",newVal);
                 action.setDescription(newVal);
-                BackendCache.getInstance().authorization = null;
+                bCache.authorization = null;
+                bCache.loginNeeded = false;
                 break;
             case ID_BACKEND_PASSWD:
-//                newVal = action.getDescription().toString().trim();
                 Settings.putString(editor, "pref_backend_passwd",newVal);
                 action.setDescription(newVal);
-                BackendCache.getInstance().authorization = null;
+                bCache.authorization = null;
+                bCache.loginNeeded = false;
                 break;
             case ID_BACKEND_MAC:
                 Settings.putString(editor, "pref_backend_mac",newVal);
