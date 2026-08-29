@@ -1173,16 +1173,18 @@ public class MainFragment extends BrowseSupportFragment
                     int toastLeng = 0;
                     if (loginNeededNow) {
                         bCache.loginNeeded = true;
+                        String user = Settings.getString("pref_backend_userid").trim();
                         try {
                             String result;
                             String url = XmlNode.mythApiUrl(null,
                                     "/Myth/LoginUser") +
                                     "?UserName=" +
-                                    URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8") +
+                                    URLEncoder.encode(user, "UTF-8") +
                                     "&Password=" +
                                     URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8");
                             XmlNode loginXml = XmlNode.fetch(url, "POST");
-                            result = loginXml.getString();connection = true;
+                            result = loginXml.getString();
+                            connection = true;
                             if (result.isEmpty()) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
                                 bCache.authorization = null;
@@ -1192,6 +1194,14 @@ public class MainFragment extends BrowseSupportFragment
                         } catch (Exception e) {
                             Log.e(TAG, CLASS + " Exception in LoginUser.", e);
                             bCache.authorization = null;
+                        }
+                        // If the demo user had been used but is no longer aithorized, remove the demo
+                        // user and password so that the settings do not display it
+                        if (bCache.authorization == null && user.equals(MainFragment.mActiveFragment.getString(R.string.demo_user))) {
+                            SharedPreferences.Editor editor = Settings.getEditor();
+                            Settings.putString(editor,"pref_backend_userid", "");
+                            Settings.putString(editor,"pref_backend_passwd", "");
+                            editor.commit();
                         }
                         loginTried = true;
                     }
