@@ -1197,7 +1197,8 @@ public class MainFragment extends BrowseSupportFragment
                         }
                         // If the demo user had been used but is no longer aithorized, remove the demo
                         // user and password so that the settings do not display it
-                        if (bCache.authorization == null && user.equals(MainFragment.mActiveFragment.getString(R.string.demo_user))) {
+                        if (bCache.authorization == null && user.equals(MyApplication.getAppContext()
+                                .getString(R.string.demo_user))) {
                             SharedPreferences.Editor editor = Settings.getEditor();
                             Settings.putString(editor,"pref_backend_userid", "");
                             Settings.putString(editor,"pref_backend_passwd", "");

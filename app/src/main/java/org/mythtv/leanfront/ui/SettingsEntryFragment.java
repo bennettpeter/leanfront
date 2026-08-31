@@ -1449,6 +1449,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         mPriorHttpPort = null;
         mPriorRowsize = null;
         mPriorParental = null;
+        mPriorFilter = null;
         isActive = false;
         MainFragment.restartMythTask();
     }
