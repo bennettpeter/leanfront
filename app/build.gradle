@@ -18,9 +18,6 @@ tasks.register('gitinfo') {
 }
 
 android {
-    lintOptions{
-        disable 'MissingTranslation'
-    }
     compileSdk = 36
     defaultConfig {
         applicationId "org.mythtv.leanfront"
@@ -59,6 +56,9 @@ android {
     }
     ndkVersion = '28.2.13676358'
     namespace = 'org.mythtv.leanfront'
+    lint {
+        disable 'MissingTranslation'
+    }
 }
 
 dependencies {

@@ -316,7 +316,10 @@ public class MainFragment extends BrowseSupportFragment
         }
         else {
             initFilterType();
-            new AsyncMainLoader(requireActivity(), isProgressBar).execute(this);
+            Activity activity = getActivity();
+            if (activity == null)
+                return;
+            new AsyncMainLoader(activity, isProgressBar).execute(this);
             isLoaderRunning = true;
         }
     }
@@ -462,8 +465,8 @@ public class MainFragment extends BrowseSupportFragment
 
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
-        Context context = requireContext();
-        if (taskRunner == null)
+        Context context = getContext();
+        if (taskRunner == null || context == null)
             return;
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
@@ -1234,7 +1237,9 @@ public class MainFragment extends BrowseSupportFragment
                                 toastMsg = R.string.msg_backend_login_req;
                                 Intent intent = new Intent(MainFragment.mActiveFragment.getActivity(), SettingsActivity.class);
                                 intent.putExtra(KEY_EXPAND, SettingsEntryFragment.ID_BACKEND);
-                                MainFragment.mActiveFragment.requireActivity().startActivity(intent);
+                                Activity activity = MainFragment.mActiveFragment.getActivity();
+                                if (activity != null)
+                                    activity.startActivity(intent);
                             }
                             else
                                 loginNeededNow = true;

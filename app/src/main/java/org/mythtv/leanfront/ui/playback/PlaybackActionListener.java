@@ -1185,7 +1185,10 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
     public void onIdleTimeout() {
         if (playbackFragment == null)
             return;
-        ((PlaybackActivity)playbackFragment.requireActivity()).updateTouchTime();
+        PlaybackActivity activity = ((PlaybackActivity)playbackFragment.getActivity());
+        if (activity == null)
+            return;
+        activity.updateTouchTime();
         dismissDialog();
         playbackFragment.hideControlsOverlay(false);
         yesPress = false;
@@ -1194,7 +1197,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                 .setTitle(playbackFragment.mVideo.title)
                 .setMessage(R.string.msg_idle_timeout)
                 .setPositiveButton(R.string.button_yes, (dialog, which) -> {
-                    ((PlaybackActivity)playbackFragment.requireActivity()).updateTouchTime();
+                    activity.updateTouchTime();
                     yesPress = true;
                  })
                 .setNegativeButton(R.string.button_no,null)
@@ -1203,7 +1206,7 @@ class PlaybackActionListener implements VideoPlayerGlue.OnActionClickedListener 
                         dialogDismiss.onDismiss(dialog);
                     else {
                         dialogDismiss.onDismiss(dialog);
-                        playbackFragment.requireActivity().finish();
+                        activity.finish();
                     }
                 });
         dialogDismiss.enableControls = false;

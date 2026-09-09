@@ -388,6 +388,8 @@ public class PlaybackFragment extends VideoSupportFragment
      * @param action Value from Video ACTIONS Video.ACTION_SET_LASTPLAYPOS or Video.ACTION_SET_BOOKMARK
      */
     void setBookmark(int action) {
+        if (mPlayerGlue == null)
+            return;
         long bookmark;
         long pos = mPlayerGlue.getCurrentPosition();
         long leng = mPlayerGlue.myGetDuration();
@@ -1308,6 +1310,8 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     boolean onControlsUp() {
+        if (mPlayerGlue == null)
+            return false;
         PlaybackControlsRow row = mPlayerGlue.getControlsRow();
         if (row == null)
             return false;
@@ -1368,7 +1372,7 @@ public class PlaybackFragment extends VideoSupportFragment
 
     @Override
     public void onPostExecute(AsyncBackendCall taskRunner) {
-        if (getContext() == null)
+        if (getContext() == null || mPlayerGlue == null)
             return;
         int [] tasks = taskRunner.getTasks();
         switch (tasks[0]) {
@@ -1513,6 +1517,8 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     public void tickle(boolean autohide, boolean showActions) {
+        if (mPlayerGlue == null)
+            return;
         mPlayerGlue.setActions(showActions);
         setControlsOverlayAutoHideEnabled(false);
         showControlsOverlay(true);
@@ -1521,7 +1527,8 @@ public class PlaybackFragment extends VideoSupportFragment
     }
 
     public void setActions(boolean showActions) {
-        mPlayerGlue.setActions(showActions);
+        if (mPlayerGlue != null)
+            mPlayerGlue.setActions(showActions);
     }
 
 
