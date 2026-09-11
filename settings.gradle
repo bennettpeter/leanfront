@@ -1,7 +1,12 @@
+pluginManagement {
+    includeBuild('../media/build-logic-settings')
+}
+
 plugins {
+    id 'gradlebuild.media3-settings-logic'
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'
 }
+
 include ':app'
 
-gradle.ext.androidxMediaModulePrefix = 'media-'
-apply from: file("../media/core_settings.gradle")
+includeMedia3.execute(file('../media'))
