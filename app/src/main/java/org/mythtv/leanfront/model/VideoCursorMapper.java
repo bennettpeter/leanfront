@@ -153,9 +153,9 @@ public final class VideoCursorMapper extends CursorMapper {
         long lastUsed = 0;
         if (lastUsedIndex >= 0 && !cursor.isNull(lastUsedIndex))
             lastUsed = cursor.getLong(lastUsedIndex);
-        boolean showRecent = true;
+        boolean showRecent = false;
         if (showRecentIndex >= 0 && !cursor.isNull(showRecentIndex))
-            showRecent = (cursor.getInt(showRecentIndex) != 0);
+            showRecent = (cursor.getInt(showRecentIndex) > 0);
 
         // Build a Video object to be processed.
         return new Video.VideoBuilder()
