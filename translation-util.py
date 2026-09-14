@@ -20,6 +20,7 @@
 
 import os, sys, re
 import json
+import asyncio
 import xml.etree.ElementTree as ET
 # TODO - replace optparse with argparse
 from optparse import OptionParser
@@ -54,7 +55,7 @@ def doCheckTranslations(default_dict, code, location, desc, keylist:list):
             value = xvalue.replace("\\'","'")
             destString = translate(value, code)
             xdestString = destString.replace("'","\\'")
-            print("Updating string '%s' -> '%s'" % (value, destString))
+            print("Updating string '%s' -> '%s'" % (value, xdestString))
             dest_dict[key] = xdestString
     saveFile(location, default_dict, dest_dict)
 
@@ -83,11 +84,16 @@ def translate(src_text, lang):
     # just use Spanish for now
     if lang == 'es_ES':
         lang = 'es'
-
-    translation = translator.translate(src_text, dest=lang, src='en')
-    result = translation.text
-
+#     translation = translator.translate(src_text, dest=lang, src='en')
+#     result = translation.text
+    result = asyncio.run(translator(src_text, lang))
     return result
+
+async def translator(src_text, lang):
+    async with Translator() as translator:
+        translation = await translator.translate(src_text, dest=lang, src='en')
+        result = translation.text
+        return result
 
 #   load the default strings into a dict
 def loadDefault():
@@ -156,8 +162,8 @@ def listLanguages():
 
 if __name__ == '__main__':
 
-    global translator
-    translator = Translator(timeout=Timeout(30.0))
+#     global translator
+#     translator = Translator(timeout=Timeout(30.0))
 
     global translation_dir
     translation_dir = os.path.dirname(os.path.abspath(sys.argv[0])) + '/app/src/main/res/'
