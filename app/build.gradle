@@ -18,13 +18,13 @@ tasks.register('gitinfo') {
 }
 
 android {
-    compileSdk = 36
+    compileSdkVersion = 36
     defaultConfig {
         applicationId "org.mythtv.leanfront"
         minSdkVersion 23
         //noinspection EditedTargetSdkVersion
-        targetSdk 36
-        compileSdk = 36
+        targetSdkVersion 36
+        compileSdkVersion = 36
         versionCode gitinfo.ext.version
         versionName gitinfo.ext.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,7 +32,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            signingConfig = signingConfigs.debug
+            shrinkResources true
             debuggable false
             ndk {
                 //noinspection ChromeOsAbiSupport
