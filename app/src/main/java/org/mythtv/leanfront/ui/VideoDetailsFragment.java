@@ -66,6 +66,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.IntentCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.DetailsSupportFragment;
@@ -168,9 +169,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         prepareBackgroundManager();
         mVideoCursorAdapter = new CursorObjectAdapter(new CardPresenter(this));
         mVideoCursorAdapter.setMapper(mVideoCursorMapper);
-
-        mSelectedVideo = requireActivity().getIntent()
-                .getParcelableExtra(PlaybackActivity.VIDEO);
+        Intent intent =  requireActivity().getIntent();
+        mSelectedVideo = IntentCompat.getParcelableExtra(intent, PlaybackActivity.VIDEO, Video.class);
 
         videoAction = new VideoAction(this, mSelectedVideo);
 

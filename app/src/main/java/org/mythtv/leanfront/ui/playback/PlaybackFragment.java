@@ -62,6 +62,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.IntentCompat;
 import androidx.leanback.app.ProgressBarManager;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
@@ -242,7 +243,8 @@ public class PlaybackFragment extends VideoSupportFragment
         super.onCreate(savedInstanceState);
 
         Activity activity = requireActivity();
-        mVideo = activity.getIntent().getParcelableExtra(PlaybackActivity.VIDEO);
+        Intent intent =  activity.getIntent();
+        mVideo = IntentCompat.getParcelableExtra(intent, PlaybackActivity.VIDEO, Video.class);
         if (mVideo == null) {
             activity.finish();
             return;
