@@ -47,6 +47,8 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     private final HttpDataSource mHttpDataSource;
     private long mTotalLength;
     private long mCurrentPos;
+    private long initialLength = C.LENGTH_UNSET;
+    private long initialTime;
     private static final String TAG = "lfe";
     private static final String CLASS = "MythHttpDataSource";
 
@@ -68,12 +70,19 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
     @Override
     public long open(DataSpec dataSpec)
             throws IOException {
+        long dataspecLength = dataSpec.length;
+        if (initialLength != C.LENGTH_UNSET && System.currentTimeMillis() - initialTime < 5000) {
+            if (dataSpec.length == C.LENGTH_UNSET)
+                dataspecLength = initialLength - dataSpec.position;
+            if (dataSpec.position + dataspecLength > initialLength)
+                dataspecLength = initialLength - dataSpec.position;
+        }
         this.mDataSpec = new DataSpec.Builder()
                 .setUri(dataSpec.uri)
                 .setHttpMethod(dataSpec.httpMethod)
                 .setHttpBody(dataSpec.httpBody)
                 .setPosition(dataSpec.position)
-                .setLength(dataSpec.length)
+                .setLength(dataspecLength)
                 .setKey(dataSpec.key)
                 .setFlags(dataSpec.flags)
                 .build();
@@ -92,6 +101,11 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                 throw e;
             }
         }
+        if (dataSpec.length == C.LENGTH_UNSET && initialLength == C.LENGTH_UNSET
+                && dataSpec.position == 0 && leng > 0) {
+            initialLength = leng;
+            initialTime = System.currentTimeMillis();
+        }
         mTotalLength = mDataSpec.position + leng;
         mCurrentPos = mDataSpec.position;
         return leng;
@@ -109,20 +123,22 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
                     .setUri(mDataSpec.uri)
                     .setHttpMethod(mDataSpec.httpMethod)
                     .setHttpBody(mDataSpec.httpBody)
-                    .setPosition(mCurrentPos + leng)
-                    .setLength(mDataSpec.length)
+                    .setPosition(mCurrentPos)
+                    .setLength(C.LENGTH_UNSET)
                     .setKey(mDataSpec.key)
                     .setFlags(mDataSpec.flags)
                     .build();
             mHttpDataSource.close();
 
             long leng2;
-            try {
+            if (mDataSpec.length == C.LENGTH_UNSET) {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     // Ignore this exception.
                 }
+            }
+            try {
                 leng2 = mHttpDataSource.open(dataSpec2);
             } catch (HttpDataSource.InvalidResponseCodeException e) {
                 // Response code 416 = read past eof
