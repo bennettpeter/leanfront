@@ -143,6 +143,8 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 intent.putExtra(PlaybackActivity.POSBOOKMARK, posbookmark);
                 if (fragment instanceof VideoDetailsFragment)
                     ((VideoDetailsFragment)fragment).startPlayForResult.launch(intent);
+                else
+                    fragment.requireContext().startActivity(intent);
                 break;
             case Video.ACTION_LIVETV:
                 setProgressBar(true);
@@ -496,7 +498,12 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 builder.setMessage(span);
                 builder.show();
                 break;
-
+            case Video.ACTION_REMOVE_LASTPLAYPOS:
+            case Video.ACTION_SET_LASTPLAYPOS:
+                if (fragment instanceof MainFragment) {
+                    ((MainFragment)fragment).startAsyncLoader(false);
+                    break;
+                }
             default:
                 // Assume ACTION_REFRESH was in the list
                 if (activity == null)
