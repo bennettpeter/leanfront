@@ -93,12 +93,18 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
                 // Date Recorded
                 SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
                 DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat(context);
+                DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
                 String recDate = "";
+                StringBuilder recDateTime = new StringBuilder();
                 if (mVideo.starttime != null) {
                     Date date = dbFormat.parse(mVideo.starttime + "+0000");
-                    if (date != null)
+                    if (date != null) {
                         recDate = outFormat.format(date);
-                    description.append(recDate);
+                        recDateTime.append(recDate);
+                        if (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING)
+                            recDateTime.append(' ').append(timeFormat.format(date));
+                    }
+                    description.append(recDateTime);
                 }
                 // Length of recording
                 int duration = Math.max(mVideo.duration, 0);
