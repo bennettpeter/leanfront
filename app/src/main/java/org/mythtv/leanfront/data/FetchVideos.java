@@ -191,6 +191,7 @@ public class FetchVideos implements Runnable {
                     break;
                 firstLoop = false;
             }
+            MainFragment.mFetchTime = System.currentTimeMillis();
         } catch (IOException | XmlPullParserException e) {
             MainFragment.mFetchTime = 0;
             Log.e(TAG, "Error occurred in downloading videos", e);
