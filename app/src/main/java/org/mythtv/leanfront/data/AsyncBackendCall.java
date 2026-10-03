@@ -17,6 +17,13 @@
  * along with MythTV-leanfront.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// For testing that leanfront works with MythTV 29 or 30
+// GetLastPlayPos -> GetLastPlayPosxxxx
+// SetLastPlayPos -> SetLastPlayPosxxxx
+// GetStreamInfo -> GetStreamInfoxxxx
+// Reset with xxxx ->
+
+
 package org.mythtv.leanfront.data;
 
 import android.annotation.SuppressLint;
