@@ -109,7 +109,6 @@ import org.mythtv.leanfront.presenter.IconHeaderItemPresenter;
 import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -1220,15 +1219,7 @@ public class MainFragment extends BrowseSupportFragment
                         connection = true;
                         if (!"true".equals(result))
                             Log.e(TAG, CLASS + " MythTask Incorrect response from DelayShutdown: " + result);
-                    } catch (FileNotFoundException | XmlPullParserException ex) {
-                        if (!mVersionMessageShown) {
-                            toastMsg = R.string.msg_no_delayshutdown;
-                            toastLeng = Toast.LENGTH_LONG;
-                            mVersionMessageShown = true;
-                        }
-                        connection = true;
-                        Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", ex);
-                    } catch (IOException e) {
+                    } catch (IOException | XmlPullParserException e) {
                         if ("Unauthorized: 401".equals(e.getMessage())) {
                             if (Settings.getString("pref_backend_userid").isEmpty()
                                 || Settings.getString("pref_backend_passwd").isEmpty()
@@ -1244,8 +1235,18 @@ public class MainFragment extends BrowseSupportFragment
                             else
                                 loginNeededNow = true;
                         }
-                        else
-                            toastMsg = R.string.msg_no_connection;
+                        else {
+                            if ("Http error:404".equals(e.getMessage()) || e instanceof XmlPullParserException) {
+                                if (!mVersionMessageShown) {
+                                    toastMsg = R.string.msg_no_delayshutdown;
+                                    mVersionMessageShown = true;
+                                }
+                                connection = true;
+                                Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", e);
+                            }
+                            else
+                                toastMsg = R.string.msg_no_connection;
+                        }
                         toastLeng = Toast.LENGTH_LONG;
                         connectionfail = true;
                         mFetchTime = 0; // Force a fetch when it comes back
