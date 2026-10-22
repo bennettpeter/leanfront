@@ -64,7 +64,7 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 ## Amazon fire TV Devices
 
-Leanfront will only run on Fire Sticks that run "Fire OS", which is a version of Android. It will not run on the "Fire TV 4K Select". That runs Amazon's "Vega OS", and will not run Android Applications. You can verify the Operating system of a particular device at https://developer.amazon.com/docs/device-specs/device-specifications-fire-tv-streaming-media-player.html . Select the device from the drop-down list and check the OS version.
+Leanfront will only run on Fire Sticks that run "Fire OS", which is a version of Android. It will not run on the "Fire TV 4K Select" or newer fire 4K devices that run Amazon's "Vega OS". They will not run Android Applications. You can verify the Operating system of a particular device at https://developer.amazon.com/docs/device-specs/device-specifications-fire-tv-streaming-media-player.html . Select the device from the drop-down list and check the OS version.
 
 Note the latest (2026) version of Fire TV STick 4K now has "Vega OS" and will not run leanfront.
 
