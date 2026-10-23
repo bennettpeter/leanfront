@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -66,7 +67,6 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.leanback.widget.TitleViewAdapter;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.core.content.ContextCompat;
 
 import android.os.Looper;
 import android.text.Html;
@@ -329,7 +329,12 @@ public class MainFragment extends BrowseSupportFragment
         super.onViewCreated(view, savedInstanceState);
 
         // Prepare the manager that maintains the same background image between activities.
-        prepareBackgroundManager();
+        String bgColor = Settings.getString("pref_color_bg");
+        if (bgColor.isEmpty())
+            prepareBackgroundManager();
+        else
+            view.setBackgroundColor(Color.parseColor(Settings.getString("pref_color_bg")));
+
 
         setupUIElements();
         setupEventListeners();
@@ -430,7 +435,9 @@ public class MainFragment extends BrowseSupportFragment
 
     @Override
     public void onStop() {
-        mBackgroundManager.release();
+        if (mBackgroundManager != null) {
+            mBackgroundManager.release();
+        }
         super.onStop();
     }
 
@@ -527,10 +534,10 @@ public class MainFragment extends BrowseSupportFragment
         setHeadersTransitionOnBackEnabled(true);
 
         // Set fastLane (or headers) background color
-        setBrandColor(ContextCompat.getColor(requireActivity(), R.color.fastlane_background));
+        setBrandColor(Color.parseColor(Settings.getString("pref_color_card_dflt")));
 
         // Set search icon color.
-        setSearchAffordanceColor(ContextCompat.getColor(requireActivity(), R.color.search_opaque));
+        setSearchAffordanceColor(Color.parseColor(Settings.getString("pref_color_search_bn")));
 
         setHeaderPresenterSelector(new PresenterSelector() {
             @Override
@@ -579,6 +586,8 @@ public class MainFragment extends BrowseSupportFragment
     }
 
     private void updateBackground(String uri) {
+        if (mBackgroundManager == null)
+            return;
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .error(mDefaultBgDrawable)

@@ -37,8 +37,8 @@ import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.BaseCardView;
 import androidx.leanback.widget.Presenter;
-import androidx.core.content.ContextCompat;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -54,6 +54,7 @@ import org.mythtv.leanfront.data.AsyncBackendCall;
 import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.XmlNode;
+import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.ui.MainFragment;
 import org.mythtv.leanfront.ui.VideoAction;
@@ -87,10 +88,8 @@ public class CardPresenter extends Presenter {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
-        mDefaultBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.default_background);
-        mSelectedBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.selected_background);
+        mDefaultBackgroundColor = Color.parseColor(Settings.getString("pref_color_card_dflt"));
+        mSelectedBackgroundColor = Color.parseColor(Settings.getString("pref_color_card_sel"));
 
         VideoCardView cardView = new VideoCardView(parent.getContext()) {
             @Override

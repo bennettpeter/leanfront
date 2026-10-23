@@ -1,9 +1,9 @@
 package org.mythtv.leanfront.ui;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.leanback.app.BackgroundManager;
@@ -15,6 +15,7 @@ import androidx.leanback.widget.Row;
 
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.model.MyHeaderItem;
+import org.mythtv.leanfront.model.Settings;
 
 public class ManageRecordingsFragment extends BrowseSupportFragment {
 
@@ -52,9 +53,11 @@ public class ManageRecordingsFragment extends BrowseSupportFragment {
     private void setupUi() {
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
-        setBrandColor(ContextCompat.getColor(requireActivity(),  R.color.fastlane_background));
+        setBrandColor(Color.parseColor(Settings.getString("pref_color_card_dflt")));
+
         // Set search icon color.
-        setSearchAffordanceColor(ContextCompat.getColor(requireActivity(), R.color.search_opaque));
+        setSearchAffordanceColor(Color.parseColor(Settings.getString("pref_color_search_bn")));
+
         if (isGuide)
             setTitle(getString(R.string.title_program_guide));
         else

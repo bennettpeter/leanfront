@@ -49,6 +49,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,7 +66,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.IntentCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
@@ -166,7 +166,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
         scrollSupport = new ScrollSupport((requireContext()));
-        prepareBackgroundManager();
+        String bgColor = Settings.getString("pref_color_bg");
+        if (bgColor.isEmpty())
+            prepareBackgroundManager();
         mVideoCursorAdapter = new CursorObjectAdapter(new CardPresenter(this));
         mVideoCursorAdapter.setMapper(mVideoCursorMapper);
         Intent intent =  requireActivity().getIntent();
@@ -194,6 +196,14 @@ public class VideoDetailsFragment extends DetailsSupportFragment
             setOnItemViewClickedListener(itemViewClickedListener);
             setOnItemViewSelectedListener(itemViewSelectedListener);
         }
+    }
+
+    @Override
+    public void onViewCreated(@org.jspecify.annotations.NonNull View view, @org.jspecify.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String bgColor = Settings.getString("pref_color_bg");
+        if (!bgColor.isEmpty())
+            view.setBackgroundColor(Color.parseColor(Settings.getString("pref_color_bg")));
     }
 
     void reload() {
@@ -227,7 +237,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
     @Override
     public void onStop() {
-        mBackgroundManager.release();
+        if (mBackgroundManager != null) {
+            mBackgroundManager.release();
+        }
         super.onStop();
     }
 
@@ -257,6 +269,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     }
 
     private void updateBackground(String uri) {
+        if (mBackgroundManager == null)
+            return;
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
@@ -300,7 +314,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                         new MovieDetailsOverviewLogoPresenter());
         Activity activity = requireActivity();
         detailsPresenter.setBackgroundColor(
-                ContextCompat.getColor(activity, R.color.selected_background));
+                Color.parseColor(Settings.getString("pref_color_card_sel")));
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.

@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -134,6 +135,11 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_HIDE_WATCHED = 78;
     private static final int ID_GUIDE_TIMESLOTS = 79;
     private static final int ID_GUIDE_OPTIONS = 80;
+    private static final int ID_COLOR_OPTIONS = 81;
+    private static final int ID_COLOR_BG = 82;
+    private static final int ID_COLOR_CARD_DFLT = 83;
+    private static final int ID_COLOR_CARD_SEL = 84;
+    private static final int ID_COLOR_SEARCH_BN = 85;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -156,6 +162,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private ArrayList<String> mPlayGroupList;
     public static boolean isActive = false;
     private boolean canClose = true;
+    private boolean mustRestart = false;
 
 
     @NonNull
@@ -633,6 +640,51 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .subActions(subActions)
                 .build());
 
+        // Colors
+        subActions = new ArrayList<>();
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_COLOR_BG)
+                .title(R.string.pref_color_bg)
+                .description(Settings.getString("pref_color_bg"))
+                .descriptionEditable(true)
+                .enabled(true)
+                .focusable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_TEXT)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_COLOR_CARD_DFLT)
+                .title(R.string.pref_color_card_dflt)
+                .description(Settings.getString("pref_color_card_dflt"))
+                .descriptionEditable(true)
+                .enabled(true)
+                .focusable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_TEXT)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_COLOR_CARD_SEL)
+                .title(R.string.pref_color_card_sel)
+                .description(Settings.getString("pref_color_card_sel"))
+                .descriptionEditable(true)
+                .enabled(true)
+                .focusable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_TEXT)
+                .build());
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_COLOR_SEARCH_BN)
+                .title(R.string.pref_color_search_bn)
+                .description(Settings.getString("pref_color_search_bn"))
+                .descriptionEditable(true)
+                .enabled(true)
+                .focusable(true)
+                .descriptionEditInputType(InputType.TYPE_CLASS_TEXT)
+                .build());
+        actions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_COLOR_OPTIONS)
+                .title(R.string.pref_color_options)
+                        .description(R.string.pref_color_options_desc)
+                .subActions(subActions)
+                .build());
+
         // Program Guide Options
         subActions = new ArrayList<>();
         subActions.add(new GuidedAction.Builder(getActivity())
@@ -954,6 +1006,25 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 Settings.putString(editor, "pref_num_cc_chans",
                         validateNumber(action, 0, 4, 2));
                 break;
+            case ID_COLOR_BG:
+                Settings.putString(editor, "pref_color_bg",
+                        validateColor(action, ""));
+                mustRestart = true;
+                break;
+            case ID_COLOR_CARD_DFLT:
+                Settings.putString(editor, "pref_color_card_dflt",
+                        validateColor(action, "#03525A"));
+                mustRestart = true;
+                break;
+            case ID_COLOR_CARD_SEL:
+                Settings.putString(editor, "pref_color_card_sel",
+                        validateColor(action, "#1A237E"));
+                break;
+            case ID_COLOR_SEARCH_BN:
+                Settings.putString(editor, "pref_color_search_bn",
+                        validateColor(action, "#ffaa3f"));
+                mustRestart = true;
+                break;
             default:
                 return GuidedAction.ACTION_ID_CURRENT;
         }
@@ -961,10 +1032,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         return GuidedAction.ACTION_ID_CURRENT;
     }
 
-    private static String validateNumber(GuidedAction action, int min, int max, int defValue) {
-        String s;
+    private String validateNumber(GuidedAction action, int min, int max, int defValue) {
         int i;
-        s = String.valueOf(action.getDescription());
+        String s = String.valueOf(action.getDescription()).trim();
+        String org = s;
         try {
             i = Integer.parseInt(s);
         } catch (Exception e) {
@@ -975,6 +1046,31 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         else if (i > max)
             i = max;
         s = String.valueOf(i);
+        if (!s.equals(org) && !org.isEmpty()) {
+            String msg = getContext().getString(R.string.msg_invalid_num, org, s, action.getTitle());
+            new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
+                    .setMessage(msg)
+                    .show();
+        }
+        action.setDescription(s);
+        return s;
+    }
+
+    private String validateColor(GuidedAction action, String defValue) {
+        String s = String.valueOf(action.getDescription()).trim();
+        if (s.isEmpty())
+            s = defValue;
+        else {
+            try {
+                Color.parseColor(s);
+            } catch (Exception e) {
+                String msg = getContext().getString(R.string.msg_invalid_color, s, defValue, action.getTitle());
+                new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
+                        .setMessage(msg)
+                        .show();
+                s = defValue;
+            }
+        }
         action.setDescription(s);
         return s;
     }
@@ -1058,6 +1154,16 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
             case ID_NUM_CC_CHANS:
                 action.setDescription(Settings.getString("pref_num_cc_chans"));
                 break;
+            case ID_COLOR_BG:
+                action.setDescription(Settings.getString("pref_color_bg"));
+                break;
+            case ID_COLOR_CARD_DFLT:
+                action.setDescription(Settings.getString("pref_color_bg"));
+                break;
+            case ID_COLOR_CARD_SEL:
+                action.setDescription(Settings.getString("pref_color_bg"));
+                break;
+
         }
     }
 
@@ -1382,7 +1488,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         Context context = requireContext();
         Intent intent = new Intent(context,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("LEANFRONT_SETTINGS",true);
+//        intent.putExtra("LEANFRONT_SETTINGS",true);
         context.startActivity(intent);
         Runtime.getRuntime().exit(0);
     }
@@ -1426,6 +1532,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
 
     @Override
     public void onResume() {
+        mustRestart = false;
         isActive = true;
         mPriorBackend = Settings.getString("pref_backend");
         mPriorHttpPort =  Settings.getString("pref_http_port");
@@ -1438,6 +1545,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     @Override
     public void onPause() {
         super.onPause();
+        if (mustRestart) {
+            restartApp();
+            return;
+        }
         BackendCache.flush();
         if (!Objects.equals(mPriorBackend, Settings.getString("pref_backend"))
             || !Objects.equals(mPriorHttpPort, Settings.getString("pref_http_port"))

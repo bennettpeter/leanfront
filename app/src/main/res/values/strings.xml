@@ -177,6 +177,18 @@
     <string name="pref_filter_none_desc">Show program list directly on main screen</string>
     <string name="pref_guide_timeslots">Number of half-hour time slots in each guide page</string>
     <string name="pref_title_guide">Program Guide</string>
+    <string name="pref_color_options">Colors</string>
+    <string name="pref_color_options_desc">Type color names or hex color codes starting with #.</string>
+    <string name="pref_color_bg">Background color. Blank for background artwork.</string>
+    <string name="pref_color_card_dflt">Brand Color. Blank for default.</string>
+    <string name="pref_color_card_sel">Selected Card Color. Blank for default.</string>
+    <string name="pref_color_search_bn">Search Button Color. Blank for default.</string>
+    <string name="msg_invalid_num">Invalid Value %1$s for %3$s. Substituting %2$s.</string>
+    <string name="msg_invalid_color">Invalid Color Value %1$s for %3$s. Substituting the default (%2$s).
+Supported formats are: #RRGGBB, #AARRGGBB. The following names are also accepted: red, blue, green,
+black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua,
+fuchsia, lime, maroon, navy, olive, purple, silver, and teal.
+    </string>
 
     <string name="msg_no_connection">Error: No Connection to MythTV Backend.</string>
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
@@ -534,6 +546,11 @@
     <string name="sdef_num_cc_chans" translatable="false">2</string>
     <string name="sdef_filter" translatable="false">recgrp</string>
     <string name="sdef_guide_timeslots" translatable="false">8</string>
+    <!-- Color Settings -->
+    <string name="sdef_color_bg" translatable="false"></string>
+    <string name="sdef_color_card_dflt" translatable="false">#03525A</string>
+    <string name="sdef_color_card_sel" translatable="false">#1A237E</string>
+    <string name="sdef_color_search_bn" translatable="false">#ffaa3f</string>
     <!-- Program Details -->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>
