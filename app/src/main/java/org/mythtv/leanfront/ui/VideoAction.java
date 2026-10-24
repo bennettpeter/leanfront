@@ -155,6 +155,20 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 call.execute(Video.ACTION_LIVETV, Video.ACTION_ADD_OR_UPDATERECRULE, Video.ACTION_WAIT_RECORDING);
                 break;
             case Video.ACTION_DELETE:
+                if (mSelectedVideo.rectype == RECTYPE_VIDEO) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity,
+                            R.style.Theme_AppCompat_Dialog_Alert);
+                    builder.setTitle(mSelectedVideo.title + " " + mSelectedVideo.subtitle);
+                    builder.setMessage(R.string.msg_delete_warning);
+                    builder.setPositiveButton(R.string.button_yes, (dlg, which) -> {
+                        AsyncBackendCall call2 = new AsyncBackendCall(activity, this);
+                        call2.setVideo(mSelectedVideo);
+                        call2.execute(Video.ACTION_DELETE_VIDEO);
+                    });
+                    builder.setNegativeButton(R.string.button_no, null);
+                    builder.show();
+                    break;
+                }
                 call = new AsyncBackendCall(activity, this);
                 call.setVideo(mSelectedVideo);
                 call.execute(Video.ACTION_REFRESH, Video.ACTION_DELETE,
@@ -307,6 +321,10 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 if (mSelectedVideo.rectype != RECTYPE_RECORDING
                         && mSelectedVideo.rectype != RECTYPE_VIDEO)
                     break;
+                // If this is a deleted video do not show any menu
+                if  (mSelectedVideo.rectype == RECTYPE_VIDEO
+                     && "Deleted".equals(mSelectedVideo.recGroup))
+                    break;
                 prompts = new ArrayList<>();
                 actions = new ArrayList<>();
                 if (id == Video.ACTION_FULL_MENU) {
@@ -356,6 +374,12 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                     if (BackendCache.getInstance().canUpdateRecGroup) {
                         prompts.add(fragment.getString(R.string.menu_update_recgrp));
                         actions.add(new Action(Video.ACTION_GETRECGROUPLIST));
+                    }
+                }
+                if (mSelectedVideo.rectype == RECTYPE_VIDEO) {
+                    if (BackendCache.getInstance().canDeleteVideos) {
+                        prompts.add(fragment.getString(R.string.menu_delete));
+                        actions.add(new Action(Video.ACTION_DELETE));
                     }
                 }
                 if (mWatched) {
@@ -497,6 +521,23 @@ public class VideoAction implements OnActionClickedListener, AsyncBackendCall.On
                 span.setSpan(new TabStopSpan.Standard(400), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 builder.setMessage(span);
                 builder.show();
+                break;
+            case Video.ACTION_DELETE_VIDEO:
+                if (xml != null && "true".equals(xml.getString())) {
+                    // The next few rows are a precaution, they are not actually
+                    // necessary unless the startAsyncLoader or finish do not run soon enough
+                    mSelectedVideo.recGroup = "Deleted";
+                    // Add trash can to deleted video description
+                    if (mDetailsDescriptionPresenter != null)
+                        mDetailsDescriptionPresenter.setupDescription();
+                    // Remove all action buttons for deleted video
+                    if (mActionsAdapter != null)
+                        mActionsAdapter.clear();
+                    if (fragment instanceof MainFragment)
+                        ((MainFragment) fragment).startAsyncLoader(false);
+                    if (fragment instanceof VideoDetailsFragment)
+                        fragment.requireActivity().finish();
+                }
                 break;
             case Video.ACTION_REMOVE_LASTPLAYPOS:
             case Video.ACTION_SET_LASTPLAYPOS:

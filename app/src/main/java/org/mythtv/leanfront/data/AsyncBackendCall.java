@@ -483,6 +483,35 @@ public class AsyncBackendCall implements Runnable {
                         Log.e(TAG, CLASS + " Exception ", e);
                     }
                     break;
+                case Video.ACTION_DELETE_VIDEO:
+                    if (mVideo.rectype != VideoContract.VideoEntry.RECTYPE_VIDEO)
+                        break;
+                    try {
+                        urlString = XmlNode.mythApiUrl(mVideo.hostname,
+                                "/Video/RemoveVideoFromDB?Id="
+                                        + mVideo.recordedid
+                                        + "&RemoveFile=true");
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        if (xmlResult != null && "true".equals(xmlResult.getString())) {
+                            if (context != null) {
+                                VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+                                SQLiteDatabase db = dbh.getWritableDatabase();
+                                if (db != null) {
+                                    // delete entry from video table
+                                    String where = VideoContract.VideoEntry.COLUMN_RECTYPE + " = ? AND "
+                                            + VideoContract.VideoEntry.COLUMN_RECORDEDID + " = ? ";
+                                    String[] selectionArgs = {
+                                            Integer.toString(VideoContract.VideoEntry.RECTYPE_VIDEO),
+                                            mVideo.recordedid};
+                                    db.delete(VideoContract.VideoEntry.TABLE_NAME, where, selectionArgs);
+                                    VideoDbHelper.releaseDatabase();
+                                }
+                            }
+                        }
+                    } catch (IOException | XmlPullParserException e) {
+                        Log.e(TAG, CLASS + " Exception ", e);
+                    }
+                    break;
                 case Video.ACTION_UNDELETE:
                     // UnDelete recording
                     if (!isRecording)
@@ -1304,6 +1333,16 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(url, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception getting Dvr wsdl.", e);
+                    }
+                    break;
+
+                case Video.ACTION_VIDEO_WSDL:
+                    try {
+                        String url = XmlNode.mythApiUrl(null,
+                                "/Video/wsdl");
+                        xmlResult = XmlNode.fetch(url, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception getting Video wsdl.", e);
                     }
                     break;
 

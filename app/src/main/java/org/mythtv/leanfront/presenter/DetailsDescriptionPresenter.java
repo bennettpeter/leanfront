@@ -204,8 +204,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
             if (mVideo.isWatched())
                 subtitle.append("\uD83D\uDC41");
             // symbols for deleted - "🗑" "🗶" "␡"
-            if (mVideo.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
-                    && "Deleted".equals(mVideo.recGroup))
+            if ("Deleted".equals(mVideo.recGroup))
                 subtitle.append("\uD83D\uDDD1");
             if (mVideo.season != null && mVideo.season.compareTo("0") > 0) {
                 subtitle.append('S').append(mVideo.season).append('E').append(mVideo.episode)

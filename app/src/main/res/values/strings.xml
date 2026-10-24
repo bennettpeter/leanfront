@@ -333,6 +333,7 @@ fuchsia, lime, maroon, navy, olive, purple, silver, and teal.
     <string name="msg_removed_recent">Removed from recently viewed list until viewed again.</string>
     <string name="msg_error_title">Error</string>
     <string name="msg_fail_allowed_rerecord">Request to allow re-record program has failed.</string>
+    <string name="msg_delete_warning">WARNING: This will delete the Video file. It cannot be undone. Are you sure?</string>
 
     <string name="sched_input_any">Any Input</string>
     <string name="sched_type">Schedule Type</string>
