@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Programmliste direkt auf dem Hauptbildschirm anzeigen</string>
   <string name="pref_guide_timeslots">Anzahl der halbstündigen Zeitfenster auf jeder Leitfadenseite</string>
   <string name="pref_title_guide">Programm</string>
+  <string name="pref_color_options">Farben</string>
+  <string name="pref_color_options_desc">Geben Sie Farbnamen oder hexadezimale Farbcodes ein, beginnend mit #.</string>
+  <string name="pref_color_bg">Hintergrundfarbe. Leer für Hintergrundgrafiken.</string>
+  <string name="pref_color_card_dflt">Markenfarbe. Für die Standardeinstellung leer.</string>
+  <string name="pref_color_card_sel">Ausgewählte Kartenfarbe. Für die Standardeinstellung leer.</string>
+  <string name="pref_color_search_bn">Farbe der Suchschaltfläche. Für die Standardeinstellung leer.</string>
+  <string name="msg_invalid_num">Ungültiger Wert %1$s für %3$s. %2$s wird ersetzt.</string>
+  <string name="msg_invalid_color">Ungültiger Farbwert %1$s für %3$s. Ersetzen des Standardwerts (%2$s). Unterstützte Formate sind: #RRGGBB, #AARRGGBB. Folgende Namen werden ebenfalls akzeptiert: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Fehler: Keine Verbindung zum MythTV-Backend.</string>
   <string name="msg_no_delayshutdown">Warnung: Das Herunterfahren des Backends im Leerlauf kann nicht verhindert werden.</string>
   <string name="msg_backend_login_req">Fehler: Backend erfordert einen gültigen Benutzernamen und Kennwort.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Wird aus der zuletzt angezeigten Liste entfernt, bis es erneut angezeigt wird.</string>
   <string name="msg_error_title">Fehler</string>
   <string name="msg_fail_allowed_rerecord">Die Anfrage, das Programm erneut aufzuzeichnen, ist fehlgeschlagen.</string>
+  <string name="msg_delete_warning">ACHTUNG: Dadurch wird die Videodatei gelöscht. Es kann nicht rückgängig gemacht werden. Bist du sicher?</string>
   <string name="sched_input_any">Beliebige Eingabe</string>
   <string name="sched_type">Zeitplantyp</string>
   <string name="sched_type_not">Nehmen Sie dieses Programm nicht auf</string>

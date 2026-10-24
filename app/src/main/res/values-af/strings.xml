@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Wys programlys direk op hoofskerm</string>
   <string name="pref_guide_timeslots">Aantal halfuur-tydgleuwe in elke gidsbladsy</string>
   <string name="pref_title_guide">Programgids</string>
+  <string name="pref_color_options">Kleure</string>
+  <string name="pref_color_options_desc">Tik kleurname of hekskleurkodes wat met # begin.</string>
+  <string name="pref_color_bg">Agtergrond kleur. Leeg vir agtergrondkunswerk.</string>
+  <string name="pref_color_card_dflt">Merk kleur. Leeg vir verstek.</string>
+  <string name="pref_color_card_sel">Geselekteerde kaartkleur. Leeg vir verstek.</string>
+  <string name="pref_color_search_bn">Soek knoppie kleur. Leeg vir verstek.</string>
+  <string name="msg_invalid_num">Ongeldige waarde %1$s vir %3$s. Vervang tans %2$s.</string>
+  <string name="msg_invalid_color">Ongeldige kleurwaarde %1$s vir %3$s. Vervang die verstek (%2$s). Ondersteunde formate is: #RRGGBB, #AARRGGBB. Die volgende name word ook aanvaar: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Fout: Geen verbinding met MythTV Backend nie.</string>
   <string name="msg_no_delayshutdown">Waarskuwing: Kan nie die afskakeling van die agterkant nie verhoed nie.</string>
   <string name="msg_backend_login_req">Fout: Backend benodig geldige gebruikersnaam en wagwoord.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Verwyder van onlangs bekykte lys totdat dit weer bekyk is.</string>
   <string name="msg_error_title">Fout</string>
   <string name="msg_fail_allowed_rerecord">Versoek om heropnameprogram toe te laat het misluk.</string>
+  <string name="msg_delete_warning">WAARSKUWING: Dit sal die videolêer uitvee. Dit kan nie ongedaan gemaak word nie. Is jy seker?</string>
   <string name="sched_input_any">Enige insette</string>
   <string name="sched_type">Tipe skedule</string>
   <string name="sched_type_not">Moenie hierdie program opneem nie</string>

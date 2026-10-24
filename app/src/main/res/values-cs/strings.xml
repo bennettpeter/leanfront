@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Zobrazit seznam programů přímo na hlavní obrazovce</string>
   <string name="pref_guide_timeslots">Počet půlhodinových časových úseků na každé stránce průvodce</string>
   <string name="pref_title_guide">Programový průvodce</string>
+  <string name="pref_color_options">Barvy</string>
+  <string name="pref_color_options_desc">Zadejte názvy barev nebo hexadecimální kódy barev začínající #.</string>
+  <string name="pref_color_bg">Barva pozadí. Prázdné pro kresbu na pozadí.</string>
+  <string name="pref_color_card_dflt">Barva značky. Prázdné pro výchozí nastavení.</string>
+  <string name="pref_color_card_sel">Vybraná barva karty. Prázdné pro výchozí nastavení.</string>
+  <string name="pref_color_search_bn">Barva tlačítka vyhledávání. Prázdné pro výchozí nastavení.</string>
+  <string name="msg_invalid_num">Neplatná hodnota %1$s pro %3$s. Nahrazuje se %2$s.</string>
+  <string name="msg_invalid_color">Neplatná hodnota barvy %1$s pro %3$s. Nahrazení výchozího nastavení (%2$s). Podporované formáty jsou: #RRGGBB, #AARRGGBB. Přijímají se také následující jména: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Chyba: Žádné připojení k MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varování: Nelze zabránit nečinnosti backendu.</string>
   <string name="msg_backend_login_req">Chyba: Backend vyžaduje platné uživatelské jméno a heslo.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Odebráno z naposledy prohlíženého seznamu, dokud nebude znovu zobrazeno.</string>
   <string name="msg_error_title">Chyba</string>
   <string name="msg_fail_allowed_rerecord">Požadavek na povolení opětovného nahrávání programu se nezdařil.</string>
+  <string name="msg_delete_warning">VAROVÁNÍ: Tímto smažete video soubor. Nelze to vrátit zpět. jsi si jistý?</string>
   <string name="sched_input_any">Libovolný vstup</string>
   <string name="sched_type">Typ rozvrhu</string>
   <string name="sched_type_not">Tento program nenahrávat</string>

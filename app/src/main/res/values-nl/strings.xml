@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Toon programmalijst rechtstreeks op het hoofdscherm</string>
   <string name="pref_guide_timeslots">Aantal tijdvakken van een half uur op elke gidspagina</string>
   <string name="pref_title_guide">Programmagids</string>
+  <string name="pref_color_options">Kleuren</string>
+  <string name="pref_color_options_desc">Typ kleurnamen of hexadecimale kleurcodes die beginnen met #.</string>
+  <string name="pref_color_bg">Achtergrondkleur. Spatie voor achtergrondillustraties.</string>
+  <string name="pref_color_card_dflt">Merk kleur. Standaard leeg.</string>
+  <string name="pref_color_card_sel">Geselecteerde kaartkleur. Standaard leeg.</string>
+  <string name="pref_color_search_bn">Kleur van zoekknop. Standaard leeg.</string>
+  <string name="msg_invalid_num">Ongeldige waarde %1$s voor %3$s. %2$s vervangen.</string>
+  <string name="msg_invalid_color">Ongeldige kleurwaarde %1$s voor %3$s. Vervanging van de standaardwaarde (%2$s). Ondersteunde formaten zijn: #RRGGBB, #AARRGGBB. De volgende namen worden ook geaccepteerd: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Fout: geen verbinding met MythTV-backend.</string>
   <string name="msg_no_delayshutdown">Waarschuwing: kan het afsluiten van de backend bij inactiviteit niet voorkomen.</string>
   <string name="msg_backend_login_req">Fout: backend vereist een geldige gebruikersnaam en wachtwoord.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Verwijderd uit de onlangs bekeken lijst totdat deze opnieuw wordt bekeken.</string>
   <string name="msg_error_title">Fout</string>
   <string name="msg_fail_allowed_rerecord">Verzoek om heropname van het programma toe te staan ​​is mislukt.</string>
+  <string name="msg_delete_warning">WAARSCHUWING: Hierdoor wordt het videobestand verwijderd. Het kan niet ongedaan worden gemaakt. Weet je het zeker?</string>
   <string name="sched_input_any">Elke invoer</string>
   <string name="sched_type">Schematype</string>
   <string name="sched_type_not">Neem dit programma niet op</string>

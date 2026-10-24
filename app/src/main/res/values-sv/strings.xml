@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Visa programlista direkt på huvudskärmen</string>
   <string name="pref_guide_timeslots">Antalet halvtimmestider på varje guidesida</string>
   <string name="pref_title_guide">Programguide</string>
+  <string name="pref_color_options">Färger</string>
+  <string name="pref_color_options_desc">Skriv färgnamn eller hex-färgkoder som börjar med #.</string>
+  <string name="pref_color_bg">Bakgrundsfärg. Tomt för bakgrundskonstverk.</string>
+  <string name="pref_color_card_dflt">Märkesfärg. Blank som standard.</string>
+  <string name="pref_color_card_sel">Vald kortfärg. Blank som standard.</string>
+  <string name="pref_color_search_bn">Sökknappsfärg. Blank som standard.</string>
+  <string name="msg_invalid_num">Ogiltigt värde %1$s för %3$s. Ersätter %2$s.</string>
+  <string name="msg_invalid_color">Ogiltigt färgvärde %1$s för %3$s. Ersätter standardinställningen (%2$s). Format som stöds är: #RRGGBB, #AARRGGBB. Följande namn accepteras också: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Fel: Ingen anslutning till MythTV Backend.</string>
   <string name="msg_no_delayshutdown">Varning: Det går inte att förhindra inaktiv avstängning av backend.</string>
   <string name="msg_backend_login_req">Fel: Backend kräver giltigt användarnamn och lösenord.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Borttagen från den senast visade listan tills den visades igen.</string>
   <string name="msg_error_title">Fel</string>
   <string name="msg_fail_allowed_rerecord">Begäran om att tillåta ominspelning av programmet har misslyckats.</string>
+  <string name="msg_delete_warning">VARNING: Detta kommer att radera videofilen. Det går inte att ångra. Är du säker?</string>
   <string name="sched_input_any">Valfri ingång</string>
   <string name="sched_type">Schematyp</string>
   <string name="sched_type_not">Spela inte in det här programmet</string>

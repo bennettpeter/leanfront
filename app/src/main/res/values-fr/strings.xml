@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Afficher la liste des programmes directement sur l\'écran principal</string>
   <string name="pref_guide_timeslots">Nombre de plages horaires d\'une demi-heure dans chaque page du guide</string>
   <string name="pref_title_guide">Guide du programme</string>
+  <string name="pref_color_options">Couleurs</string>
+  <string name="pref_color_options_desc">Tapez les noms de couleurs ou les codes de couleurs hexadécimaux commençant par #.</string>
+  <string name="pref_color_bg">Couleur de fond. Vide pour les illustrations d’arrière-plan.</string>
+  <string name="pref_color_card_dflt">Couleur de la marque. Vide par défaut.</string>
+  <string name="pref_color_card_sel">Couleur de la carte sélectionnée. Vide par défaut.</string>
+  <string name="pref_color_search_bn">Couleur du bouton de recherche. Vide par défaut.</string>
+  <string name="msg_invalid_num">Valeur %1$s non valide pour %3$s. Remplacement de %2$s.</string>
+  <string name="msg_invalid_color">Valeur de couleur %1$s non valide pour %3$s. Remplacement de la valeur par défaut (%2$s). Les formats pris en charge sont : #RRGGBB, #AARRGGBB. Les noms suivants sont également acceptés : red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Erreur : aucune connexion au backend MythTV.</string>
   <string name="msg_no_delayshutdown">Avertissement : Impossible d\'empêcher l\'arrêt d\'inactivité du backend.</string>
   <string name="msg_backend_login_req">Erreur: le backend nécessite un nom d\'utilisateur et un mot de passe valides.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Supprimé de la liste récemment consultée jusqu\'à ce qu\'il soit consulté à nouveau.</string>
   <string name="msg_error_title">Erreur</string>
   <string name="msg_fail_allowed_rerecord">La demande d\'autorisation du programme de réenregistrement a échoué.</string>
+  <string name="msg_delete_warning">AVERTISSEMENT : cela supprimera le fichier vidéo. Cela ne peut pas être annulé. Es-tu sûr?</string>
   <string name="sched_input_any">N\'importe quelle entrée</string>
   <string name="sched_type">Type d\'horaire</string>
   <string name="sched_type_not">N\'enregistrez pas ce programme</string>

@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Näytä ohjelmaluettelo suoraan päänäytöllä</string>
   <string name="pref_guide_timeslots">Puolen tunnin aikavälit kullakin opassivulla</string>
   <string name="pref_title_guide">Ohjelmaopas</string>
+  <string name="pref_color_options">värit</string>
+  <string name="pref_color_options_desc">Kirjoita värien nimet tai heksadesimaalivärikoodit alkaen #.</string>
+  <string name="pref_color_bg">Taustaväri. Tyhjä taustataideteoksia varten.</string>
+  <string name="pref_color_card_dflt">Merkki Väri. Tyhjä oletuksena.</string>
+  <string name="pref_color_card_sel">Valittu kortin väri. Tyhjä oletuksena.</string>
+  <string name="pref_color_search_bn">Hakupainikkeen väri. Tyhjä oletuksena.</string>
+  <string name="msg_invalid_num">Virheellinen arvo %1$s kohteelle %3$s. Korvataan %2$s.</string>
+  <string name="msg_invalid_color">Virheellinen väriarvo %1$s kohteelle %3$s. Korvaa oletusarvon (%2$s). Tuetut muodot ovat: #RRGGBB, #ARRGGBB. Myös seuraavat nimet hyväksytään: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Virhe: Ei yhteyttä MythTV-taustajärjestelmään.</string>
   <string name="msg_no_delayshutdown">Varoitus: Taustajärjestelmän automaattista sammuttamista ei voida estää.</string>
   <string name="msg_backend_login_req">VIRHE: Taustaohjelma vaatii kelvollisen käyttäjänimen ja salasanan.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Poistettu äskettäin katsotusta luettelosta, kunnes se katsotaan uudelleen.</string>
   <string name="msg_error_title">Virhe</string>
   <string name="msg_fail_allowed_rerecord">Ohjelman uudelleentallennuspyyntö epäonnistui.</string>
+  <string name="msg_delete_warning">VAROITUS: Tämä poistaa videotiedoston. Sitä ei voi kumota. Oletko varma?</string>
   <string name="sched_input_any">Mikä tahansa lähde</string>
   <string name="sched_type">Aikataulun tyyppi</string>
   <string name="sched_type_not">Älä tallenna tätä ohjelmaa</string>

@@ -142,6 +142,14 @@
   <string name="pref_filter_none_desc">Mostrar lista de programas diretamente na tela principal</string>
   <string name="pref_guide_timeslots">Número de intervalos de meia hora em cada página do guia</string>
   <string name="pref_title_guide">Guia do Programa</string>
+  <string name="pref_color_options">Cores</string>
+  <string name="pref_color_options_desc">Digite nomes de cores ou códigos de cores hexadecimais começando com #.</string>
+  <string name="pref_color_bg">Cor de fundo. Em branco para arte de fundo.</string>
+  <string name="pref_color_card_dflt">Cor da marca. Em branco por padrão.</string>
+  <string name="pref_color_card_sel">Cor do cartão selecionada. Em branco por padrão.</string>
+  <string name="pref_color_search_bn">Cor do botão de pesquisa. Em branco por padrão.</string>
+  <string name="msg_invalid_num">Valor inválido %1$s para %3$s. Substituindo %2$s.</string>
+  <string name="msg_invalid_color">Valor de cor inválido %1$s para %3$s. Substituindo o padrão (%2$s). Os formatos suportados são: #RRGGBB, #AARRGGBB. Também são aceitos os seguintes nomes: red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray, darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy, olive, purple, silver, teal.</string>
   <string name="msg_no_connection">Erro: Sem conexão com o back-end do MythTV.</string>
   <string name="msg_no_delayshutdown">Aviso: não é possível evitar o desligamento inativo do back-end.</string>
   <string name="msg_backend_login_req">Erro: o back -end requer nome de usuário e senha válidos.</string>
@@ -272,6 +280,7 @@
   <string name="msg_removed_recent">Removido da lista visualizada recentemente até ser visualizado novamente.</string>
   <string name="msg_error_title">Erro</string>
   <string name="msg_fail_allowed_rerecord">A solicitação para permitir a regravação do programa falhou.</string>
+  <string name="msg_delete_warning">AVISO: Isso excluirá o arquivo de vídeo. Não pode ser desfeito. Tem certeza?</string>
   <string name="sched_input_any">Qualquer entrada</string>
   <string name="sched_type">Tipo de agendamento</string>
   <string name="sched_type_not">Não grave este programa</string>
