@@ -204,7 +204,11 @@ public class XmlNode {
         } catch(IOException e) {
             bCache.isConnected = false;
             Log.e(TAG, CLASS + " Exception calling backend " + urlString, e);
-            if (!urlString.endsWith("/Myth/DelayShutdown"))
+            // Only restart MythTask if the exception is a failure to connect,
+            // not if it is a bad response code, because a bad response on one call
+            // does not indicate a system failure. This is to prevent continuous
+            // refreshing of the main screen after a single failure
+            if (response == null && !urlString.endsWith("/Myth/DelayShutdown"))
                 MainFragment.restartMythTask();
             throw e;
         } finally {

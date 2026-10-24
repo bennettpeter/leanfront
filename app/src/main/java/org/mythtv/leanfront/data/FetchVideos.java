@@ -82,6 +82,7 @@ public class FetchVideos implements Runnable {
                 return;
         }
         try {
+            MainFragment.mFetchTime = System.currentTimeMillis();
             if (recType != VideoContract.VideoEntry.RECTYPE_RECORDING)
                 recGroup = null;
             VideoDbBuilder builder = new VideoDbBuilder(context);
