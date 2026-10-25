@@ -2,15 +2,15 @@
 
 ## Android Development
 
-See https://developer.android.com/guide to learn android development. There are a number of differences when devdeloping for TV.
+See https://developer.android.com/guide to learn android development. There are a number of differences when developing for TV.
 
 ## Leanfront
 
-Leanfront is written exclusively in java. It does not use Compose, which is a newer user interface feature that requires the Kotlin programming language. For info on TV development see https://developer.android.com/training/tv. Lenfront is built using the android leanback libraries.
+Leanfront is written exclusively in java. It does not use Compose, which is a newer user interface feature that requires the Kotlin programming language. For info on TV development see https://developer.android.com/training/tv. Leanfront is built using the android leanback libraries.
 
 Leanfront TV version started as a fork of the Google sample leanback video application. It started as an alternative to mythfrontend for android when I discovered that the android version of mythfrontend could not display 4K video. With mythfrontend the video was resized to 1920x1080, even on a 4K TV with a 4K enabled android device.
 
-The app uses android media3, formerly known as ExoPlayer, for video playback (https://github.com/androidx/media). There is some customization of media3 to cater for special features of leanfront:
+Leanfront uses android media3, formerly known as ExoPlayer, for video playback (https://github.com/androidx/media). There is some customization of media3 to cater for special features of leanfront:
 
 - A pull request to support software decoding via ffmpeg. See https://github.com/androidx/media/pull/1591. The pull request is from rabbitknight, works very well, but has never been accepted into media3. This builds upon the ffmpeg audio feature which is a standard part of media3.
 - A patch to fix a bug where playback hangs under certain conditions if there is an audio track with no audio data.
@@ -21,7 +21,7 @@ We build the media3 components rather than import them from a repository. This i
 
 The customization is part of a fork of media3, https://github.com/bennettpeter/media. In that fork, each release of media3 that is included in a release of leanfront is branched into a leanfront specific branch, for example branch 1.11.1-lf is the customized version of release 1.11.1.
 
-Building leanfront requires building parts of ffmpeg and libyuv. libyuv is used by the ffmpeg video software decoder. The script update_dependencies.sh clones https://github.com/FFmpeg/FFmpeg and https://github.com/bennettpeter/libyuv and the script build_ffmpeg.sh builds them. These must be run before attempting to build leanfront.
+Building leanfront requires building parts of ffmpeg and libyuv. libyuv is used by the ffmpeg video software decoder. The script update_dependencies.sh clones https://github.com/FFmpeg/FFmpeg,  https://github.com/bennettpeter/media and https://github.com/bennettpeter/libyuv. The script build_ffmpeg.sh builds them. These must be run before attempting to build leanfront.
 
 All customization is built into a single commit. Upgrading to a new version of media3 requires creating a branch based on the release tag and cherry-picking the commit with the customization. If there were extra commits in the prior versions, I combine them into one when moving to a new version.
 
