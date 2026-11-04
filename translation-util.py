@@ -6,44 +6,43 @@
 #
 # run ./translation-util.py to display help info
 #
-# Required modules: googletrans and flatten_dict
+# Required modules: deep-translator and flatten_dict
 #
-# run sudo pip3 install googletrans==3.1.0a0 to install google trans.
+# run sudo pip3 install deep-translator to install deep-translator.
 # On ubuntu 24.04 pip3 is disabled, so do the following in your home directory
 # This creates directory "python" in your home directory
 # python3 -m venv python
 # source python/bin/activate
-# pip3 install googletrans==3.1.0a0
+# pip3 install deep-translator
 #
 # Then before running ./translation-util.py, run this:
 # export PYTHONPATH=/home/peter/python/lib/python3.12/site-packages
 
 import os, sys, re
 import json
-import asyncio
 import xml.etree.ElementTree as ET
 # TODO - replace optparse with argparse
 from optparse import OptionParser
-from googletrans import Translator
+from deep_translator import MyMemoryTranslator
 from httpx import Timeout
 
 DEFAULT_LANG = ('default', 'values', 'Default')
 
 DEST_LANGS = [
-            ('af',    'values-af',         'Afrikaans'),
-            ('cs',    'values-cs',         'Czech'),
-            ('da',    'values-da',         'Danish'),
-            ('de',    'values-de',         'German'),
-            ('el',    'values-el',         'Greek'),
-            ('es',    'values-es',         'Spanish'),
-            ('fi',    'values-fi',         'Finnish'),
-            ('fr',    'values-fr',         'French'),
-            ('it',    'values-it',         'Italian'),
-            ('nl',    'values-nl',         'Dutch'),
-            ('no',    'values-nb',         'Norwegian'),
-            ('pl',    'values-pl',         'Polish'),
-            ('pt',    'values-pt',         'Portuguese'),
-            ('sv',    'values-sv',         'Swedish')
+            ('af-ZA',    'values-af',         'Afrikaans'),
+            ('cs-CZ',    'values-cs',         'Czech'),
+            ('da-DK',    'values-da',         'Danish'),
+            ('de-DE',    'values-de',         'German'),
+            ('el-GR',    'values-el',         'Greek'),
+            ('es-ES',    'values-es',         'Spanish'),
+            ('fi-FI',    'values-fi',         'Finnish'),
+            ('fr-FR',    'values-fr',         'French'),
+            ('it-IT',    'values-it',         'Italian'),
+            ('nl-NL',    'values-nl',         'Dutch'),
+            ('nb-NO',    'values-nb',         'Norwegian'),
+            ('pl-PL',    'values-pl',         'Polish'),
+            ('pt-PT',    'values-pt',         'Portuguese'),
+            ('sv-SE',    'values-sv',         'Swedish')
         ]
 
 def doCheckTranslations(default_dict, code, location, desc, keylist:list):
@@ -81,19 +80,9 @@ def translate(src_text, lang):
     if lang == 'en_US' or lang == 'en_UK' or lang == 'en_CA':
         return src_text
 
-    # just use Spanish for now
-    if lang == 'es_ES':
-        lang = 'es'
-#     translation = translator.translate(src_text, dest=lang, src='en')
-#     result = translation.text
-    result = asyncio.run(translator(src_text, lang))
+    result = MyMemoryTranslator(source='en-US', target=lang).translate(src_text)
     return result
 
-async def translator(src_text, lang):
-    async with Translator() as translator:
-        translation = await translator.translate(src_text, dest=lang, src='en')
-        result = translation.text
-        return result
 
 #   load the default strings into a dict
 def loadDefault():
@@ -161,9 +150,6 @@ def listLanguages():
         print("{0:6}  {1:12}  {2}".format(code,file,name))
 
 if __name__ == '__main__':
-
-#     global translator
-#     translator = Translator(timeout=Timeout(30.0))
 
     global translation_dir
     translation_dir = os.path.dirname(os.path.abspath(sys.argv[0])) + '/app/src/main/res/'
