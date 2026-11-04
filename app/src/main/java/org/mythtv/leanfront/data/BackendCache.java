@@ -122,7 +122,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                     break;
                 schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
                 if (schemaNode != null) {
-                    // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
+                    // Check if the RemoveVideoFromDB method takes the RemoveFile parameter
                     XmlNode parameterNode = schemaNode.getNode
                             (new String[]{"RemoveVideoFromDB", "complexType", "sequence", "RemoveFile"}, 0);
                     if (parameterNode != null)
