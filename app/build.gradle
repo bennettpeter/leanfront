@@ -1,4 +1,15 @@
+plugins {
+    id 'com.android.application'
+    // Add the Google services Gradle plugin
+    id 'com.google.gms.google-services'
+}
 apply plugin: 'com.android.application'
+apply plugin: 'idea'
+idea {
+    module {
+        excludeDirs.add(file('app/src/main/jni/ffmpeg'))
+    }
+}
 
 tasks.register('gitinfo') {
 //    println 'bash update_dependencies.sh'.execute().text
@@ -21,7 +32,7 @@ android {
     compileSdkVersion = 36
     defaultConfig {
         applicationId "org.mythtv.leanfront"
-        minSdkVersion 23
+        minSdkVersion 24
         //noinspection EditedTargetSdkVersion
         targetSdkVersion 36
         compileSdkVersion = 36
@@ -79,7 +90,7 @@ dependencies {
     implementation 'androidx.media3:media3-ui'
     implementation 'androidx.media3:media3-decoder-ffmpeg'
     implementation 'androidx.media3:media3-datasource-okhttp'
-
+    implementation 'com.google.firebase:firebase-config:24.0.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.14.1'
@@ -90,11 +101,10 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation("com.squareup.okhttp3:okhttp:5.4.0")
     implementation 'com.github.bumptech.glide:okhttp3-integration:5.0.7'
-}
 
-apply plugin: 'idea'
-idea {
-    module {
-        excludeDirs.add(file('app/src/main/jni/ffmpeg'))
-    }
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:35.1.0')
+    implementation platform('com.google.firebase:firebase-config')
+//    implementation platform('com.google.firebase:firebase-database')
+    implementation platform("com.google.firebase:firebase-analytics")
 }

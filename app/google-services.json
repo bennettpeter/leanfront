@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168334274181",
+    "project_id": "leanfront-4d5e7",
+    "storage_bucket": "leanfront-4d5e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168334274181:android:8ea1b03d52adad73e803ec",
+        "android_client_info": {
+          "package_name": "org.mythtv.leanfront"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZpD9Ti3XieDAHBbEZvoQdGCaPEjLMCsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

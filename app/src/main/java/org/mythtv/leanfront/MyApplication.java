@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -15,6 +17,10 @@ public class MyApplication extends Application {
     public static OkHttpClient httpClient;
     public static OkHttpClient apiHttpClient;
     public static OkHttpClient fileLengthHttpClient;
+    public FirebaseRemoteConfig firebaseRemoteConfig;
+    @SuppressLint("StaticFieldLeak")
+    public static MyApplication singleton;
+
 
     public MyApplication() {
         httpClient = new OkHttpClient();
@@ -26,6 +32,7 @@ public class MyApplication extends Application {
                 .readTimeout(1000, TimeUnit.MILLISECONDS)
                 .connectTimeout(1000, TimeUnit.MILLISECONDS)
                 .build();
+        singleton = this;
     }
     public void onCreate() {
         super.onCreate();

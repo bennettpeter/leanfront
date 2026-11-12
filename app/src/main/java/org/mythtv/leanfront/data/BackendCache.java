@@ -6,6 +6,7 @@ import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
+import org.mythtv.leanfront.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public boolean loginNeeded;
     public long infoTime;
     public int diskUsage;
-    private static final String demoName = MyApplication.getAppContext().getString(R.string.demo_name);
+    private static final String demoName = "demo";
 
     private BackendCache() {
         init();
@@ -78,11 +79,21 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
             if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
                 ipAddress = "[" + ipAddress + "]";
             if (ipAddress.equals(demoName)) {
-                ipAddress =  MyApplication.getAppContext().getString(R.string.demo_ip);
-                SharedPreferences.Editor editor = Settings.getEditor();
-                Settings.putString(editor,"pref_backend_userid", MyApplication.getAppContext().getString(R.string.demo_user));
-                Settings.putString(editor,"pref_backend_passwd", MyApplication.getAppContext().getString(R.string.demo_pswd));
-                editor.commit();
+                if (!MainActivity.fetchTask.isComplete()) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+                if (MainActivity.fetchTask.isSuccessful()) {
+                    ipAddress = MyApplication.singleton.firebaseRemoteConfig.getString("demo_ip");
+                    SharedPreferences.Editor editor = Settings.getEditor();
+                    Settings.putString(editor, "pref_backend_userid",
+                            MyApplication.singleton.firebaseRemoteConfig.getString("demo_user"));
+                    Settings.putString(editor, "pref_backend_passwd",
+                            MyApplication.singleton.firebaseRemoteConfig.getString("demo_pswd"));
+                    editor.commit();
+                }
             }
         }
         return ipAddress;

@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -42,6 +41,7 @@ import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
 
+import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.BackendCache;
 import org.mythtv.leanfront.data.VideoDbHelper;
@@ -237,7 +237,8 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                 .build());
         str = Settings.getString("pref_backend_userid");
-        if (BackendCache.getInstance().loginNeeded && !str.equals(getString(R.string.demo_user))) {
+        if (BackendCache.getInstance().loginNeeded && !str.equals
+                (MyApplication.singleton.firebaseRemoteConfig.getString("demo_user"))) {
             subActions.add(new GuidedAction.Builder(getActivity())
                     .id(ID_BACKEND_USERID)
                     .title(R.string.pref_title_backend_userid)
@@ -1046,9 +1047,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         else if (i > max)
             i = max;
         s = String.valueOf(i);
-        if (!s.equals(org) && !org.isEmpty()) {
-            String msg = getContext().getString(R.string.msg_invalid_num, org, s, action.getTitle());
-            new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
+        Context context = getContext();
+        if (!s.equals(org) && !org.isEmpty() && context != null) {
+            String msg = context.getString(R.string.msg_invalid_num, org, s, action.getTitle());
+            new AlertDialog.Builder(context, R.style.Theme_AppCompat_Dialog_Alert)
                     .setMessage(msg)
                     .show();
         }
@@ -1064,10 +1066,13 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
             try {
                 Color.parseColor(s);
             } catch (Exception e) {
-                String msg = getContext().getString(R.string.msg_invalid_color, s, defValue, action.getTitle());
-                new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
-                        .setMessage(msg)
-                        .show();
+                Context context = getContext();
+                if (context != null) {
+                    String msg = getContext().getString(R.string.msg_invalid_color, s, defValue, action.getTitle());
+                    new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
+                            .setMessage(msg)
+                            .show();
+                }
                 s = defValue;
             }
         }

@@ -482,11 +482,7 @@ public class MainFragment extends BrowseSupportFragment
                     break;
                 // Get rid of span elements, which are pop=ups and should not be displayed here
                 String fix = result.replaceAll("<span>.+</span>","");
-                Spanned spanned;
-                if (Build.VERSION.SDK_INT >= 24)
-                    spanned = Html.fromHtml(fix,Html.FROM_HTML_MODE_COMPACT);
-                else
-                    spanned =  Html.fromHtml(fix);
+                Spanned spanned = Html.fromHtml(fix,Html.FROM_HTML_MODE_COMPACT);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context,
                         R.style.Theme_AppCompat);
                 builder.setMessage(spanned);
@@ -518,6 +514,7 @@ public class MainFragment extends BrowseSupportFragment
         }
         else {
             DisplayMetrics metrics = new DisplayMetrics();
+            // We cannot eliminate the deprecated calls here because the replacements need API level 30
             activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
             width = metrics.widthPixels;
             height = metrics.heightPixels;
@@ -737,7 +734,7 @@ public class MainFragment extends BrowseSupportFragment
         toolsRowAdapter.add(video);
 
         SelectionSetter setter = new SelectionSetter(selection[0], selection[1]);
-        handler.postDelayed(setter, 100);
+        handler.postDelayed(setter, 400);
     }
 
     public int getType() {
@@ -1208,8 +1205,8 @@ public class MainFragment extends BrowseSupportFragment
                         }
                         // If the demo user had been used but is no longer aithorized, remove the demo
                         // user and password so that the settings do not display it
-                        if (bCache.authorization == null && user.equals(MyApplication.getAppContext()
-                                .getString(R.string.demo_user))) {
+                        if (bCache.authorization == null && user.equals
+                                (MyApplication.singleton.firebaseRemoteConfig.getString("demo_user"))) {
                             SharedPreferences.Editor editor = Settings.getEditor();
                             Settings.putString(editor,"pref_backend_userid", "");
                             Settings.putString(editor,"pref_backend_passwd", "");

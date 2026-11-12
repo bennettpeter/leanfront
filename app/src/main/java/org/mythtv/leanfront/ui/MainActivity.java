@@ -29,21 +29,24 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.mobile.MobileWelcomeActivity;
 
-import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /*
  * MainActivity class that loads MainFragment.
@@ -54,6 +57,8 @@ public class MainActivity extends LeanbackActivity {
     private static final String CLASS = "MainActivity";
     long mMultipleKeyTime;
     private MainFragment mainFragment;
+    public static Task<Boolean> fetchTask;
+    private final static ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +74,7 @@ public class MainActivity extends LeanbackActivity {
                 return;
             }
         }
+        fetchConfig(0);
         setContentView(R.layout.main);
         Fragment fragment =
                 getSupportFragmentManager().findFragmentByTag("main");
@@ -90,6 +96,28 @@ public class MainActivity extends LeanbackActivity {
             // This is the first time running the app, let's go to onboarding
             startActivity(new Intent(this, SettingsActivity.class));
         }
+    }
+
+    static void fetchConfig(int waitMillis) {
+        if (waitMillis > 0) {
+            try {
+                Thread.sleep(waitMillis);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        if (MyApplication.singleton.firebaseRemoteConfig == null) {
+            MyApplication.singleton.firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setMinimumFetchIntervalInSeconds(86400)   // 24 hours
+                    .build();
+            MyApplication.singleton.firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        }
+        fetchTask = MyApplication.singleton.firebaseRemoteConfig.fetchAndActivate();
+        fetchTask.addOnCompleteListener( (task) -> {
+            if (!task.isSuccessful()) {
+                executor.submit(() -> fetchConfig(30000));
+            }
+        } );
     }
 
     @Override
@@ -128,16 +156,15 @@ public class MainActivity extends LeanbackActivity {
     }
 
 
-    @SuppressWarnings("unused")
-    public static void setAppLocale(String localeCode){
-        Resources resources = MyApplication.getAppContext().getResources();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-        Configuration configuration = resources.getConfiguration();
-        configuration.setLocale(new Locale(localeCode.toLowerCase()));
-        resources.updateConfiguration(configuration, displayMetrics);
-        configuration.locale = new Locale(localeCode.toLowerCase());
-        resources.updateConfiguration(configuration, displayMetrics);
-    }
+//    public static void setAppLocale(String localeCode){
+//        Resources resources = MyApplication.getAppContext().getResources();
+//        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+//        Configuration configuration = resources.getConfiguration();
+//        configuration.setLocale(new Locale(localeCode.toLowerCase()));
+//        resources.updateConfiguration(configuration, displayMetrics);
+//        configuration.locale = new Locale(localeCode.toLowerCase());
+//        resources.updateConfiguration(configuration, displayMetrics);
+//    }
 
 
 }
