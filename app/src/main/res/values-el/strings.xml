@@ -413,7 +413,7 @@
   <string name="msg_success">Επιτυχία</string>
   <string name="msg_restart">Το Leanfront θα επανεκκινήσει</string>
   <string name="msg_db_busy">Δεν είναι δυνατή η εκτέλεση της ενέργειας επειδή η βάση δεδομένων είναι κατειλημμένη.</string>
-  <string name="notes_title">Τι νέα;</string>
+  <string name="notes_title">Ειδοποίηση</string>
   <string name="notes_seen">Να μην εμφανιστεί ξανά</string>
   <string name="details_category">Κατηγορία</string>
   <string name="details_starttime">Ωρα έναρξης</string>

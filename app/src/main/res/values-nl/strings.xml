@@ -413,7 +413,7 @@
   <string name="msg_success">Succes</string>
   <string name="msg_restart">Leanfront zal opnieuw opstarten</string>
   <string name="msg_db_busy">Kan de actie niet uitvoeren omdat de database bezet is.</string>
-  <string name="notes_title">Wat is er nieuw?</string>
+  <string name="notes_title">Kennisgeving</string>
   <string name="notes_seen">Niet meer tonen</string>
   <string name="details_category">Categorie</string>
   <string name="details_starttime">Starttijd</string>
