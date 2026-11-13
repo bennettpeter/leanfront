@@ -73,6 +73,8 @@ import android.text.Html;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -110,6 +112,8 @@ import org.mythtv.leanfront.ui.playback.PlaybackActivity;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -376,33 +380,116 @@ public class MainFragment extends BrowseSupportFragment
     // in sNotes in the parens, e.g. {R.string.notes_audio}
     @SuppressWarnings("ConstantConditions")
     void showNotes() {
-        // deleted: R.string.notes_paging
-        //noinspection MismatchedReadAndWriteOfArray
-        final int[] sNotes = {};
-        int deletedNotes = 1;
-        int notesVersion = Settings.getInt("pref_notes_version");
-        if (notesVersion < deletedNotes)
-            notesVersion = deletedNotes;
-        if (notesVersion >= sNotes.length + deletedNotes)
-            return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
-                R.style.Theme_AppCompat_Dialog_Alert);
-        builder.setTitle(R.string.notes_title);
-        StringBuilder msg = new StringBuilder();
-        for (int ix = notesVersion - deletedNotes ; ix < sNotes.length ; ix++) {
-            msg.append(getContext().getString(sNotes[ix]));
-        }
-        builder.setMessage(msg);
-        builder.setPositiveButton(R.string.notes_seen, (dialog, which) -> {
-            SharedPreferences.Editor editor = Settings.getEditor();
-            Settings.putString(editor,"pref_notes_version",String.valueOf(sNotes.length + deletedNotes));
-            editor.commit();
-            dialog.cancel();
-        });
-        builder.setNegativeButton(android.R.string.ok, (dialog, which) -> dialog.cancel());
+        handler.postDelayed( () -> {
+            if (MainActivity.fetchTask.isSuccessful()) {
+                String msgJson = MyApplication.singleton.firebaseRemoteConfig.getString("message");
+                if (!msgJson.isEmpty()) {
+                    int msgVersion = Settings.getInt("pref_msg_version");
+                    ArrayList<String> msgText = new ArrayList<>();
+                    int maxSeq = parseMessages(msgJson, msgText, msgVersion);
+                    if (!msgText.isEmpty()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
+                                R.style.Theme_AppCompat_Dialog_Alert);
+                        builder.setTitle(R.string.notes_title);
+                        StringBuilder msg = new StringBuilder();
+                        for (String text : msgText) {
+                            msg.append(text).append("\n");
+                        }
+                        builder.setMessage(msg);
+                        builder.setPositiveButton(R.string.notes_seen, (dialog, which) -> {
+                            SharedPreferences.Editor editor = Settings.getEditor();
+                            Settings.putString(editor, "pref_msg_version", String.valueOf(maxSeq));
+                            editor.commit();
+                            dialog.cancel();
+                        });
+                        builder.setNegativeButton(android.R.string.ok, (dialog, which) -> dialog.cancel());
+                        builder.show();
+                    }
+                }
+            }
+        },1000);
 
-        builder.show();
     }
+
+    int parseMessages(String msgJson, ArrayList<String> msgText, int msgVersion) {
+
+//      Example
+//        {
+//          "messages": [
+//            {
+//                "seq": 20261113001,
+//                    "msg": "Welcome to leanfront 1648"
+//            },
+//            {
+//                "seq": 20261113002,
+//                    "msg": "Second msg 1648"
+//            }
+//          ]
+//        }
+
+        Reader in = new StringReader(msgJson);
+        int maxSeq = 0;
+        try (JsonReader reader = new JsonReader(in)) {
+            reader.beginObject();
+            doc:
+            for (; ; ) {
+                switch (reader.peek()) {
+                    case NAME:
+                        String name = reader.nextName();
+                        if (name.equals("messages")) {
+                            reader.beginArray();
+                            for (; ; ) {
+                                if (reader.peek() == JsonToken.END_ARRAY) {
+                                    reader.endArray();
+                                    break;
+                                }
+                                reader.beginObject();
+                                int seq = 0;
+                                String text = "";
+                                entry:
+                                for (; ; ) {
+                                    switch (reader.peek()) {
+                                        case NAME:
+                                            String name1 = reader.nextName();
+                                            switch (name1) {
+                                                case "seq":
+                                                    seq = reader.nextInt();
+                                                    break;
+                                                case "msg":
+                                                    text = reader.nextString();
+                                                    break;
+                                                default:
+                                                    reader.skipValue();
+                                            }
+                                            break;
+                                        case END_OBJECT:
+                                            if (seq > msgVersion) {
+                                                if (seq > maxSeq)
+                                                    maxSeq = seq;
+//                                                maxSeq.add(seq);
+                                                msgText.add(text);
+                                            }
+                                            reader.endObject();
+                                            break entry;
+                                    }
+                                } // entry
+                            } // results
+                        } else {
+                            reader.skipValue();
+                        }
+                        break;
+                    case END_OBJECT:
+                        reader.endObject();
+                        break doc;
+                    default:
+                }
+            } // doc
+        } catch (IOException | IllegalStateException e) {
+            Log.e(TAG, CLASS + " Exception parsing: " + msgJson, e);
+        }
+        return maxSeq;
+    }
+
 
     public static void restartMythTask() {
         if (!scheduledTaskRunning) {

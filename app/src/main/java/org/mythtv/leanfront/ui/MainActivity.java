@@ -40,6 +40,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
+import org.mythtv.leanfront.BuildConfig;
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
@@ -107,8 +108,11 @@ public class MainActivity extends LeanbackActivity {
         }
         if (MyApplication.singleton.firebaseRemoteConfig == null) {
             MyApplication.singleton.firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            int minFetch = 86400;  // 24 hours
+            if (BuildConfig.DEBUG)
+                minFetch = 10;
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(86400)   // 24 hours
+                    .setMinimumFetchIntervalInSeconds(minFetch)   // 24 hours
                     .build();
             MyApplication.singleton.firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         }
@@ -117,7 +121,7 @@ public class MainActivity extends LeanbackActivity {
             if (!task.isSuccessful()) {
                 executor.submit(() -> fetchConfig(30000));
             }
-        } );
+        });
     }
 
     @Override
