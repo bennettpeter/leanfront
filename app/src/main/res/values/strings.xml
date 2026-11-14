@@ -486,68 +486,6 @@
     <!--Support for Global Search, never tested, may not work-->
     <string name="global_search" translatable="false">GLOBALSEARCH</string>
 
-    <!--Settings default values, used in Settings.java-->
-    <string name="sdef_http_port" translatable="false">6544</string>
-    <string name="sdef_http_ssl" translatable="false">false</string>
-    <!--    This is actually last play pos but stored as pref_bookmark-->
-    <!--    for backward compatibility-->
-    <string name="sdef_bookmark" translatable="false">mythtv</string>
-    <string name="sdef_skip_fwd" translatable="false">60</string>
-    <string name="sdef_skip_back" translatable="false">20</string>
-    <string name="sdef_seq" translatable="false">rectime</string>
-    <string name="sdef_seq_ascdesc" translatable="false">asc</string>
-    <string name="sdef_audio" translatable="false">auto</string>
-    <string name="sdef_video" translatable="false">auto</string>
-    <string name="sdef_jump" translatable="false">5</string>
-    <string name="sdef_livetv_duration" translatable="false">60</string>
-    <string name="sdef_framerate_match" translatable="false">false</string>
-    <string name="sdef_subtitle_size" translatable="false">100</string>
-    <string name="sdef_error_toast" translatable="false">false</string>
-    <string name="sdef_merge_videos" translatable="false">false</string>
-    <string name="sdef_show_recents" translatable="false">true</string>
-    <string name="sdef_recents_deleted" translatable="false">false</string>
-    <string name="sdef_recents_watched" translatable="false">false</string>
-    <string name="sdef_recents_trim" translatable="false">true</string>
-    <string name="sdef_related_deleted" translatable="false">false</string>
-    <string name="sdef_related_watched" translatable="false">false</string>
-    <string name="sdef_recents_days" translatable="false">7</string>
-    <!--This value -12303292 is Dark Gray (Color.DKGRAY) -->
-    <string name="sdef_letterbox_color" translatable="false">-12303292</string>
-    <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
-    <string name="sdef_livetv_rowsize" translatable="false">100</string>
-    <string name="sdef_video_parental" translatable="false">4</string>
-    <string name="sdef_audio_pause" translatable="false">false</string>
-    <string name="sdef_autoplay" translatable="false">false</string>
-    <string name="sdef_audio_sync" translatable="false">0</string>
-    <string name="sdef_captions" translatable="false">0</string>
-    <string name="sdef_notes_version" translatable="false">0</string>
-    <!-- 0=off, 1=notify, 2=skip   -->
-    <string name="sdef_commskip" translatable="false">0</string>
-    <!--  Number of seconds to add to start or end times  -->
-    <string name="sdef_commskip_start" translatable="false">0</string>
-    <string name="sdef_commskip_end" translatable="false">0</string>
-    <!-- Customizable keys -->
-    <!-- updown: values are controls, jump or skipcom    -->
-    <string name="sdef_updown" translatable="false">controls</string>
-    <!-- The next two have values rewff, jump or skipcom  -->
-    <string name="sdef_leftright" translatable="false">rewff</string>
-    <string name="sdef_rewff" translatable="false">rewff</string>
-    <string name="sdef_speed" translatable="false">100</string>
-    <string name="sdef_volume" translatable="false">100</string>
-    <string name="sdef_poss_empty" translatable="false">false</string>
-    <string name="sdef_max_vids" translatable="false">20000</string>
-    <string name="sdef_refresh_mins" translatable="false">60</string>
-    <!--suppress CheckTagEmptyBody -->
-    <string name="sdef_chan_group" translatable="false"></string>
-    <string name="sdef_idle_timeout" translatable="false">360</string>
-    <string name="sdef_num_cc_chans" translatable="false">2</string>
-    <string name="sdef_filter" translatable="false">recgrp</string>
-    <string name="sdef_guide_timeslots" translatable="false">8</string>
-    <!-- Color Settings -->
-    <string name="sdef_color_bg" translatable="false"></string>
-    <string name="sdef_color_card_dflt" translatable="false">#03525A</string>
-    <string name="sdef_color_card_sel" translatable="false">#1A237E</string>
-    <string name="sdef_color_search_bn" translatable="false">#ffaa3f</string>
     <!-- Program Details -->
     <string name="details_category">Category</string>
     <string name="details_starttime">Start Time</string>

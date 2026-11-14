@@ -48,24 +48,23 @@ public class Settings {
     // null group or "Default" = empty string
     // If group value not found return default value.
     public static String getString(String key, @Nullable String group) {
+        Context context = MyApplication.getAppContext();
         if (key.startsWith("pref_"))
             key = key.substring(5);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences
-                (MyApplication.getAppContext());
+                (context);
+        SharedPreferences prefDefaults = context.getSharedPreferences("pref_defaults",0);
+        SharedPreferences prefOverrides = context.getSharedPreferences("pref_overrides",0);
+
         if (prefs != null) {
             if (group == null || group.equals("Default"))
                 group = "";
             String actualKey = "pref" + group + "_" + key;
             String result = prefs.getString(actualKey, null);
-            if (result == null) {
-                actualKey = "sdef" + "_" + key;
-                Context context = MyApplication.getAppContext();
-                Resources res = context.getResources();
-                @SuppressLint("DiscouragedApi")
-                int resId = res.getIdentifier(actualKey, "string", context.getPackageName());
-                if (resId != 0)
-                    result = res.getString(resId);
-            }
+            if (result == null)
+                result = prefOverrides.getString(actualKey,null);
+            if (result == null)
+                result = prefDefaults.getString(actualKey,null);
             if (result == null)
                 result = "";
             return result;

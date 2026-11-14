@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <!--Settings default values, used in Settings.java-->
+    <string name="pref_http_port">6544</string>
+    <string name="pref_http_ssl">false</string>
+    <!--    This is actually last play pos but stored as pref_bookmark-->
+    <!--    for backward compatibility-->
+    <string name="pref_bookmark">mythtv</string>
+    <string name="pref_skip_fwd">60</string>
+    <string name="pref_skip_back">20</string>
+    <string name="pref_seq">rectime</string>
+    <string name="pref_seq_ascdesc">asc</string>
+    <string name="pref_audio">auto</string>
+    <string name="pref_video">auto</string>
+    <string name="pref_jump">5</string>
+    <string name="pref_livetv_duration">60</string>
+    <string name="pref_framerate_match">false</string>
+    <string name="pref_subtitle_size">100</string>
+    <string name="pref_error_toast">false</string>
+    <string name="pref_merge_videos">false</string>
+    <string name="pref_show_recents">true</string>
+    <string name="pref_recents_deleted">false</string>
+    <string name="pref_recents_watched">false</string>
+    <string name="pref_recents_trim">true</string>
+    <string name="pref_related_deleted">false</string>
+    <string name="pref_related_watched">false</string>
+    <string name="pref_recents_days">7</string>
+    <!--This value -12303292 is Dark Gray (Color.DKGRAY) -->
+    <string name="pref_letterbox_color">-12303292</string>
+    <string name="pref_tweak_ts_search_pkts">2600</string>
+    <string name="pref_livetv_rowsize">100</string>
+    <string name="pref_video_parental">4</string>
+    <string name="pref_audio_pause">false</string>
+    <string name="pref_autoplay">false</string>
+    <string name="pref_audio_sync">0</string>
+    <string name="pref_captions">0</string>
+    <string name="pref_notes_version">0</string>
+    <!-- 0=off, 1=notify, 2=skip   -->
+    <string name="pref_commskip">0</string>
+    <!--  Number of seconds to add to start or end times  -->
+    <string name="pref_commskip_start">0</string>
+    <string name="pref_commskip_end">0</string>
+    <!-- Customizable keys -->
+    <!-- updown: values are controls, jump or skipcom    -->
+    <string name="pref_updown">controls</string>
+    <!-- The next two have values rewff, jump or skipcom  -->
+    <string name="pref_leftright">rewff</string>
+    <string name="pref_rewff">rewff</string>
+    <string name="pref_speed">100</string>
+    <string name="pref_volume">100</string>
+    <string name="pref_poss_empty">false</string>
+    <string name="pref_max_vids">20000</string>
+    <string name="pref_refresh_mins">60</string>
+    <!--suppress CheckTagEmptyBody -->
+    <string name="pref_chan_group"></string>
+    <string name="pref_idle_timeout">360</string>
+    <string name="pref_num_cc_chans">2</string>
+    <string name="pref_filter">recgrp</string>
+    <string name="pref_guide_timeslots">8</string>
+    <!-- Color Settings -->
+    <string name="pref_color_bg"></string>
+    <string name="pref_color_card_dflt">#03525A</string>
+    <string name="pref_color_card_sel">#1A237E</string>
+    <string name="pref_color_search_bn">#ffaa3f</string>
+</map>

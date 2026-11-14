@@ -46,6 +46,12 @@ import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.mobile.MobileWelcomeActivity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -75,6 +81,7 @@ public class MainActivity extends LeanbackActivity {
                 return;
             }
         }
+        deployAssetFile("pref_defaults.xml", "shared_prefs/pref_defaults.xml");
         fetchConfig(0);
         setContentView(R.layout.main);
         Fragment fragment =
@@ -99,6 +106,43 @@ public class MainActivity extends LeanbackActivity {
         }
     }
 
+    static void deployAssetFile(String assetFileName, String outputFileName) {
+        Context context = MyApplication.getAppContext();
+        // Target location: /data/user/0/<your.package>/<outputFileName>
+        File outFile = new File(context.getDataDir(), outputFileName);
+        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(outFile)))) {
+            for (;;) {
+                String line = rdr.readLine();
+                if (line == null)
+                    break;
+                if (line.contains("name=\"VersionName\">")) {
+                    String[] split = line.split("[<>]");
+                    if (BuildConfig.VERSION_NAME.equals(split[2]))
+                        return;
+                    else
+                        break;
+                }
+            }
+        } catch (IOException ignored) {
+        }
+
+        try (
+            BufferedReader rdr = new BufferedReader(new InputStreamReader(context.getAssets().open(assetFileName)));
+            FileWriter wrt = new FileWriter(outFile) ) {
+            for (;;) {
+                String line = rdr.readLine();
+                if (line == null)
+                    break;
+                wrt.write(line + "\n");
+                if ("<map>".equals(line))
+                    wrt.write("    <string name=\"VersionName\">" + BuildConfig.VERSION_NAME + "</string>\n");
+            }
+            wrt.flush();
+        } catch (IOException e) {
+            Log.e(TAG, CLASS + " Exception deploying " + outputFileName, e);
+        }
+    }
+
     static void fetchConfig(int waitMillis) {
         if (waitMillis > 0) {
             try {
@@ -118,10 +162,16 @@ public class MainActivity extends LeanbackActivity {
         }
         fetchTask = MyApplication.singleton.firebaseRemoteConfig.fetchAndActivate();
         fetchTask.addOnCompleteListener( (task) -> {
-            if (!task.isSuccessful()) {
+            if (task.isSuccessful())
+                fbSettings();
+            else
                 executor.submit(() -> fetchConfig(30000));
-            }
         });
+    }
+
+    // Apply firebase updates to Settings
+    static void fbSettings() {
+
     }
 
     @Override
