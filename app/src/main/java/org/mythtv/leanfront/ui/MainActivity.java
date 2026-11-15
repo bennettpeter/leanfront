@@ -207,10 +207,19 @@ public class MainActivity extends LeanbackActivity {
                                     }
                                 }
                             }
+                            String defaultValue = Settings.getDefaultString(settingName);
                             if (value == null || value.isEmpty())
                                 editor.remove(settingName);
                             else
                                 editor.putString(settingName, value);
+                            String actual = Settings.getString(settingName);
+                            if (!actual.isEmpty()
+                                    && (actual.equals(defaultValue) || actual.equals(value))) {
+                                // Remove value when it is the old default or the new default
+                                SharedPreferences.Editor editor2 = Settings.getEditor();
+                                editor2.remove(settingName);
+                                editor2.commit();
+                            }
                         }
                         editor.commit();
                     }

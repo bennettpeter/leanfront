@@ -907,7 +907,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_HTTP_PORT:
                 Settings.putString(editor, "pref_http_port",
-                    validateNumber(action, 1, 65535, 6544));
+                    validateNumber(action, 1, 65535, "pref_http_port"));
                 bCache.authorization = null;
                 bCache.loginNeeded = false;
                 break;
@@ -928,75 +928,75 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_SKIP_FWD:
                 Settings.putString(editor, "pref_skip_fwd",group,
-                        validateNumber(action, 1, 3600, 60));
+                        validateNumber(action, 1, 3600, "pref_skip_fwd"));
                 break;
             case ID_SKIP_BACK:
                 Settings.putString(editor, "pref_skip_back",group,
-                        validateNumber(action, 1, 3600, 60));
+                        validateNumber(action, 1, 3600, "pref_skip_back"));
                 break;
             case ID_JUMP:
                 Settings.putString(editor, "pref_jump",group,
-                        validateNumber(action, 1, 60, 5));
+                        validateNumber(action, 1, 60, "pref_jump"));
                 break;
             case ID_IDLE_TIMEOUT:
                 Settings.putString(editor, "pref_idle_timeout",
-                        validateNumber(action, 0, 720, 360));
+                        validateNumber(action, 0, 720, "pref_idle_timeout"));
                 break;
             case ID_SUBTITLE_SIZE:
                 Settings.putString(editor, "pref_subtitle_size",group,
-                        validateNumber(action, 25, 300, 100));
+                        validateNumber(action, 25, 300, "pref_subtitle_size"));
                 break;
             case ID_RECENTS_DAYS:
                 Settings.putString(editor, "pref_recents_days",
-                        validateNumber(action, 1, 60, 7));
+                        validateNumber(action, 1, 60, "pref_recents_days"));
                 break;
             case ID_TWEAK_SEARCH_PKTS:
                 Settings.putString(editor, "pref_tweak_ts_search_pkts",
-                        validateNumber(action, 600, 100000, 2600));
+                        validateNumber(action, 600, 100000, "pref_tweak_ts_search_pkts"));
                 break;
             case ID_LIVETV_ROWSIZE:
                 Settings.putString(editor, "pref_livetv_rowsize",
-                        validateNumber(action, 1, 100, 100));
+                        validateNumber(action, 1, 100, "pref_livetv_rowsize"));
                 break;
             case ID_VIDEO_PARENTAL:
                 Settings.putString(editor, "pref_video_parental",
-                        validateNumber(action, 1, 4, 4));
+                        validateNumber(action, 1, 4, "pref_video_parental"));
                 break;
             case ID_GUIDE_TIMESLOTS:
                 Settings.putString(editor, "pref_guide_timeslots",
-                        validateNumber(action, 1, 16, 8));
+                        validateNumber(action, 1, 16, "pref_guide_timeslots"));
                 break;
             case ID_AUDIO_SYNC:
                 Settings.putString(editor, "pref_audio_sync",group,
-                        validateNumber(action, -2500, 2500, 0));
+                        validateNumber(action, -2500, 2500, "pref_audio_sync"));
                 break;
             case ID_COMMSKIP_START:
                 Settings.putString(editor, "pref_commskip_start",
-                        validateNumber(action, -10, 10, 0));
+                        validateNumber(action, -10, 10, "pref_commskip_start"));
                 break;
             case ID_COMMSKIP_END:
                 Settings.putString(editor, "pref_commskip_end",
-                        validateNumber(action, -10, 10, 0));
+                        validateNumber(action, -10, 10, "pref_commskip_end"));
                 break;
             case ID_CAPTIONS:
                 Settings.putString(editor, "pref_captions",group,
-                        validateNumber(action, 0, 10, 0));
+                        validateNumber(action, 0, 10, "pref_captions"));
                 break;
             case ID_SPEED:
                 Settings.putString(editor, "pref_speed",group,
-                        validateNumber(action, 10, 800, 100));
+                        validateNumber(action, 10, 800, "pref_speed"));
                 break;
             case ID_VOLUME:
                 Settings.putString(editor, "pref_volume",group,
-                        validateNumber(action, 10, 1000, 100));
+                        validateNumber(action, 10, 1000, "pref_volume"));
                 break;
             case ID_MAX_VIDS:
                 Settings.putString(editor, "pref_max_vids",
-                        validateNumber(action, 1000, 90000, 10000));
+                        validateNumber(action, 1000, 90000, "pref_max_vids"));
                 break;
             case ID_REFRESH_MINS:
                 // Must be divisible by 4;
-                newVal = validateNumber(action, 4, 60, 60);
+                newVal = validateNumber(action, 4, 60, "pref_refresh_mins");
                 int i = Integer.parseInt(newVal);
                 i = (i/4)*4;
                 newVal = String.valueOf(i);
@@ -1005,25 +1005,25 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_NUM_CC_CHANS:
                 Settings.putString(editor, "pref_num_cc_chans",
-                        validateNumber(action, 0, 4, 2));
+                        validateNumber(action, 0, 4, "pref_num_cc_chans"));
                 break;
             case ID_COLOR_BG:
                 Settings.putString(editor, "pref_color_bg",
-                        validateColor(action, ""));
+                        validateColor(action, "pref_color_bg"));
                 mustRestart = true;
                 break;
             case ID_COLOR_CARD_DFLT:
                 Settings.putString(editor, "pref_color_card_dflt",
-                        validateColor(action, "#03525A"));
+                        validateColor(action, "pref_color_card_dflt"));
                 mustRestart = true;
                 break;
             case ID_COLOR_CARD_SEL:
                 Settings.putString(editor, "pref_color_card_sel",
-                        validateColor(action, "#1A237E"));
+                        validateColor(action, "pref_color_card_sel"));
                 break;
             case ID_COLOR_SEARCH_BN:
                 Settings.putString(editor, "pref_color_search_bn",
-                        validateColor(action, "#ffaa3f"));
+                        validateColor(action, "pref_color_search_bn"));
                 mustRestart = true;
                 break;
             default:
@@ -1033,7 +1033,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         return GuidedAction.ACTION_ID_CURRENT;
     }
 
-    private String validateNumber(GuidedAction action, int min, int max, int defValue) {
+    private String validateNumberI(GuidedAction action, int min, int max, int defValue) {
         int i;
         String s = String.valueOf(action.getDescription()).trim();
         String org = s;
@@ -1058,7 +1058,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         return s;
     }
 
-    private String validateColor(GuidedAction action, String defValue) {
+    private String validateNumber(GuidedAction action, int min, int max, String key) {
+        int defValue = Settings.getDefaultInt(key);
+        return validateNumberI(action, min, max, defValue);
+    }
+
+    private String validateColorD(GuidedAction action, String defValue) {
         String s = String.valueOf(action.getDescription()).trim();
         if (s.isEmpty())
             s = defValue;
@@ -1079,6 +1084,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
         action.setDescription(s);
         return s;
     }
+
+    private String validateColor(GuidedAction action, String key) {
+        String defValue = Settings.getDefaultString(key);
+        return validateColorD(action, defValue);
+    }
+
 
     @Override
     public void onGuidedActionEditCanceled(GuidedAction action) {

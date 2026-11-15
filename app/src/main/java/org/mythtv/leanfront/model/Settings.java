@@ -19,16 +19,16 @@
 
 package org.mythtv.leanfront.model;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import org.mythtv.leanfront.MyApplication;
+
+import java.util.Objects;
 
 public class Settings {
     private static final String TAG = "lfe";
@@ -47,7 +47,7 @@ public class Settings {
     // This adds prefxxxx_ to string where xxxx is the group
     // null group or "Default" = empty string
     // If group value not found return default value.
-    public static String getString(String key, @Nullable String group) {
+    public static String getString(String key, @Nullable String group, boolean getDefault) {
         Context context = MyApplication.getAppContext();
         if (key.startsWith("pref_"))
             key = key.substring(5);
@@ -59,8 +59,11 @@ public class Settings {
         if (prefs != null) {
             if (group == null || group.equals("Default"))
                 group = "";
+            String result = null;
             String actualKey = "pref" + group + "_" + key;
-            String result = prefs.getString(actualKey, null);
+            if (!getDefault)
+                result = prefs.getString(actualKey, null);
+            actualKey =  "pref" + "_" + key;
             if (result == null || result.isEmpty())
                 result = prefOverrides.getString(actualKey,null);
             if (result == null || result.isEmpty())
@@ -73,12 +76,20 @@ public class Settings {
             return "";
     }
 
+    public static String getString(String key, @Nullable String group) {
+        return getString(key, group, false);
+    }
+
+    public static String getDefaultString(String key) {
+        return getString(key, null, true);
+    }
+
     public static String getString(String key) {
         return getString(key,null);
     }
 
-    public static int getInt(String key, @Nullable String group) {
-        String str = getString(key, group).trim();
+    public static int getInt(String key, @Nullable String group, boolean getDefault) {
+        String str = getString(key, group, getDefault).trim();
         if (str.isEmpty())
             return 0;
         try {
@@ -89,19 +100,33 @@ public class Settings {
         }
     }
 
+    public static int getDefaultInt(String key) {
+        return getInt(key, null, true);
+    }
+
+    public static int getInt(String key, @Nullable String group) {
+        return getInt(key, group, false);
+    }
+
     public static int getInt(String key) {
         return getInt(key,null);
     }
 
     public static void putString(SharedPreferences.Editor editor, String key,
                                  @Nullable String group, String value) {
+        String defaultValue = getDefaultString(key);
+        if (Objects.equals(value, defaultValue))
+            value = null;
         if (key.startsWith("pref_"))
             key = key.substring(5);
         if (editor != null) {
             if (group == null || group.equals("Default"))
                 group = "";
             String actualKey = "pref" + group + "_" + key;
-            editor.putString(actualKey,value);
+            if (value == null || value.isEmpty())
+                editor.remove(actualKey);
+            else
+                editor.putString(actualKey,value);
         }
     }
 
