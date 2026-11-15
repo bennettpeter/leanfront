@@ -59,7 +59,7 @@
     <string name="pref_guide_timeslots">8</string>
     <!-- Color Settings -->
     <string name="pref_color_bg"></string>
-    <string name="pref_color_card_dflt">#03525A</string>
-    <string name="pref_color_card_sel">#1A237E</string>
+    <string name="pref_color_card_dflt">#23699e</string>
+    <string name="pref_color_card_sel">#2b8231</string>
     <string name="pref_color_search_bn">#ffaa3f</string>
 </map>
