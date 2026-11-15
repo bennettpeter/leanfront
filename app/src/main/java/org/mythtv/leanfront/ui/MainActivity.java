@@ -28,12 +28,19 @@ import android.app.ActivityManager;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Task;
@@ -45,6 +52,7 @@ import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.mobile.MobileWelcomeActivity;
+import org.mythtv.leanfront.model.Settings;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,6 +60,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,6 +77,8 @@ public class MainActivity extends LeanbackActivity {
     private MainFragment mainFragment;
     public static Task<Boolean> fetchTask;
     private final static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,7 +156,7 @@ public class MainActivity extends LeanbackActivity {
         }
     }
 
-    static void fetchConfig(int waitMillis) {
+    void fetchConfig(int waitMillis) {
         if (waitMillis > 0) {
             try {
                 Thread.sleep(waitMillis);
@@ -170,9 +183,115 @@ public class MainActivity extends LeanbackActivity {
     }
 
     // Apply firebase updates to Settings
-    static void fbSettings() {
+    void fbSettings() {
+        handler.postDelayed( () -> {
+            if (MainActivity.fetchTask.isSuccessful()) {
+                String msgJson = MyApplication.singleton.firebaseRemoteConfig.getString("setting");
+                if (!msgJson.isEmpty()) {
+                    ArrayList<String> settingNames = new ArrayList<>();
+                    ArrayList<String> values = new ArrayList<>();
+                    parseSettings(msgJson, settingNames, values);
+                    if (!settingNames.isEmpty()) {
+                        SharedPreferences prefOverrides = getSharedPreferences("pref_overrides",0);
+                        SharedPreferences.Editor editor = prefOverrides.edit();
+                        for (int ix = 0; ix < settingNames.size() ; ix++) {
+                            String settingName = settingNames.get(ix);
+                            String value = values.get(ix);
+                            if (value != null && !value.isEmpty()) {
+                                if (settingName.startsWith("pref_color")) {
+                                    try {
+                                        Color.parseColor(value);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, CLASS + " Invalid color in override for " + settingName + " : " + value);
+                                        value = null;
+                                    }
+                                }
+                            }
+                            if (value == null || value.isEmpty())
+                                editor.remove(settingName);
+                            else
+                                editor.putString(settingName, value);
+                        }
+                        editor.commit();
+                    }
+                }
+            }
+        },1000);
 
     }
+
+    static void parseSettings(String msgJson, ArrayList<String> settingNames, ArrayList<String> values) {
+
+//      Example
+//      {
+//        "settings": [
+//          {
+//            "name": "pref_color_card_dflt",
+//            "value": "#23699e"
+//          },
+//          {
+//            "name": "pref_color_search_bn"
+//          }
+//        ]
+//      }
+
+        Reader in = new StringReader(msgJson);
+        try (JsonReader reader = new JsonReader(in)) {
+            reader.beginObject();
+            doc:
+            for (; ; ) {
+                switch (reader.peek()) {
+                    case NAME:
+                        String name = reader.nextName();
+                        if (name.equals("settings")) {
+                            reader.beginArray();
+                            for (; ; ) {
+                                if (reader.peek() == JsonToken.END_ARRAY) {
+                                    reader.endArray();
+                                    break;
+                                }
+                                reader.beginObject();
+                                String settingName = "";
+                                String value = "";
+                                entry:
+                                for (; ; ) {
+                                    switch (reader.peek()) {
+                                        case NAME:
+                                            String name1 = reader.nextName();
+                                            switch (name1) {
+                                                case "name":
+                                                    settingName = reader.nextString();
+                                                    break;
+                                                case "value":
+                                                    value = reader.nextString();
+                                                    break;
+                                                default:
+                                                    reader.skipValue();
+                                            }
+                                            break;
+                                        case END_OBJECT:
+                                            settingNames.add(settingName);
+                                            values.add(value);
+                                            reader.endObject();
+                                            break entry;
+                                    }
+                                } // entry
+                            } // results
+                        } else {
+                            reader.skipValue();
+                        }
+                        break;
+                    case END_OBJECT:
+                        reader.endObject();
+                        break doc;
+                    default:
+                }
+            } // doc
+        } catch (IOException | IllegalStateException e) {
+            Log.e(TAG, CLASS + " Exception parsing: " + msgJson, e);
+        }
+    }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {

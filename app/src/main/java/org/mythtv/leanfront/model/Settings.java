@@ -61,9 +61,9 @@ public class Settings {
                 group = "";
             String actualKey = "pref" + group + "_" + key;
             String result = prefs.getString(actualKey, null);
-            if (result == null)
+            if (result == null || result.isEmpty())
                 result = prefOverrides.getString(actualKey,null);
-            if (result == null)
+            if (result == null || result.isEmpty())
                 result = prefDefaults.getString(actualKey,null);
             if (result == null)
                 result = "";

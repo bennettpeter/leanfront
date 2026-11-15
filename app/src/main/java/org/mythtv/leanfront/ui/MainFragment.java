@@ -378,7 +378,6 @@ public class MainFragment extends BrowseSupportFragment
     // To advise users of new features etc.
     // Currently, no messages are displayed but an array of strings can be provided
     // in sNotes in the parens, e.g. {R.string.notes_audio}
-    @SuppressWarnings("ConstantConditions")
     void showNotes() {
         handler.postDelayed( () -> {
             if (MainActivity.fetchTask.isSuccessful()) {
@@ -411,7 +410,7 @@ public class MainFragment extends BrowseSupportFragment
 
     }
 
-    int parseMessages(String msgJson, ArrayList<String> msgText, int msgVersion) {
+    static int parseMessages(String msgJson, ArrayList<String> msgText, int msgVersion) {
 
 //      Example
 //        {
