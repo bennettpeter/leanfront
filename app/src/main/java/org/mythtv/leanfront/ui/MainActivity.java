@@ -40,7 +40,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Task;
@@ -94,7 +93,7 @@ public class MainActivity extends LeanbackActivity {
                 return;
             }
         }
-        deployAssetFile("pref_defaults.xml", "shared_prefs/pref_defaults.xml");
+        deployAssetFile();
         fetchConfig(0);
         setContentView(R.layout.main);
         Fragment fragment =
@@ -119,24 +118,30 @@ public class MainActivity extends LeanbackActivity {
         }
     }
 
-    static void deployAssetFile(String assetFileName, String outputFileName) {
+    static void deployAssetFile() {
         Context context = MyApplication.getAppContext();
+        String assetFileName = "pref_defaults.xml";
+        String outputFileName = "shared_prefs/pref_defaults.xml";
         // Target location: /data/user/0/<your.package>/<outputFileName>
         File outFile = new File(context.getDataDir(), outputFileName);
-        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(outFile)))) {
-            for (;;) {
-                String line = rdr.readLine();
-                if (line == null)
-                    break;
-                if (line.contains("name=\"VersionName\">")) {
-                    String[] split = line.split("[<>]");
-                    if (BuildConfig.VERSION_NAME.equals(split[2]))
-                        return;
-                    else
+        // Check if the defaults file is already up to date and if so,
+        // return to avoid copying it unnecessarily again/
+        if (outFile.exists()) {
+            try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(outFile)))) {
+                for (; ; ) {
+                    String line = rdr.readLine();
+                    if (line == null)
                         break;
+                    if (line.contains("name=\"VersionName\">")) {
+                        String[] split = line.split("[<>]");
+                        if (BuildConfig.VERSION_NAME.equals(split[2]))
+                            return;
+                        else
+                            break;
+                    }
                 }
+            } catch (IOException ignored) {
             }
-        } catch (IOException ignored) {
         }
 
         try (
