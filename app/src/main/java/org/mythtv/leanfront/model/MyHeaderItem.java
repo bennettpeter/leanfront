@@ -29,6 +29,7 @@ public class MyHeaderItem extends HeaderItem implements ListItem {
     private int mItemType;
     private String mBaseName;
     private Fragment fragment;
+    private long sortKey;
 
     public MyHeaderItem(String name, int type, String baseName) {
         super(name);
@@ -47,5 +48,13 @@ public class MyHeaderItem extends HeaderItem implements ListItem {
 
     public void setFragment(Fragment fragment) {
         this.fragment = fragment;
+    }
+
+    public long getSortKey() {
+        return sortKey;
+    }
+
+    public void setSortKey(long sortKey) {
+        this.sortKey = sortKey;
     }
 }

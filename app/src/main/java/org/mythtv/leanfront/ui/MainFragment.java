@@ -992,6 +992,11 @@ public class MainFragment extends BrowseSupportFragment
                         baseName = name;
                     intent.putExtra(MainFragment.KEY_BASENAME,baseName);
                     break;
+                case TYPE_RECENTS:
+                    intent = new Intent(activity, MainActivity.class);
+                    intent.putExtra(MainFragment.KEY_TYPE,MainFragment.TYPE_RECENTS);
+                    intent.putExtra(MainFragment.KEY_BASENAME,headerItem.getName());
+                    break;
                 default:
                     int rownum = mCategoryRowAdapter.indexOf(row);
                     if (rownum == -1)

@@ -23,5 +23,7 @@ public interface ListItem {
 
     int getItemType();
     String getName();
+    default long getSortKey() {return 0;}
     default String getBaseName() {return null;}
+
 }

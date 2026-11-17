@@ -24,6 +24,8 @@
 
 package org.mythtv.leanfront.ui;
 
+import static org.mythtv.leanfront.data.VideoContract.StatusEntry.COLUMN_LAST_USED;
+import static org.mythtv.leanfront.data.VideoContract.StatusEntry.COLUMN_SHOW_RECENT;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_AIRDATE;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_CATEGORY;
 import static org.mythtv.leanfront.data.VideoContract.VideoEntry.COLUMN_CHANNUM;
@@ -263,6 +265,17 @@ public class AsyncMainLoader implements Runnable {
             selection.append(RECTYPE_VIDEO);
         }
 
+        if (mType == TYPE_RECENTS) {
+            long recentsDays = Settings.getInt("pref_recents_days");
+            long recentsStart = System.currentTimeMillis() - recentsDays * 24*60*60*1000;
+            selection.append(COLUMN_TITLEMATCH)
+                    .append(" IN ( SELECT ")
+                    .append(COLUMN_TITLEMATCH).append(" FROM ")
+                    .append(VIEW_NAME).append(" WHERE ")
+                    .append(COLUMN_SHOW_RECENT).append(" > 0 AND ")
+                    .append(COLUMN_LAST_USED).append(" > ").append(recentsStart).append(" ) ");
+        }
+
         if (hideWatched) {
             if (selection.length() > 0) {
                 selection.insert(0,"( ");
@@ -383,7 +396,7 @@ public class AsyncMainLoader implements Runnable {
         // For Recordings currentItem is title saved used in toplevel page --> change to titlematch
         String currentItem = null;
         int recentsRowNum = -1;
-        MyHeaderItem header;
+        MyHeaderItem header = null;
 
         // Create the recents row, only for top level
         if (mType == TYPE_TOPLEVEL && showRecents) {
@@ -397,7 +410,7 @@ public class AsyncMainLoader implements Runnable {
         }
 
         // Create "All" row (but not for videos)
-        if (mType != TYPE_VIDEODIR) {
+        if (mType != TYPE_VIDEODIR && mType != TYPE_RECENTS) {
             header = new MyHeaderItem(allTitle,
                     allType, mBaseName);
             allSparse = new SparseArray<>();
@@ -417,6 +430,7 @@ public class AsyncMainLoader implements Runnable {
         }
 
         // Iterate through each filter entry and add it to the ArrayAdapter.
+        boolean rowLastUsedShow = false; // Is the latest Viewed in the row flagged as showRecent ?
         while (cursorHasData && !data.isAfterLast()) {
             boolean addToRow = true;
             int itemType = -1;
@@ -433,7 +447,7 @@ public class AsyncMainLoader implements Runnable {
 
             // For Rec Group type, only use recordings from that recording group.
             // categories are titles.
-            if (mType == TYPE_RECGROUP
+            if (mType == TYPE_RECGROUP || mType == TYPE_RECENTS
                 || (mType == TYPE_TOPLEVEL && filterType == FILTER_NONE)) {
                 filter = data.getString(titleIndex);
                 filtermatch = data.getString(titleMatchIndex);
@@ -482,7 +496,7 @@ public class AsyncMainLoader implements Runnable {
                     itemname = fileparts[1];
                 }
                 if ((fileparts.length <= 2 && mType == TYPE_VIDEODIR)
-                        || fileparts.length == 1)
+                        || fileparts.length == 1 || mType == TYPE_RECENTS)
                     itemType = TYPE_VIDEO;
                 else
                     itemType = TYPE_VIDEODIR;
@@ -547,6 +561,12 @@ public class AsyncMainLoader implements Runnable {
                         rowList.sort(videoComparator);
                     }
                 }
+                // If the prior row should be exclluded because they had reuested remove
+                // from recents, remove the row.
+                if (mType == TYPE_RECENTS && !filterList.isEmpty() && ! rowLastUsedShow) {
+                    filterList.remove(filterList.size() - 1);
+                    rowLastUsedShow = false;
+                }
                 rowList = new ArrayList<>();
                 header = new MyHeaderItem(filter,
                         rowType, mBaseName);
@@ -578,6 +598,12 @@ public class AsyncMainLoader implements Runnable {
                     tVideo.type = TYPE_CHANNEL_ALL;
                 }
                 rowList.add(tVideo);
+                if (mType == TYPE_RECENTS) {
+                    if (tVideo.lastUsed > header.getSortKey()) {
+                        header.setSortKey(tVideo.lastUsed);
+                        rowLastUsedShow = tVideo.showRecent;
+                    }
+                }
             }
 
             // Add video to "Root" row
@@ -697,6 +723,23 @@ public class AsyncMainLoader implements Runnable {
             for (int ix = 0; ix < allSparse.size(); ix++) {
                 allList.add(allSparse.get(allSparse.keyAt(ix)));
             }
+        }
+
+        if (mType == TYPE_RECENTS) {
+            // If the last row should be excluded because they had reuested remove
+            // from recents, remove the row.
+            if (!filterList.isEmpty() && !rowLastUsedShow) {
+                filterList.remove(filterList.size() - 1);
+                rowLastUsedShow = false;
+            }
+            // If it is a recents page, sort rows into decending order of last used
+            filterList.sort((row1, row2) -> {
+                // sort in descending order
+                long diff = row2.get(0).getSortKey() - row1.get(0).getSortKey();
+                if (diff < 0) return -1;
+                if (diff == 0) return 0;
+                return 1;
+            });
         }
     }
     static class VideoComparator implements Comparator<ListItem> {
