@@ -30,6 +30,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -44,6 +45,7 @@ import org.mythtv.leanfront.model.RecordRule;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
+import org.mythtv.leanfront.ui.MainActivity;
 import org.mythtv.leanfront.ui.MainFragment;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -58,6 +60,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -602,6 +605,8 @@ public class AsyncBackendCall implements Runnable {
                                     null, values);
                         }
                         VideoDbHelper.releaseDatabase();
+                        if ("true".equals(Settings.getString("pref_share_recents")))
+                            MainActivity.mainInstance.fbUpdateFromDB(mVideo.videoUrlPath);
                     } catch (IOException | XmlPullParserException e) {
                         Log.e(TAG, CLASS + " Exception ", e);
                     }
@@ -672,6 +677,8 @@ public class AsyncBackendCall implements Runnable {
                             selectionArgs);
 
                     VideoDbHelper.releaseDatabase();
+                    if ("true".equals(Settings.getString("pref_share_recents")))
+                        MainActivity.mainInstance.fbUpdateFromDB(mVideo.videoUrlPath);
 
                     if (context != null)
                         MainFragment.startFetch(mVideo.rectype, mVideo.recordedid, null, false);
@@ -1498,6 +1505,46 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (IOException | XmlPullParserException e) {
                         Log.e(TAG, CLASS + " Exception ", e);
+                    }
+                    break;
+
+                case Video.ACTION_GET_UUID:
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Myth/GetSetting?HostName=_GLOBAL_&Key=SystemUUID");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        Log.e(TAG, CLASS + " Exception ", e);
+                        break;
+                    }
+                    String uuid = null;
+                    if (xmlResult != null)
+                        uuid = xmlResult.getString();
+                    if (uuid == null) {
+                        uuid = UUID.randomUUID().toString();
+                        try {
+                            urlString = XmlNode.mythApiUrl(null,
+                                    "/Myth/PutSetting?HostName=_GLOBAL_&Key=SystemUUID&Value="
+                                    + uuid);
+                            xmlResult = XmlNode.fetch(urlString, "POST");
+                        } catch (IOException | XmlPullParserException e) {
+                            Log.e(TAG, CLASS + " Exception ", e);
+                            break;
+                        }
+                        try {
+                            urlString = XmlNode.mythApiUrl(null,
+                                    "/Myth/GetSetting?HostName=_GLOBAL_&Key=SystemUUID");
+                            xmlResult = XmlNode.fetch(urlString, null);
+                        } catch (IOException | XmlPullParserException e) {
+                            Log.e(TAG, CLASS + " Exception ", e);
+                            break;
+                        }
+                    }
+                    if (xmlResult != null) {
+                        uuid = xmlResult.getString();
+                        SharedPreferences.Editor editor = Settings.getEditor();
+                        Settings.putString(editor,"pref_uuid", uuid);
+                        editor.commit();
                     }
                     break;
 

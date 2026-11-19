@@ -266,9 +266,12 @@ public class AsyncMainLoader implements Runnable {
         }
 
         if (mType == TYPE_RECENTS) {
+            selection.append(" ( ").append(COLUMN_RECGROUP).append(" IS NULL OR ");
+            selection.append(COLUMN_RECGROUP).append(" NOT IN ('LiveTV','Deleted') ) ");
             long recentsDays = Settings.getInt("pref_recents_days");
             long recentsStart = System.currentTimeMillis() - recentsDays * 24*60*60*1000;
-            selection.append(COLUMN_TITLEMATCH)
+            selection.append(" AND ")
+                    .append(COLUMN_TITLEMATCH)
                     .append(" IN ( SELECT ")
                     .append(COLUMN_TITLEMATCH).append(" FROM ")
                     .append(VIEW_NAME).append(" WHERE ")
@@ -565,7 +568,6 @@ public class AsyncMainLoader implements Runnable {
                 // from recents, remove the row.
                 if (mType == TYPE_RECENTS && !filterList.isEmpty() && ! rowLastUsedShow) {
                     filterList.remove(filterList.size() - 1);
-                    rowLastUsedShow = false;
                 }
                 rowList = new ArrayList<>();
                 header = new MyHeaderItem(filter,
@@ -730,7 +732,6 @@ public class AsyncMainLoader implements Runnable {
             // from recents, remove the row.
             if (!filterList.isEmpty() && !rowLastUsedShow) {
                 filterList.remove(filterList.size() - 1);
-                rowLastUsedShow = false;
             }
             // If it is a recents page, sort rows into decending order of last used
             filterList.sort((row1, row2) -> {

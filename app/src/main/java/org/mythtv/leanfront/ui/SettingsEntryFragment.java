@@ -140,6 +140,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_COLOR_CARD_DFLT = 83;
     private static final int ID_COLOR_CARD_SEL = 84;
     private static final int ID_COLOR_SEARCH_BN = 85;
+    private static final int ID_SHARE_RECENTS = 86;
 
 
     private static final String KEY_EXPAND = "EXPAND";
@@ -546,6 +547,16 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 .enabled("true".equals(recents))
                 .focusable("true".equals(recents))
                 .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
+                .build());
+        String shareRecents = Settings.getString("pref_share_recents");
+        subActions.add(new GuidedAction.Builder(getActivity())
+                .id(ID_SHARE_RECENTS)
+                .title(R.string.pref_share_recents)
+                .description(R.string.pref_share_recents_desc)
+                .checked("true".equals(shareRecents))
+                .enabled("true".equals(recents))
+                .focusable("true".equals(recents))
+                .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
                 .build());
         String recentsDel = Settings.getString("pref_recents_deleted");
         subActions.add(new GuidedAction.Builder(getActivity())
@@ -1275,6 +1286,13 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 else
                     Settings.putString(editor, "pref_show_recents", "false");
                 restart(ID_PROG_LIST_OPTIONS);
+                break;
+            case ID_SHARE_RECENTS:
+                if (action.isChecked())
+                    Settings.putString(editor, "pref_share_recents", "true");
+                else
+                    Settings.putString(editor, "pref_share_recents", "false");
+                mustRestart = true;
                 break;
             case ID_RECENTS_DELETED:
                 if (action.isChecked())

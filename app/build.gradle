@@ -90,7 +90,9 @@ dependencies {
     implementation 'androidx.media3:media3-ui'
     implementation 'androidx.media3:media3-decoder-ffmpeg'
     implementation 'androidx.media3:media3-datasource-okhttp'
+    implementation 'com.google.firebase:firebase-auth:25.0.0'
     implementation 'com.google.firebase:firebase-config:24.0.1'
+    implementation 'com.google.firebase:firebase-database:23.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.14.1'
@@ -105,6 +107,7 @@ dependencies {
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:35.1.0')
     implementation platform('com.google.firebase:firebase-config')
-//    implementation platform('com.google.firebase:firebase-database')
+    implementation platform('com.google.firebase:firebase-database')
     implementation platform("com.google.firebase:firebase-analytics")
+    implementation platform("com.google.firebase:firebase-auth")
 }

@@ -26,10 +26,13 @@ package org.mythtv.leanfront.ui;
 
 import android.app.ActivityManager;
 import android.app.UiModeManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,18 +43,31 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
 import org.mythtv.leanfront.BuildConfig;
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
+import org.mythtv.leanfront.data.AsyncBackendCall;
+import org.mythtv.leanfront.data.VideoContract;
+import org.mythtv.leanfront.data.VideoDbHelper;
 import org.mythtv.leanfront.data.XmlNode;
 import org.mythtv.leanfront.mobile.MobileWelcomeActivity;
 import org.mythtv.leanfront.model.Settings;
+import org.mythtv.leanfront.model.Video;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,9 +77,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.HashSet;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /*
  * MainActivity class that loads MainFragment.
@@ -75,8 +96,13 @@ public class MainActivity extends LeanbackActivity {
     long mMultipleKeyTime;
     private MainFragment mainFragment;
     public static Task<Boolean> fetchTask;
-    private final static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final static FirebaseAuth fbAuth = FirebaseAuth.getInstance();
+    private final DatabaseReference fbDatabase = FirebaseDatabase.getInstance().getReference();
+    private final HashSet<String> recentlySynced = new HashSet<>();
+    private ScheduledFuture<?> resetFuture;
+    public static MainActivity mainInstance;
 
 
     @Override
@@ -93,8 +119,13 @@ public class MainActivity extends LeanbackActivity {
                 return;
             }
         }
-        deployAssetFile();
-        fetchConfig(0);
+        if (isTaskRoot()) {
+            mainInstance = this;
+            deployAssetFile();
+            fetchConfig();
+            if ("true".equals(Settings.getString("pref_share_recents")))
+                fbSignUp();
+        }
         setContentView(R.layout.main);
         Fragment fragment =
                 getSupportFragmentManager().findFragmentByTag("main");
@@ -104,9 +135,9 @@ public class MainActivity extends LeanbackActivity {
         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         int memoryClass = am.getMemoryClass();
         int lMemoryClass = am.getLargeMemoryClass();
-        Log.i(TAG, CLASS + " memoryClass:" + memoryClass +" lMemoryClass:" + lMemoryClass);
+        Log.i(TAG, CLASS + " memoryClass:" + memoryClass + " lMemoryClass:" + lMemoryClass);
         Intent intent = getIntent();
-        boolean settingsReq = intent.getBooleanExtra("LEANFRONT_SETTINGS",false);
+        boolean settingsReq = intent.getBooleanExtra("LEANFRONT_SETTINGS", false);
         if (savedInstanceState != null) {
             settingsReq = savedInstanceState.getBoolean("settingsReq");
         }
@@ -125,7 +156,7 @@ public class MainActivity extends LeanbackActivity {
         // Target location: /data/user/0/<your.package>/<outputFileName>
         File outFile = new File(context.getDataDir(), outputFileName);
         // Check if the defaults file is already up to date and if so,
-        // return to avoid copying it unnecessarily again/
+        // return to avoid copying it unnecessarily again
         if (outFile.exists()) {
             try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(outFile)))) {
                 for (; ; ) {
@@ -145,9 +176,9 @@ public class MainActivity extends LeanbackActivity {
         }
 
         try (
-            BufferedReader rdr = new BufferedReader(new InputStreamReader(context.getAssets().open(assetFileName)));
-            FileWriter wrt = new FileWriter(outFile) ) {
-            for (;;) {
+                BufferedReader rdr = new BufferedReader(new InputStreamReader(context.getAssets().open(assetFileName)));
+                FileWriter wrt = new FileWriter(outFile)) {
+            for (; ; ) {
                 String line = rdr.readLine();
                 if (line == null)
                     break;
@@ -161,13 +192,7 @@ public class MainActivity extends LeanbackActivity {
         }
     }
 
-    void fetchConfig(int waitMillis) {
-        if (waitMillis > 0) {
-            try {
-                Thread.sleep(waitMillis);
-            } catch (InterruptedException ignored) {
-            }
-        }
+    void fetchConfig() {
         if (MyApplication.singleton.firebaseRemoteConfig == null) {
             MyApplication.singleton.firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             int minFetch = 86400;  // 24 hours
@@ -179,17 +204,17 @@ public class MainActivity extends LeanbackActivity {
             MyApplication.singleton.firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         }
         fetchTask = MyApplication.singleton.firebaseRemoteConfig.fetchAndActivate();
-        fetchTask.addOnCompleteListener( (task) -> {
+        fetchTask.addOnCompleteListener((task) -> {
             if (task.isSuccessful())
                 fbSettings();
             else
-                executor.submit(() -> fetchConfig(30000));
+                Log.e(TAG, CLASS + " fetchConfig failed.");
         });
     }
 
     // Apply firebase updates to Settings
     void fbSettings() {
-        handler.postDelayed( () -> {
+        handler.postDelayed(() -> {
             if (MainActivity.fetchTask.isSuccessful()) {
                 String msgJson = MyApplication.singleton.firebaseRemoteConfig.getString("setting");
                 if (!msgJson.isEmpty()) {
@@ -197,9 +222,9 @@ public class MainActivity extends LeanbackActivity {
                     ArrayList<String> values = new ArrayList<>();
                     parseSettings(msgJson, settingNames, values);
                     if (!settingNames.isEmpty()) {
-                        SharedPreferences prefOverrides = getSharedPreferences("pref_overrides",0);
+                        SharedPreferences prefOverrides = getSharedPreferences("pref_overrides", 0);
                         SharedPreferences.Editor editor = prefOverrides.edit();
-                        for (int ix = 0; ix < settingNames.size() ; ix++) {
+                        for (int ix = 0; ix < settingNames.size(); ix++) {
                             String settingName = settingNames.get(ix);
                             String value = values.get(ix);
                             if (value != null && !value.isEmpty()) {
@@ -226,11 +251,11 @@ public class MainActivity extends LeanbackActivity {
                                 editor2.commit();
                             }
                         }
-                        editor.commit();
+                        editor.apply();
                     }
                 }
             }
-        },1000);
+        }, 1000);
 
     }
 
@@ -304,6 +329,273 @@ public class MainActivity extends LeanbackActivity {
         } catch (IOException | IllegalStateException e) {
             Log.e(TAG, CLASS + " Exception parsing: " + msgJson, e);
         }
+    }
+
+    public void fbSignUp() {
+        FirebaseUser currentUser = fbAuth.getCurrentUser();
+        String email;
+        String userId;
+        if (currentUser == null)
+            userId = null;
+        else {
+            email = currentUser.getEmail();
+            if (email == null) {
+                Log.e(TAG, CLASS + " fbSignUp: email address is null ");
+                return;
+            }
+            String[] split = email.split("@");
+            userId = split[0];
+        }
+        Log.i(TAG, CLASS + " fbSignUp: Already signed in as " + userId);
+        AsyncBackendCall call = new AsyncBackendCall(this,
+                (taskrunner) -> fbCheckSignIn(userId));
+        call.execute(Video.ACTION_GET_UUID);
+    }
+
+    void fbCheckSignIn(String userId) {
+        String uuid = Settings.getString("pref_uuid");
+        if (userId != null && userId.equals(uuid)) {
+            startSharing();
+            return;
+        }
+        Log.i(TAG, CLASS + " fbCheckSignIn: Sign off " + userId + " and sign on " + uuid);
+
+        if (userId != null)
+            fbAuth.signOut();
+        fbAuth.signInWithEmailAndPassword(uuid + "@nowhere.org", uuid)
+            .addOnSuccessListener(authResult -> {
+                Log.i(TAG, CLASS + " fbCheckSignIn: Sign in successful " + uuid);
+                // Sign-in succeeded
+                startSharing();
+            })
+            .addOnFailureListener(e -> {
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    fbCreateUser(uuid);
+                } else {
+                    Log.e(TAG, CLASS + " fbCheckSignIn: Exception signing in ", e);
+                }
+            });
+    }
+
+    void fbCreateUser(String uuid) {
+        fbAuth.createUserWithEmailAndPassword(uuid + "@nowhere.org", uuid)
+                .addOnCompleteListener((task)  -> {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, CLASS + " fbCreateUser: Successful created User id " + uuid);
+                        // Create User Succeeded
+                        startSharing();
+                    }
+                    else
+                        Log.e(TAG, CLASS + " Failure creating user ");
+                });
+    }
+
+    void startSharing() {
+        executor.submit(() -> {
+            fbCleanup();
+            fbListenForChanges();
+        });
+        // Wait 60 seconds for the changes to be finished before updating
+        // firebase, in case we uipdate with old values
+        executor.schedule(() -> fbUpdateFromDB(null), 15, TimeUnit.SECONDS);
+    }
+
+    void fbCleanup() {
+        String uid = fbGetUid();
+        fbDatabase.child("videostatus")
+          .child(uid)
+          .get().addOnCompleteListener( (task) -> {
+            if (task.isSuccessful()) {
+                Iterable<DataSnapshot> iter = task.getResult().getChildren();
+                iter.forEach((data) -> {
+                    // 60 days in milliseconds
+                    long expiration = System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000;
+                    Long lastUsed = (Long) data.child("last_used").getValue(false);
+                    if (lastUsed == null || lastUsed < expiration) {
+                        String key = data.getKey();
+                        if (key != null)
+                            fbDatabase.child("videostatus").child(uid).child(data.getKey()).removeValue();
+                    }
+                });
+            }
+            else {
+                Log.e(TAG, CLASS + " fbCleanup: error accessing data ");
+            }
+        });
+
+    }
+
+    public void fbUpdateFromDB(String url) {
+        String uid = fbGetUid();
+        VideoDbHelper dbh = VideoDbHelper.getInstance(this);
+        SQLiteDatabase db = dbh.getReadableDatabase();
+        if (db == null)
+            return;
+        final String [] columns = {
+                VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH,
+                VideoContract.StatusEntry.COLUMN_LAST_USED,
+                VideoContract.StatusEntry.COLUMN_SHOW_RECENT
+        };
+        String selection = null;
+        String[] args = null;
+        if (url != null) {
+            selection = VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH + " = ? ";
+            args = new String[]{url};
+        }
+
+        Cursor csr = db.query(
+                VideoContract.StatusEntry.TABLE_NAME,   // The table to query
+                columns,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                args,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                null);               // The sort order
+        boolean cursorHasData = csr.moveToFirst();
+
+        // 60 days in milliseconds
+        long expiration = System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000;
+        while (cursorHasData && !csr.isAfterLast()) {
+            url = csr.getString(0);
+            if (!recentlySynced.contains(url)) {
+                long lastUsed = csr.getLong(1);
+                if (lastUsed < expiration) {
+                    csr.moveToNext();
+                    continue;
+                }
+                String urlKey;
+                try {
+                    urlKey = URLEncoder.encode(url, "UTF-8")
+                            .replace("+", "%20")
+                            .replace(".", "%2E")
+                            .replace("*", "%2A");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                fbDatabase.child("videostatus")
+                        .child(uid)
+                        .child(urlKey)                     // url is a key
+                        .child("last_used")       // key
+                        .setValue(lastUsed);       // last used value
+                fbDatabase.child("videostatus")
+                        .child(uid)
+                        .child(urlKey)                      // url is a key
+                        .child("show_recent")      // key
+                        .setValue(csr.getInt(2) != 0);    // show recent value (boolean)
+                recentlySynced.add(url);
+            }
+            csr.moveToNext();
+        }
+        csr.close();
+
+        if (resetFuture != null)
+            resetFuture.cancel(false);
+        resetFuture = executor.schedule(() -> {
+            recentlySynced.clear();
+            resetFuture = null;
+        }, 60, TimeUnit.SECONDS);
+    }
+
+    void fbListenForChanges() {
+        String uid = fbGetUid();
+        fbDatabase.child("videostatus")
+            .child(uid)
+            .addChildEventListener(new ChildEventListener() {
+
+            public void childChange(@NonNull DataSnapshot snapshot, boolean delete) {
+                // 60 days in milliseconds
+                long expiration = System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000;
+                Long lastUsed = (Long) snapshot.child("last_used").getValue(false);
+                Boolean showRecent = (Boolean) snapshot.child("show_recent").getValue(false);
+                if (lastUsed == null || showRecent == null || lastUsed < expiration)
+                    return;
+                String url;
+                try {
+                    url = java.net.URLDecoder.decode(snapshot.getKey(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                if (!recentlySynced.contains(url)) {
+                    // Gets the data repository in write mode
+                    VideoDbHelper dbh = VideoDbHelper.getInstance(MainActivity.this);
+                    SQLiteDatabase db = dbh.getWritableDatabase();
+                    if (db == null)
+                        return;
+
+                    String selection = VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH + " = ?";
+                    String[] selectionArgs = {url};
+
+                    if (delete) {
+                        db.delete(
+                                VideoContract.StatusEntry.TABLE_NAME,
+                                selection,
+                                selectionArgs);
+                    } else {
+                        // Create a new map of values, where column names are the keys
+                        ContentValues values = new ContentValues();
+                        values.put(VideoContract.StatusEntry.COLUMN_LAST_USED, lastUsed);
+                        values.put(VideoContract.StatusEntry.COLUMN_BOOKMARK, 0);
+                        values.put(VideoContract.StatusEntry.COLUMN_SHOW_RECENT, showRecent);
+
+                        // First try an update
+                        int sqlCount = db.update(
+                                VideoContract.StatusEntry.TABLE_NAME,
+                                values,
+                                selection,
+                                selectionArgs);
+
+                        if (sqlCount == 0) {
+                            // Try an insert instead
+                            values.put(VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH, url);
+                            // Insert the new row, returning the primary key value of the new row
+                            db.insert(VideoContract.StatusEntry.TABLE_NAME,
+                                    null, values);
+                        }
+                        recentlySynced.add(url);
+                    }
+                    VideoDbHelper.releaseDatabase();
+                }
+                if (resetFuture != null)
+                    resetFuture.cancel(false);
+                resetFuture = executor.schedule(() -> {
+                    recentlySynced.clear();
+                    resetFuture = null;
+                }, 60, TimeUnit.SECONDS);
+            }
+
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    childChange(snapshot, false);
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    childChange(snapshot, false);
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    childChange(snapshot, true);
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    // Do nothing
+                }
+                @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, CLASS + " fbListenForChanges failed " + error.getMessage());
+            }
+        });
+    }
+
+    String fbGetUid() {
+        FirebaseUser currentUser = fbAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.e(TAG, CLASS + " fbGetUid: User is null ", new Throwable());
+            return "";
+        }
+        return currentUser.getUid();
     }
 
 
