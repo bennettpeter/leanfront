@@ -42,10 +42,8 @@ import static org.mythtv.leanfront.data.VideoContract.VideoEntry.RECTYPE_VIDEO;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationManager;
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -84,7 +82,6 @@ import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.OnItemViewClickedListener;
-import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
@@ -141,11 +138,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     private final VideoCursorMapper mVideoCursorMapper = new VideoCursorMapper();
     private DetailsOverviewRow mDetailsOverviewRow = null;
     private final ItemViewClickedListener itemViewClickedListener = new ItemViewClickedListener();
-    private final ItemViewSelectedListener itemViewSelectedListener = new ItemViewSelectedListener();
     private VideoAction videoAction;
-    private ScrollSupport scrollSupport;
-    private boolean isTV;
-    private boolean actionInitialSelect;
     ActivityResultLauncher<Intent> startPlayForResult;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean firstResume = true;
@@ -162,10 +155,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                     }
                 }
         );
-        UiModeManager uiModeManager = (UiModeManager)requireContext().getSystemService(Context.UI_MODE_SERVICE);
-        isTV = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
-        scrollSupport = new ScrollSupport((requireContext()));
         String bgColor = Settings.getString("pref_color_bg");
         if (bgColor.isEmpty())
             prepareBackgroundManager();
@@ -194,7 +184,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
             // When a Related Video item is clicked.
             setOnItemViewClickedListener(itemViewClickedListener);
-            setOnItemViewSelectedListener(itemViewSelectedListener);
         }
     }
 
@@ -247,7 +236,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
     public void onResume() {
         updateBackground(mSelectedVideo.bgImageUrl);
         super.onResume();
-        actionInitialSelect = true;
         if (!firstResume)
             reload();
         firstResume = false;
@@ -255,7 +243,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
 
     @Override
     public void onPause() {
-        scrollSupport.stop();
         handler.removeCallbacksAndMessages(null);
         super.onPause();
     }
@@ -485,7 +472,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
                 videoAction.onActionClicked(new Action(Video.ACTION_REFRESH));
                 // When a Related Video item is clicked.
                 setOnItemViewClickedListener(itemViewClickedListener);
-                setOnItemViewSelectedListener(itemViewSelectedListener);
             }
         }
     }
@@ -606,7 +592,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         }
         videoAction.setActionsAdapter(actionsAdapter);
         mDetailsOverviewRow.setActionsAdapter(actionsAdapter);
-        actionInitialSelect = true;
 
         mAdapter.add(mDetailsOverviewRow);
     }
@@ -663,17 +648,4 @@ public class VideoDetailsFragment extends DetailsSupportFragment
         }
     }
 
-    private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
-
-        @Override
-        public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if (item instanceof Action) {
-                if (!isTV && !actionInitialSelect)
-                    onActionClicked((Action)item);
-                actionInitialSelect = false;
-            }
-            else
-                scrollSupport.onItemSelected(itemViewHolder,rowViewHolder, getRowsSupportFragment());
-        }
-    }
 }

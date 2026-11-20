@@ -192,8 +192,6 @@ public class MainFragment extends BrowseSupportFragment
     private static MainFragment mActiveFragment = null;
     private static boolean mWasInBackground = true;
     private static final int TASK_INTERVAL = 240;
-//    private ItemViewClickedListener mItemViewClickedListener;
-    private ScrollSupport scrollSupport;
     volatile boolean isLoaderRunning;
     private ArrayList<String> mRecGroupList;
     private String mNewValueText;
@@ -206,7 +204,6 @@ public class MainFragment extends BrowseSupportFragment
             mSavedSelection = null;
         else
             mSavedSelection = savedInstanceState.getIntArray("selection");
-        scrollSupport = new ScrollSupport((requireContext()));
         Intent intent = requireActivity().getIntent();
         mType = intent.getIntExtra(KEY_TYPE, TYPE_TOPLEVEL);
         if (mType == TYPE_TOPLEVEL) {
@@ -387,6 +384,9 @@ public class MainFragment extends BrowseSupportFragment
                     ArrayList<String> msgText = new ArrayList<>();
                     int maxSeq = parseMessages(msgJson, msgText, msgVersion);
                     if (!msgText.isEmpty()) {
+                        Context context = getContext();
+                        if (context == null)
+                            return;
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
                                 R.style.Theme_AppCompat_Dialog_Alert);
                         builder.setTitle(R.string.notes_title);
@@ -506,7 +506,6 @@ public class MainFragment extends BrowseSupportFragment
     @Override
     public void onPause()
     {
-        scrollSupport.stop();
         super.onPause();
         mActiveFragment = null;
     }
@@ -755,21 +754,33 @@ public class MainFragment extends BrowseSupportFragment
         // Fill in disk usage
         setUsage(true);
         // Every time we have to re-get the category loader, we must re-create the sidebar.
-        mCategoryRowAdapter.clear();
         ListRow row;
-        for (int rownum = 0 ; rownum < list.size() ; rownum++) {
+        int rownum;
+        for (rownum = 0 ; rownum < list.size() ; rownum++) {
             ArrayList<ListItem> rowList = list.get(rownum);
             MyHeaderItem header = (MyHeaderItem) rowList.get(0);
             if (mRowName != null && mRowName.equals(header.getName()))
                 selection[0] = rownum;
-            ArrayObjectAdapter rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter(this));
+            ArrayObjectAdapter rowObjectAdapter;
+            if (mCategoryRowAdapter.size() > rownum) {
+                row = (ListRow) mCategoryRowAdapter.get(rownum);
+                assert row != null;
+                rowObjectAdapter = (ArrayObjectAdapter)row.getAdapter();
+            }
+            else {
+                rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter(this));
+                row = new ListRow(header, rowObjectAdapter);
+                mCategoryRowAdapter.add(row);
+            }
             rowList.remove(0);
             if (!rowList.isEmpty())
-                rowObjectAdapter.addAll(0, rowList);
-            row = new ListRow(header, rowObjectAdapter);
-            mCategoryRowAdapter.add(row);
+                rowObjectAdapter.setItems(rowList, null);
         }
         mRowName = null;
+
+        // Remove any remaining rows
+        if (mCategoryRowAdapter.size() > rownum)
+            mCategoryRowAdapter.removeItems(rownum, mCategoryRowAdapter.size()-rownum);
 
         // Create a row for tools.
         MyHeaderItem gridHeader = new MyHeaderItem(getString(R.string.row_header_tools),
@@ -946,7 +957,6 @@ public class MainFragment extends BrowseSupportFragment
             if (item instanceof Video)
                 mBackgroundUrl = ((Video) item).bgImageUrl;
             startBackgroundTimer();
-            scrollSupport.onItemSelected(itemViewHolder,rowViewHolder, getRowsSupportFragment());
         }
     }
 
