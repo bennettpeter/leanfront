@@ -272,7 +272,7 @@ public class AsyncMainLoader implements Runnable {
             selection.append(COLUMN_TITLEMATCH)
                     .append(" IN ( SELECT ")
                     .append(COLUMN_TITLEMATCH).append(" FROM ")
-                    .append(VideoContract.StatusEntry.TABLE_NAME).append(" WHERE ")
+                    .append(VIEW_NAME).append(" WHERE ")
                     .append(COLUMN_SHOW_RECENT).append(" > 0 AND ")
                     .append(COLUMN_LAST_USED).append(" > ").append(recentsStart).append(" ) ");
         }
