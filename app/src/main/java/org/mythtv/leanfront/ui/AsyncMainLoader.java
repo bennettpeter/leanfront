@@ -72,6 +72,7 @@ import androidx.annotation.NonNull;
 
 import org.mythtv.leanfront.MyApplication;
 import org.mythtv.leanfront.R;
+import org.mythtv.leanfront.data.VideoContract;
 import org.mythtv.leanfront.data.VideoDbHelper;
 import org.mythtv.leanfront.model.ListItem;
 import org.mythtv.leanfront.model.MyHeaderItem;
@@ -266,15 +267,12 @@ public class AsyncMainLoader implements Runnable {
         }
 
         if (mType == TYPE_RECENTS) {
-            selection.append(" ( ").append(COLUMN_RECGROUP).append(" IS NULL OR ");
-            selection.append(COLUMN_RECGROUP).append(" NOT IN ('LiveTV','Deleted') ) ");
             long recentsDays = Settings.getInt("pref_recents_days");
             long recentsStart = System.currentTimeMillis() - recentsDays * 24*60*60*1000;
-            selection.append(" AND ")
-                    .append(COLUMN_TITLEMATCH)
+            selection.append(COLUMN_TITLEMATCH)
                     .append(" IN ( SELECT ")
                     .append(COLUMN_TITLEMATCH).append(" FROM ")
-                    .append(VIEW_NAME).append(" WHERE ")
+                    .append(VideoContract.StatusEntry.TABLE_NAME).append(" WHERE ")
                     .append(COLUMN_SHOW_RECENT).append(" > 0 AND ")
                     .append(COLUMN_LAST_USED).append(" > ").append(recentsStart).append(" ) ");
         }
@@ -564,7 +562,7 @@ public class AsyncMainLoader implements Runnable {
                         rowList.sort(videoComparator);
                     }
                 }
-                // If the prior row should be exclluded because they had reuested remove
+                // If the prior row should be excluded because they had reuested remove
                 // from recents, remove the row.
                 if (mType == TYPE_RECENTS && !filterList.isEmpty() && ! rowLastUsedShow) {
                     filterList.remove(filterList.size() - 1);
@@ -599,13 +597,16 @@ public class AsyncMainLoader implements Runnable {
                             .build();
                     tVideo.type = TYPE_CHANNEL_ALL;
                 }
-                rowList.add(tVideo);
                 if (mType == TYPE_RECENTS) {
+                    if (!"Deleted".equals(tVideo.recGroup))
+                        rowList.add(tVideo);
+                    // We need to include deleted items for sort
                     if (tVideo.lastUsed > header.getSortKey()) {
                         header.setSortKey(tVideo.lastUsed);
                         rowLastUsedShow = tVideo.showRecent;
                     }
-                }
+                } else
+                    rowList.add(tVideo);
             }
 
             // Add video to "Root" row
