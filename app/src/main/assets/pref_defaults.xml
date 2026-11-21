@@ -62,5 +62,5 @@
     <string name="pref_color_card_dflt">#23699e</string>
     <string name="pref_color_card_sel">#2b8231</string>
     <string name="pref_color_search_bn">#ffaa3f</string>
-    <string name="pref_share_recents">false</string>
+    <string name="pref_share_recents">true</string>
 </map>

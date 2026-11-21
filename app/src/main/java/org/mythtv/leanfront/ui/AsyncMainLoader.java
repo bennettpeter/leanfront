@@ -277,7 +277,7 @@ public class AsyncMainLoader implements Runnable {
                     .append(COLUMN_LAST_USED).append(" > ").append(recentsStart).append(" ) ");
         }
 
-        if (hideWatched) {
+        if (hideWatched && mType != TYPE_RECENTS) {
             if (selection.length() > 0) {
                 selection.insert(0,"( ");
                 selection.append(" ) AND ");
@@ -346,6 +346,7 @@ public class AsyncMainLoader implements Runnable {
         boolean recentsTrim = "true".equals(Settings.getString("pref_recents_trim"));
         boolean showRecentDeleted = "true".equals(Settings.getString("pref_recents_deleted"));
         boolean showRecentWatched = "true".equals(Settings.getString("pref_recents_watched"));
+        boolean hideWatched = "true".equals(Settings.getString("pref_hide_watched"));
         recentsTrim = recentsTrim && (showRecentDeleted || showRecentWatched);
         VideoComparator videoComparator = new VideoComparator(ascdesc);
 
@@ -598,7 +599,8 @@ public class AsyncMainLoader implements Runnable {
                     tVideo.type = TYPE_CHANNEL_ALL;
                 }
                 if (mType == TYPE_RECENTS) {
-                    if (!"Deleted".equals(tVideo.recGroup))
+                    if (!"Deleted".equals(tVideo.recGroup)
+                        && (!hideWatched || !tVideo.isWatched()))
                         rowList.add(tVideo);
                     // We need to include deleted items for sort
                     if (tVideo.lastUsed > header.getSortKey()) {
