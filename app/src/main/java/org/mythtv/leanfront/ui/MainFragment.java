@@ -406,7 +406,7 @@ public class MainFragment extends BrowseSupportFragment
                     }
                 }
             }
-        },1000);
+        },2000);
 
     }
 

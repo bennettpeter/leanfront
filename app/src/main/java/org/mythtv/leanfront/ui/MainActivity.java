@@ -208,7 +208,7 @@ public class MainActivity extends LeanbackActivity {
             if (task.isSuccessful())
                 fbSettings();
             else
-                Log.e(TAG, CLASS + " fetchConfig failed.");
+                Log.e(TAG, CLASS + " fetchConfig failed.", task.getException());
         });
     }
 
@@ -255,7 +255,7 @@ public class MainActivity extends LeanbackActivity {
                     }
                 }
             }
-        }, 1000);
+        }, 5000);
 
     }
 
@@ -386,7 +386,7 @@ public class MainActivity extends LeanbackActivity {
                         startSharing();
                     }
                     else
-                        Log.e(TAG, CLASS + " Failure creating user ");
+                        Log.e(TAG, CLASS + " Failure creating user ", task.getException());
                 });
     }
 
@@ -419,7 +419,7 @@ public class MainActivity extends LeanbackActivity {
                 });
             }
             else {
-                Log.e(TAG, CLASS + " fbCleanup: error accessing data ");
+                Log.e(TAG, CLASS + " fbCleanup: error accessing data ", task.getException());
             }
         });
 
