@@ -766,6 +766,7 @@ public class MainFragment extends BrowseSupportFragment
                 row = (ListRow) mCategoryRowAdapter.get(rownum);
                 assert row != null;
                 rowObjectAdapter = (ArrayObjectAdapter)row.getAdapter();
+                row.setHeaderItem(header);
             }
             else {
                 rowObjectAdapter = new ArrayObjectAdapter(new CardPresenter(this));
@@ -829,6 +830,8 @@ public class MainFragment extends BrowseSupportFragment
                 .build();
         video.type = TYPE_MANAGE;
         toolsRowAdapter.add(video);
+
+        mCategoryRowAdapter.notifyArrayItemRangeChanged(0, mCategoryRowAdapter.size());
 
         SelectionSetter setter = new SelectionSetter(selection[0], selection[1]);
         handler.postDelayed(setter, 400);
