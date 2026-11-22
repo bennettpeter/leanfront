@@ -44,6 +44,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.audiofx.LoudnessEnhancer;
 import android.net.Uri;
 import android.os.Build;
@@ -185,7 +186,7 @@ public class PlaybackFragment extends VideoSupportFragment
     private final String prefVideo = Settings.getString("pref_video");
     private boolean mFrameMatch = "true".equals(Settings.getString("pref_framerate_match"));
     private int mSubtitleSize =  Settings.getInt("pref_subtitle_size");
-    private int mBgColor = Settings.getInt("pref_letterbox_color");
+    private int mBgColor = Color.parseColor(Settings.getString("pref_color_letterbox"));
     public boolean mAudioPause = "true".equals(Settings.getString("pref_audio_pause"));
     // Selectable command for certain keys
     static final int CMD_CONTROLS = 1;
@@ -786,7 +787,7 @@ public class PlaybackFragment extends VideoSupportFragment
         mJump = 60000 * Settings.getInt("pref_jump",group);
         mFrameMatch = "true".equals(Settings.getString("pref_framerate_match",group));
         mSubtitleSize =  Settings.getInt("pref_subtitle_size",group);
-        mBgColor = Settings.getInt("pref_letterbox_color",group);
+        mBgColor = Color.parseColor(Settings.getString("pref_color_letterbox", group));
         if (mPlayerGlue != null)
             mPlayerGlue.setAutoPlay("true".equals(Settings.getString("pref_autoplay",group)));
         int sampleOffsetUs = 1000 * Settings.getInt("pref_audio_sync",group);

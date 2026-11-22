@@ -86,7 +86,6 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_RELATED_DELETED = 28;
     private static final int ID_RELATED_WATCHED = 29;
     private static final int ID_RECENTS_DAYS = 30;
-    private static final int ID_LETTERBOX_BLACK = 31;
     private static final int ID_RECENTS_TRIM = 32;
     private static final int ID_TWEAKS = 33;
     private static final int ID_TWEAK_SEARCH_PKTS = 34;
@@ -141,7 +140,7 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
     private static final int ID_COLOR_CARD_SEL = 84;
     private static final int ID_COLOR_SEARCH_BN = 85;
     private static final int ID_SHARE_RECENTS = 86;
-
+    private static final int ID_COLOR_LETTERBOX = 87;
 
     private static final String KEY_EXPAND = "EXPAND";
 
@@ -382,14 +381,12 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     .descriptionEditable(true)
                     .descriptionEditInputType(InputType.TYPE_CLASS_NUMBER)
                     .build());
-
-            int i = Settings.getInt("pref_letterbox_color", group);
             subActions.add(new GuidedAction.Builder(getActivity())
-                    .id(ID_LETTERBOX_BLACK + addon)
-                    .title(R.string.pref_letterbox_black)
-                    .checked(i == Color.BLACK)
-                    .description(R.string.pref_letterbox_black_desc)
-                    .checkSetId(GuidedAction.CHECKBOX_CHECK_SET_ID)
+                    .id(ID_COLOR_LETTERBOX + addon)
+                    .title(R.string.pref_color_letterbox)
+                    .description(Settings.getString("pref_color_letterbox", group))
+                    .descriptionEditable(true)
+                    .descriptionEditInputType(InputType.TYPE_CLASS_TEXT)
                     .build());
             str = Settings.getString("pref_autoplay", group);
             subActions.add(new GuidedAction.Builder(getActivity())
@@ -989,6 +986,10 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 Settings.putString(editor, "pref_commskip_end",
                         validateNumber(action, -10, 10, "pref_commskip_end"));
                 break;
+            case ID_COLOR_LETTERBOX:
+                Settings.putString(editor, "pref_color_letterbox",group,
+                        validateColor(action, "pref_color_letterbox"));
+                break;
             case ID_CAPTIONS:
                 Settings.putString(editor, "pref_captions",group,
                         validateNumber(action, 0, 10, "pref_captions"));
@@ -1162,6 +1163,9 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                 break;
             case ID_COMMSKIP_END:
                 action.setDescription(Settings.getString("pref_commskip_end"));
+                break;
+            case ID_COLOR_LETTERBOX:
+                action.setDescription(Settings.getString("pref_color_letterbox"));
                 break;
             case ID_CAPTIONS:
                 action.setDescription(Settings.getString("pref_captions"));
@@ -1363,14 +1367,6 @@ public class SettingsEntryFragment extends GuidedStepSupportFragment {
                     Settings.putString(editor, "pref_audio_pause", "true");
                 else
                     Settings.putString(editor, "pref_audio_pause", "false");
-                break;
-            case ID_LETTERBOX_BLACK:
-                if (action.isChecked())
-                    Settings.putString(editor, "pref_letterbox_color",group,
-                            String.valueOf(Color.BLACK));
-                else
-                    Settings.putString(editor, "pref_letterbox_color",group,
-                            String.valueOf(Color.DKGRAY));
                 break;
             case ID_AUTOPLAY:
                 if (action.isChecked())
