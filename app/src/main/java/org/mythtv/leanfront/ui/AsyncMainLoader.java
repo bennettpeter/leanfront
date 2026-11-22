@@ -277,7 +277,8 @@ public class AsyncMainLoader implements Runnable {
                     .append(COLUMN_LAST_USED).append(" > ").append(recentsStart).append(" ) ");
         }
 
-        if (hideWatched && mType != TYPE_RECENTS) {
+        if (hideWatched &&
+                (mType == TYPE_RECGROUP || mType == TYPE_VIDEODIR)) {
             if (selection.length() > 0) {
                 selection.insert(0,"( ");
                 selection.append(" ) AND ");
