@@ -102,8 +102,8 @@
     <string name="pref_show_recents">Show Recently Viewed List</string>
     <string name="pref_show_recents_desc">This appears on the top level screen only.</string>
     <string name="pref_recents_days">Number of Days in Recently Viewed List</string>
-    <string name="pref_share_recents">Shared Recently Viewed List</string>
-    <string name="pref_share_recents_desc">The Recently Viewed list will be shared with other leanfront instances that connect to the same backend.</string>
+    <string name="pref_share_recents">Backup and share Recently Viewed List</string>
+    <string name="pref_share_recents_desc">The Recently Viewed list will be backed up and shared with other leanfront instances on the same backend.</string>
     <string name="pref_recents_deleted">Include Deleted Recordings in Recent List</string>
     <string name="pref_recents_deleted_desc">Recordings that have been marked "Deleted" but not yet physically removed yet</string>
     <string name="pref_recents_watched">Include Watched Shows in Recent List</string>
