@@ -103,6 +103,8 @@ Recommended Settings:
 
 Now, for example, if you watched and deleted an episode yesterday, the deleted episode shows at the front of the recent list. Select that episode from the recent list. Go down in the details screen to the related list. You will see unwatched, undeleted episodes of the series and you can select one to play.
 
+There is an option to backup and share the recently viewed list. If you have more than one TV device you can have the recently viewed list shared among two or more of them. Enable the option in Settings, Program List Options. Enable this in all devices you want to participate in sharing. This also backs up your recently viewed list to Google. If you remove and reinstall leanfront, then enable the option again, you will get your recent list restored.
+
 </details>
 
 <details><summary>More details</summary>
@@ -707,6 +709,7 @@ After installing [Android Studio][studio], use SDK Manager to install the emulat
 - In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/28.2.13676358
 - Run build_ffmpeg.sh.
 - Open the project in [Android Studio][studio].
+- Compile will fail without a google-services.json file. Copy the google-services.json_without_api_key to a file called google-services.json. This does not have the api key. You can build and run with this file, but the sharing of Recently Viewed videos will not work. I do not includde the API key in the github repository, in case bad actors steal it to abuse the google realtime database used by this app.
 - Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick). 
 - It can also be run with an android emulator. Sound is poor with an emulator.
 - If you do not want to build this yourself, see [Installing Leanfront](#installing-leanfront).
