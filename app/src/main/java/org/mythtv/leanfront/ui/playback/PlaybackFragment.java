@@ -101,7 +101,6 @@ import org.mythtv.leanfront.model.Playlist;
 import org.mythtv.leanfront.model.Settings;
 import org.mythtv.leanfront.model.Video;
 import org.mythtv.leanfront.model.VideoCursorMapper;
-import org.mythtv.leanfront.player.MyExtractorsFactory;
 import org.mythtv.leanfront.player.MyRenderersFactory;
 import org.mythtv.leanfront.player.VideoPlayerGlue;
 import org.mythtv.leanfront.presenter.CardPresenter;
@@ -124,6 +123,8 @@ import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.MergingMediaSource;
 import androidx.media3.exoplayer.source.SingleSampleMediaSource;
+import androidx.media3.extractor.DefaultExtractorsFactory;
+import androidx.media3.extractor.ts.TsExtractor;
 import androidx.media3.ui.SubtitleView;
 import org.mythtv.leanfront.ui.MainFragment;
 import org.mythtv.leanfront.ui.VideoDetailsActivity;
@@ -137,6 +138,7 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -991,7 +993,18 @@ public class PlaybackFragment extends VideoSupportFragment
         String userAgent = Util.getUserAgent(requireActivity(), "VideoPlayerGlue");
         MythHttpDataSource.Factory dsFactory = new MythHttpDataSource.Factory(userAgent);
         MediaItem item = MediaItem.fromUri(mediaSourceUri);
-        MyExtractorsFactory extFactory = new MyExtractorsFactory();
+        List<Format> closedCaptionFormats = new ArrayList<>();
+        int num = Settings.getInt("pref_num_cc_chans");
+        for (int ccnum = 1 ; ccnum <= num; ccnum++)
+            closedCaptionFormats.add(
+                    new Format.Builder()
+                            .setAccessibilityChannel(ccnum)
+                            .setSampleMimeType(MimeTypes.APPLICATION_CEA608)
+                            .build());
+        DefaultExtractorsFactory extFactory = new DefaultExtractorsFactory()
+            .setTsSubtitleFormats(closedCaptionFormats)
+            .setTsExtractorTimestampSearchBytes(
+                Settings.getInt("pref_tweak_ts_search_pkts") * TsExtractor.TS_PACKET_SIZE);
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (dsFactory,
                         extFactory);
