@@ -433,7 +433,7 @@ public class AsyncMainLoader implements Runnable {
         }
 
         // Iterate through each filter entry and add it to the ArrayAdapter.
-        boolean rowLastUsedShow = false; // Is the latest Viewed in the row flagged as showRecent ?
+        Video rowLastUsedVideo = null;
         while (cursorHasData && !data.isAfterLast()) {
             boolean addToRow = true;
             int itemType = -1;
@@ -564,9 +564,15 @@ public class AsyncMainLoader implements Runnable {
                         rowList.sort(videoComparator);
                     }
                 }
+                // If the prior row is empty add the last used video
+                if (mType == TYPE_RECENTS && rowList.size() == 1 && rowLastUsedVideo != null) {
+                    rowList.add(rowLastUsedVideo);
+                }
+
                 // If the prior row should be excluded because they had reuested remove
                 // from recents, remove the row.
-                if (mType == TYPE_RECENTS && !filterList.isEmpty() && ! rowLastUsedShow) {
+                if (mType == TYPE_RECENTS && !filterList.isEmpty() && rowLastUsedVideo != null
+                  && !rowLastUsedVideo.showRecent) {
                     filterList.remove(filterList.size() - 1);
                 }
                 rowList = new ArrayList<>();
@@ -575,6 +581,7 @@ public class AsyncMainLoader implements Runnable {
                 rowList.add(header);
                 filterList.add(rowList);
                 currentCategoryMatch = filtermatch;
+                rowLastUsedVideo = null;
             }
 
             // If a directory, create a placeholder for directory name
@@ -606,7 +613,7 @@ public class AsyncMainLoader implements Runnable {
                     // We need to include deleted items for sort
                     if (tVideo.lastUsed > header.getSortKey()) {
                         header.setSortKey(tVideo.lastUsed);
-                        rowLastUsedShow = tVideo.showRecent;
+                        rowLastUsedVideo = tVideo;
                     }
                 } else
                     rowList.add(tVideo);
@@ -734,7 +741,7 @@ public class AsyncMainLoader implements Runnable {
         if (mType == TYPE_RECENTS) {
             // If the last row should be excluded because they had reuested remove
             // from recents, remove the row.
-            if (!filterList.isEmpty() && !rowLastUsedShow) {
+            if (!filterList.isEmpty() && rowLastUsedVideo != null && !rowLastUsedVideo.showRecent) {
                 filterList.remove(filterList.size() - 1);
             }
             // If it is a recents page, sort rows into decending order of last used
